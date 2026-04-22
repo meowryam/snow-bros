@@ -1,5 +1,5 @@
 #include "StarLevel.h"
-
+#include <cstdlib>
 StarEvent::StarEvent() {
     starLevel = 0;
     choice0 = "";
@@ -7,15 +7,16 @@ StarEvent::StarEvent() {
     choice2 = " ";
 }
 void StarEvent::Level(int totalLevels) {
-    int normalLevels[10], count =0;
+    int normalLevels[10];
+    int count = 0;
     for (int i=0; i < totalLevels; i++) {
         if (i % 5 != 0) {
             normalLevels[count] = i;
 			count++; 
         }
     }
-    int index = rand() % count;
-	starLevel = normalLevels[index];
+    int n = rand() % count;
+	starLevel = normalLevels[n];
 }
 
 bool StarEvent::isStarLevel(int levelNumber) const {
