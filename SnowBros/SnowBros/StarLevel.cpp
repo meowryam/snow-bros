@@ -7,7 +7,7 @@ StarEvent::StarEvent() {
     choice2 = " ";
 }
 void StarEvent::Level(int totalLevels) {
-    int normalLevels[10];
+	int normalLevels[10] = { 0 };
     int count = 0;
     for (int i=0; i < totalLevels; i++) {
         if (i % 5 != 0) {
