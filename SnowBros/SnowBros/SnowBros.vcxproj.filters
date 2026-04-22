@@ -35,5 +35,8 @@
     <ClInclude Include="FileManager.h">
       <Filter>data</Filter>
     </ClInclude>
+    <ClInclude Include="GemSystem.h">
+      <Filter>data</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

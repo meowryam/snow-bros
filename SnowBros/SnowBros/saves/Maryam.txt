@@ -1,0 +1,5 @@
+username=Maryam
+current_level=3
+lives=2
+gem_count=760
+high_score=0

@@ -1,37 +1,57 @@
-#include <SFML/Graphics.hpp>
-#include <cmath>
+#include <iostream>
+#include "PlayerData.h"
+#include "FileManager.h"
+#include "GemSystem.h"
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode({800, 600}), "Heart");
+    // --- Test 1: Create a player ---
+    PlayerData player;
+    player.setUsername("Maryam");
+    std::cout << "=== NEW PLAYER ===" << std::endl;
+    std::cout << "Username: " << player.getUsername() << std::endl;
+    std::cout << "Level: " << player.getCurrentLevel() << std::endl;
+    std::cout << "Lives: " << player.getLives() << std::endl;
+    std::cout << "Gems: " << player.getGemCount() << std::endl;
 
-    const int numPoints = 100;
-    sf::VertexArray heart(sf::PrimitiveType::TriangleFan, numPoints + 2);
+    // --- Test 2: Gem system ---
+    GemSystem gems(player);
+    std::cout << "\n=== GEM TESTS ===" << std::endl;
 
-    // Center point
-    heart[0].position = sf::Vector2f(400, 300);
-    heart[0].color = sf::Color::Red;
+    gems.enemykilled();
+    gems.enemykilled();
+    gems.enemykilled();
+    std::cout << "After 3 enemy kills: " << player.getGemCount() << " gems" << std::endl;
 
-    for (int i = 0; i <= numPoints; i++) {
-        float t = i * 2 * 3.14159f / numPoints;
+    gems.Mogerakilled();
+    std::cout << "After Mogera kill: " << player.getGemCount() << " gems" << std::endl;
 
-        // Heart parametric equation
-        float x = 16 * pow(sin(t), 3);
-        float y = -(13 * cos(t) - 5 * cos(2*t) - 2 * cos(3*t) - cos(4*t));
+    gems.gamakichikilled();
+    std::cout << "After Gamakichi kill: " << player.getGemCount() << " gems" << std::endl;
 
-        // Scale and center
-        heart[i + 1].position = sf::Vector2f(400 + x * 10, 300 + y * 10);
-        heart[i + 1].color = sf::Color::Red;
-    }
+    gems.addGems(50);
+    std::cout << "After bonus level (+50): " << player.getGemCount() << " gems" << std::endl;
 
-    while (window.isOpen()) {
-        while (auto event = window.pollEvent()) {
-            if (event->is<sf::Event::Closed>())
-                window.close();
-        }
-        window.clear(sf::Color::Black);
-        window.draw(heart);
-        window.display();
-    }
+    // --- Test 3: Save ---
+    std::cout << "\n=== SAVE TEST ===" << std::endl;
+    player.setCurrentLevel(3);
+    player.setLives(2);
+    bool saved = FileManager::savePlayerData(player);
+    std::cout << "Save successful: " << (saved ? "YES" : "NO") << std::endl;
+
+    // --- Test 4: Load ---
+    std::cout << "\n=== LOAD TEST ===" << std::endl;
+    PlayerData loaded;
+    bool loadSuccess = FileManager::loadPlayerData("alice", loaded);
+    std::cout << "Load successful: " << (loadSuccess ? "YES" : "NO") << std::endl;
+    std::cout << "Username: " << loaded.getUsername() << std::endl;
+    std::cout << "Level: " << loaded.getCurrentLevel() << std::endl;
+    std::cout << "Lives: " << loaded.getLives() << std::endl;
+    std::cout << "Gems: " << loaded.getGemCount() << std::endl;
+
+    // --- Test 5: Save exists ---
+    std::cout << "\n=== SAVE EXISTS TEST ===" << std::endl;
+    std::cout << "alice save exists: " << (FileManager::saveExists("alice") ? "YES" : "NO") << std::endl;
+    std::cout << "bob save exists: " << (FileManager::saveExists("bob") ? "YES" : "NO") << std::endl;
 
     return 0;
 }

@@ -14,7 +14,7 @@ public:
 	PlayerData() {
 		username = "Maryam";
 		currentlevel = 1;
-		lives = 3;
+		lives = 2;
 		gemCount = 0;
 		highscore = 0;
 	}
