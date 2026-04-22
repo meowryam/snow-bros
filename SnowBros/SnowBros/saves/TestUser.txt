@@ -1,0 +1,5 @@
+username=TestUser
+current_level=10
+lives=3
+gem_count=300
+high_score=7500
