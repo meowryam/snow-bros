@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="SnowBros/SnowBros.vcxproj" />
+  <Project Path="SnowBros/SnowBros.vcxproj" Id="d07a8fe5-6ec6-4ac6-aef6-2b458d82cdc1" />
 </Solution>
