@@ -139,6 +139,9 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\entities\Enemy.h" />
+    <ClInclude Include="..\..\src\entities\Entity.h" />
+    <ClInclude Include="..\..\src\entities\Projectile.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState.h" />
