@@ -1,86 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="data">
-      <UniqueIdentifier>{bb8757f5-56b8-4c95-a3f1-5bb9f509a3e9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="Levelblueprint.cpp" />
+    <ClCompile Include="LevelsManager.cpp" />
+    <ClCompile Include="StarLevel.cpp" />
+    <ClCompile Include="ShopScreen.cpp" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FileManager.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StarLevel.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
-    <ClCompile Include="Levelblueprint.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelsManager.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="PlayerData.h">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager.h">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="GemSystem.h">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="..\..\src\entities\Entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\entities\Enemy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\entities\Projectile.h">
-      <Filter>Header Files</Filter>
-=======
-    <ClInclude Include="ShopSystem.h">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="StarLevel.h">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="Levelblueprint.h">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelsManager.h">
-      <Filter>data</Filter>
->>>>>>> 46796ac841b6a44063fadbc5c8f9e943c233bc32
-    </ClInclude>
+    <ClInclude Include="..\..\src\entities\Enemy.h" />
+    <ClInclude Include="..\..\src\entities\Entity.h" />
+    <ClInclude Include="..\..\src\entities\Projectile.h" />
+    <ClInclude Include="FileManager.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="GameStateManager.h" />
+    <ClInclude Include="GemSystem.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Levelblueprint.h" />
+    <ClInclude Include="LevelsManager.h" />
+    <ClInclude Include="PlayerData.h" />
+    <ClInclude Include="ShopSystem.h" />
+    <ClInclude Include="StarLevel.h" />
   </ItemGroup>
 </Project>
