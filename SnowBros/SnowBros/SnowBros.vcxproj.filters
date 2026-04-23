@@ -30,6 +30,12 @@
     <ClCompile Include="StarLevel.cpp">
       <Filter>data</Filter>
     </ClCompile>
+    <ClCompile Include="Levelblueprint.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelsManager.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PlayerData.h">
@@ -57,6 +63,12 @@
       <Filter>data</Filter>
     </ClInclude>
     <ClInclude Include="StarLevel.h">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="Levelblueprint.h">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelsManager.h">
       <Filter>data</Filter>
     </ClInclude>
   </ItemGroup>

@@ -135,6 +135,8 @@
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="Levelblueprint.cpp" />
+    <ClCompile Include="LevelsManager.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="StarLevel.cpp" />
   </ItemGroup>
@@ -145,6 +147,8 @@
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GemSystem.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Levelblueprint.h" />
+    <ClInclude Include="LevelsManager.h" />
     <ClInclude Include="PlayerData.h" />
     <ClInclude Include="ShopSystem.h" />
     <ClInclude Include="StarLevel.h" />
