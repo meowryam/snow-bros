@@ -21,14 +21,20 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="meri-baari.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FileManager.cpp">
       <Filter>data</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StarLevel.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="Levelblueprint.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelsManager.cpp">
+      <Filter>data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,6 +59,7 @@
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\..\src\entities\Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -61,6 +68,19 @@
     </ClInclude>
     <ClInclude Include="..\..\src\entities\Projectile.h">
       <Filter>Header Files</Filter>
+=======
+    <ClInclude Include="ShopSystem.h">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="StarLevel.h">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="Levelblueprint.h">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelsManager.h">
+      <Filter>data</Filter>
+>>>>>>> 46796ac841b6a44063fadbc5c8f9e943c233bc32
     </ClInclude>
   </ItemGroup>
 </Project>

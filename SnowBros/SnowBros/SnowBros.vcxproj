@@ -134,9 +134,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="meri-baari.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="Levelblueprint.cpp" />
+    <ClCompile Include="LevelsManager.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="StarLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\entities\Enemy.h" />
@@ -148,7 +150,11 @@
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GemSystem.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Levelblueprint.h" />
+    <ClInclude Include="LevelsManager.h" />
     <ClInclude Include="PlayerData.h" />
+    <ClInclude Include="ShopSystem.h" />
+    <ClInclude Include="StarLevel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
