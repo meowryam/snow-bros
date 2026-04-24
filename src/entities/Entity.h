@@ -4,7 +4,7 @@
 
 class Entity
 {
-private:
+protected:
 
 	double x, y;
 	double xspeed, yspeed;

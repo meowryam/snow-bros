@@ -7,10 +7,8 @@ private:
 	int damage;
 public:
 	Projectile(double xx, double yy, int dam)
+		: Entity(xx, yy), damage(dam)   
 	{
-		x = xx;
-		y = yy;
-		damage = dam;
 	}
 
 	int getdamage()

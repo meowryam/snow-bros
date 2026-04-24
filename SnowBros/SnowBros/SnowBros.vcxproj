@@ -141,8 +141,10 @@
     <ClCompile Include="StarLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\core\EventBus.h" />
     <ClInclude Include="..\..\src\entities\Enemy.h" />
     <ClInclude Include="..\..\src\entities\Entity.h" />
+    <ClInclude Include="..\..\src\entities\PoweUp.h" />
     <ClInclude Include="..\..\src\entities\Projectile.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Game.h" />
