@@ -345,7 +345,7 @@ public:
         player1.resolvePlatforms(platforms, platformCount);
 
         // Spawn snowball if requested
-        if (player1.getState() == PlayerState::THROWING) {
+        if (player1.getWantsToThrow()) {
             bool powerful = player1.isSnowballPowerActive();
             bool longRange = player1.isDistanceIncreaseActive();
             double dir = player1.getFacing() == Direction::RIGHT ? 1.0 : -1.0;

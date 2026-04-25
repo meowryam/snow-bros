@@ -15,7 +15,9 @@ protected:
     float directionInterval;   // how long before next flip (randomized)
     float hitFlashTimer;      
     static constexpr float HIT_FLASH_DURATION = 0.15f;
-
+    // Shakeout timer — fully trapped enemy shakes free after this expires
+    float shakeoutTimer;
+    static constexpr float SHAKEOUT_DURATION = 5.0f;  // seconds before escape
     static constexpr float hitboxbotom_width = 36.f;
     static constexpr float hitboxbotom_height = 44.f;
     int snowballHits;

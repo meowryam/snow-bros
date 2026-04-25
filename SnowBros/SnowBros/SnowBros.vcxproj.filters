@@ -15,6 +15,7 @@
     <ClCompile Include="Tornado.cpp" />
     <ClCompile Include="Gamakichi.cpp" />
     <ClCompile Include="Mogera.cpp" />
+    <ClCompile Include="SnowBall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">

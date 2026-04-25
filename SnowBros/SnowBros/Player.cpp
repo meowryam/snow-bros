@@ -3,6 +3,7 @@ Player::Player()
     : playerData(*(new PlayerData())),  
     sprite(texture)
 {
+    
     playerNumber = 1;
     screenWidth = 800.f;
     screenHeight = 600.f;
@@ -10,6 +11,7 @@ Player::Player()
     velocity = Vector2f(0.f, 0.f);
     speed = BASE_SPEED;
     invincibleTimer = 3.f;  // 3 seconds of spawn protection
+    wantsToThrow = false;
     isOnGround = false;
     canJump = true;
     isAlive = true;
@@ -113,9 +115,10 @@ void Player::handleInput() {
         canJump = true;
     }
     if (Keyboard::isKeyPressed(keyThrow)) {
-        if (state != PlayerState::THROWING) { 
-            state = PlayerState::THROWING;
-        }
+        wantsToThrow = true;
+    }
+    else {
+        wantsToThrow = false;
     }
 }
 void Player::update(float deltaTime) {

@@ -16,6 +16,7 @@ Botom::Botom(double startX, double startY, float scrW, float scrH)
     yspeed = 0.0;
     directionTimer = randFloat(1.5f, 3.5f);
     directionInterval = directionTimer;
+    shakeoutTimer = SHAKEOUT_DURATION;
     hitFlashTimer = 0.f;
     snowballHits = 0;
     showDebug = false;
@@ -30,6 +31,15 @@ void Botom::update(double deltaTime) {
 
     if (trap && rolling) {
         x += xspeed * deltaTime;
+        // Count down shakeout — enemy escapes if player ignores it
+        shakeoutTimer -= static_cast<float>(deltaTime);
+        if (shakeoutTimer <= 0.f) {
+            // Enemy shakes free — reset everything
+            trap = false;
+            snowballHits = 0;
+            shakeoutTimer = SHAKEOUT_DURATION;
+            xspeed = speed;  // resume walking
+        }
         if (!isOnGround) {
             yspeed += GRAVITY * deltaTime;
             if (yspeed > MAX_FALL) yspeed = MAX_FALL;

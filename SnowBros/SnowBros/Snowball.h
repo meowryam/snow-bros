@@ -1,132 +1,77 @@
-//#include "Projectile.h"
-//
-//// Player's thrown snowball — grows with hits, becomes rollable when full.
-//// This is yours fully (ties to player throw mechanic in T-A4).
-//class Snowball : public Projectile {
-//private:
-//    int snowLevel;   // 0=small, 1=medium, 2=full (can encase enemy)
-//    bool rolling;
-//    double direction; // +1.0 = right, -1.0 = left
-//
-//public:
-//    Snowball(double x, double y, double dir)
-//        : Projectile(x, y, 1), snowLevel(0), rolling(false), direction(dir) {
-//        xspeed = dir * 300.0;
-//    }
-//
-//    void addSnow() {
-//        if (snowLevel < 2) snowLevel++;
-//    }
-//
-//    bool canEncase()    const { return snowLevel >= 2; }
-//    bool isRolling()    const { return rolling; }
-//    void startRolling() { rolling = true; xspeed = direction * 200.0; }
-//    int  getSnowLevel() const { return snowLevel; }
-//
-//    void update(double deltaTime) override {
-//        if (!alive) return;
-//        x += xspeed * deltaTime;
-//        y += yspeed * deltaTime;
-//        // TODO: add gravity, platform collision, rolling behaviour
-//    }
-//
-//    void draw(sf::RenderWindow& window) override {
-//        // TODO: draw correct frame from Items.png based on snowLevel
-//    }
-//};
-
-
 #pragma once
-#include "Projectile.h"
+#include "Entity.h"
 #include "Platform.h"
-#include <optional>
 
-class Snowball : public Projectile {
+// ============================================================
+//  Snowball — the player's primary weapon
+//
+//  Lifecycle:
+//  1. Spawned by the game loop when player presses throw
+//  2. Travels horizontally in the direction the player faces
+//  3. Wraps around screen edges (exits one side, enters other)
+//  4. On contact with an unencased enemy:
+//       - calls enemy->receiveSnowballHit()
+//       - snowball dies (setalive(false))
+//  5. isRolling() always returns false — rolling is handled
+//     inside the enemy via startRolling(). GameLevel's collision
+//     check for rolling is done against the enemy, not the snowball.
+//
+//  Drawn as a white circle (approximated as a square placeholder
+//  until sprites arrive).
+// ============================================================
+
+class Snowball : public Entity {
+
 private:
-    int    snowLevel;
-    bool   rolling;
+
+    // --- Screen boundaries for wrapping ---
+    float screenWidth;
+    float screenHeight;
+
+    // --- Size of the snowball hitbox ---
+    static constexpr float SIZE = 24.f;  // 24x24 as GameLevel expects
+
+    // --- Power flags ---
+    // Set by spawnSnowball() in GameLevel based on active power-ups
+    bool powerful;    // if true, one hit fully encases enemy (snowball power)
+    bool longRange;   // if true, travels at higher speed (distance increase)
+
+    // --- Base and boosted speeds ---
+    static constexpr double BASE_SPEED = 350.0;  // normal throw speed
+    static constexpr double LONG_RANGE_SPEED = 600.0; // with distance increase
+
+    // --- Direction: +1.0 = right, -1.0 = left ---
     double direction;
 
-    sf::Texture              texture;
-    std::optional<sf::Sprite> sprite;
-    bool                     textureLoaded;
-
 public:
-    Snowball(double x, double y, double dir)
-        : Projectile(x, y, 1),
-        snowLevel(0), rolling(false), direction(dir),
-        textureLoaded(false)
-    {
-        xspeed = dir * 300.0;
-    }
 
-    bool loadTexture(const string& path) {
-        if (!texture.loadFromFile(path)) return false;
-        sprite.emplace(texture);
-        textureLoaded = true;
-        return true;
-    }
+    // Constructor — pass spawn position and direction
+    // powerful and longRange default to false (normal snowball)
+    Snowball(double startX, double startY, double dir,
+        bool isPowerful = false, bool isLongRange = false,
+        float scrW = 800.f, float scrH = 600.f);
 
-    void addSnow() { if (snowLevel < 2) snowLevel++; }
-    bool canEncase()    const { return snowLevel >= 2; }
-    bool isRolling()    const { return rolling; }
-    int  getSnowLevel() const { return snowLevel; }
+    // Called every frame
+    void update(double deltaTime) override;
 
-    void startRolling() {
-        rolling = true;
-        xspeed = direction * 200.0;
-        yspeed = 0;
-    }
+    // Draw placeholder white square
+    void draw(sf::RenderWindow& window) override;
 
-    void resolvePlatforms(Platform platforms[], int count) {
-        for (int i = 0; i < count; i++) {
-            sf::FloatRect& p = platforms[i].rect;
-            float sx = (float)x, sy = (float)y;
-            float sw = 24.f, sh = 24.f;
-            if (yspeed >= 0 &&
-                sx + sw > p.position.x &&
-                sx < p.position.x + p.size.x &&
-                sy + sh >= p.position.y &&
-                sy + sh <= p.position.y + p.size.y + 8.f) {
-                y = p.position.y - sh;
-                yspeed = 0;
-                if (!rolling) startRolling();
-            }
-        }
-    }
+    // Resolve collision with platforms —
+    // snowball dies if it hits a wall (platforms are vertical boundaries too)
+    // For now snowball passes through platforms horizontally,
+    // only wraps at screen edges. Keep simple as discussed.
+    void resolvePlatforms(Platform platforms[], int count);
 
-    void update(double deltaTime) override {
-        if (!alive) return;
-        yspeed += 900.0 * deltaTime; // gravity
-        x += xspeed * deltaTime;
-        y += yspeed * deltaTime;
+    // Always false — rolling is the enemy's responsibility
+    // GameLevel calls this but rolling is handled via enemy->startRolling()
+    bool isRolling() const;
 
-        // screen wrap (spec 7.1)
-        if (x > 800) x = -24;
-        if (x < -24) x = 800;
+    // Power flags — set externally by spawnSnowball in GameLevel
+    void addSnow();          // makes next hit a full encase (powerful mode)
+    void setLongRange();     // boosts speed to long range speed
 
-        // die if falls off bottom
-        if (y > 620) alive = false;
-    }
-
-    void draw(sf::RenderWindow& window) override {
-        if (!alive) return;
-
-        if (!textureLoaded) {
-            sf::RectangleShape r(sf::Vector2f(24.f, 24.f));
-            r.setPosition({ (float)x, (float)y });
-            r.setFillColor(rolling ? sf::Color::White : sf::Color(200, 220, 255));
-            window.draw(r);
-            return;
-        }
-
-        // frame based on snowLevel (0=small,1=medium,2=full)
-        sprite->setTextureRect(sf::IntRect(
-            sf::Vector2i(snowLevel * 80, 0),
-            sf::Vector2i(80, 80)
-        ));
-        sprite->setPosition({ (float)x, (float)y });
-        sprite->setScale({ 0.3f, 0.3f });
-        window.draw(*sprite);
-    }
+    // Getters GameLevel needs
+    sf::FloatRect getHitbox() const;
+    float getSize() const;
 };

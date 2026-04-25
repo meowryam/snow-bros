@@ -28,7 +28,7 @@ private:
     static constexpr float JUMP_FORCE = -600.f;
     static constexpr float GRAVITY = 1200.f;
     static constexpr float MAX_FALL_SPEED = 800.f;
-    
+    bool wantsToThrow;  // true for exactly one frame when space pressed
     bool isOnGround;
     bool canJump;
     float screenWidth;
@@ -60,6 +60,7 @@ public:
     Player(); 
     Player(PlayerData& data, int playerNum, float screenW, float screenH);
     bool loadTexture(const std::string& path);
+  
     void handleInput();
     void update(float deltaTime);
     void draw(sf::RenderWindow& window) const;
@@ -85,4 +86,5 @@ public:
     // remove: bool isInvincible() const { return false; }
     bool isInvincible() const { return invincibleTimer > 0.f; }
     void resolvePlatforms(Platform platforms[], int count);
+    bool getWantsToThrow() const { return wantsToThrow; }
 };
