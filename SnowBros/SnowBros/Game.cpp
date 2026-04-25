@@ -21,8 +21,8 @@ Game::Game()
         "assets\\"),
     twoPlayerMode(false)
 {
-    player1.respawn(100.0, 200.0);
-    player2.respawn(200.0, 200.0);
+    player1.resetForNewLevel(Vector2f(100.f, 200.f));
+    player2.resetForNewLevel(Vector2f(200.f, 200.f));
 
     window.setFramerateLimit(30); // lock to 30 FPS
     leaderboard.load();

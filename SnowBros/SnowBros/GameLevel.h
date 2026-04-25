@@ -167,13 +167,13 @@ private:
 
         // Player vs trapped enemy — kick to start rolling
         auto checkKick = [&](Player& p) {
-            if (p.isDead) return;
-            sf::FloatRect phb = p.getHitboxPublic();
+            if (!p.getIsAlive()) return;
+            sf::FloatRect phb = p.getHitbox();
             for (int ei = 0; ei < botomCount; ei++) {
                 if (!botoms[ei]->getalive()) continue;
                 if (botoms[ei]->fullyTrapped && !botoms[ei]->rolling) {
                     if (phb.findIntersection(botoms[ei]->getHitbox())) {
-                        double dir = (p.getX() < botoms[ei]->getx()) ? 1.0 : -1.0;
+                        double dir = (p.getPosition().x < botoms[ei]->getx()) ? 1.0 : -1.0;
                         botoms[ei]->startRolling(dir);
                     }
                 }
@@ -184,8 +184,8 @@ private:
 
         // Player vs enemy — take damage
         auto checkDamage = [&](Player& p) {
-            if (p.isDead || p.isInvincible()) return;
-            sf::FloatRect phb = p.getHitboxPublic();
+            if (!p.getIsAlive() || p.isInvincible()) return;
+            sf::FloatRect phb = p.getHitbox();
 
             for (int ei = 0; ei < botomCount; ei++) {
                 if (!botoms[ei]->getalive() || botoms[ei]->fullyTrapped) continue;
@@ -329,17 +329,16 @@ public:
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F2)) showHitboxes = false;
 
         // Handle player input
-        player1.handleInput(keyBindings);
+        player1.handleInput();
         player1.update(deltaTime);
         player1.resolvePlatforms(platforms, platformCount);
 
         // Spawn snowball if requested
-        if (player1.wantsToThrow) {
-            player1.wantsToThrow = false;
-            bool powerful = player1.hasSnowballPower();
-            bool longRange = player1.hasDistanceIncrease();
-            double dir = player1.isFacingRight() ? 1.0 : -1.0;
-            spawnSnowball(player1.getX() + (dir > 0 ? 48 : 0), player1.getY() + 20, dir, powerful, longRange);
+        if (player1.getState() == PlayerState::THROWING) {
+            bool powerful = player1.isSnowballPowerActive();
+            bool longRange = player1.isDistanceIncreaseActive();
+            double dir = player1.getFacing() == Direction::RIGHT ? 1.0 : -1.0;
+            spawnSnowball(player1.getPosition().x + (dir > 0 ? 48 : 0), player1.getPosition().y + 20, dir, powerful, longRange);
             scoreSystem.resetChain();
         }
 
@@ -367,22 +366,22 @@ public:
         }
         for (int i = 0; i < tornadoCount; i++) {
             if (!tornados[i]->getalive()) continue;
-            tornados[i]->setPlayerPos(player1.getX(), player1.getY());
+            tornados[i]->setPlayerPos(player1.getPosition().x, player1.getPosition().y);
             tornados[i]->update(deltaTime);
         }
         if (hasMogera && mogera->getalive())    mogera->update(deltaTime);
         if (hasGamakichi && gamakichi->getalive()) {
-            gamakichi->setPlayerPos(player1.getX(), player1.getY());
+            gamakichi->setPlayerPos(player1.getPosition().x, player1.getPosition().y);
             gamakichi->update(deltaTime);
         }
 
         checkCollisions(player1, player2);
 
         // Handle player death
-        if (player1.isDead) {
+        if (!player1.getIsAlive()) {
             playerData.setLives(playerData.getLives() - 1);
             if (playerData.getLives() > 0) {
-                player1.respawn(100, 200);
+                player1.resetForNewLevel(Vector2f(100.f, 200.f));
             }
         }
 
@@ -426,7 +425,7 @@ public:
                 r.setOutlineColor(c);
                 window.draw(r);
                 };
-            drawHB(player1.getHitboxPublic(), sf::Color::Green);
+            drawHB(player1.getHitbox(), sf::Color::Green);
             for (int i = 0; i < botomCount; i++)
                 if (botoms[i]->getalive()) drawHB(botoms[i]->getHitbox(), sf::Color::Red);
         }
