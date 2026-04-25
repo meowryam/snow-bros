@@ -10,7 +10,6 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -79,21 +78,5 @@
     <ClInclude Include="..\..\src\core\EventBus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-=======
-    <ClInclude Include="..\..\src\entities\Enemy.h" />
-    <ClInclude Include="..\..\src\entities\Entity.h" />
-    <ClInclude Include="..\..\src\entities\Projectile.h" />
-    <ClInclude Include="FileManager.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameState.h" />
-    <ClInclude Include="GameStateManager.h" />
-    <ClInclude Include="GemSystem.h" />
-    <ClInclude Include="InputManager.h" />
-    <ClInclude Include="Levelblueprint.h" />
-    <ClInclude Include="LevelsManager.h" />
-    <ClInclude Include="PlayerData.h" />
-    <ClInclude Include="ShopSystem.h" />
-    <ClInclude Include="StarLevel.h" />
->>>>>>> fd27c65a39722099563c0a5b073c7daebe84ffd3
   </ItemGroup>
 </Project>
