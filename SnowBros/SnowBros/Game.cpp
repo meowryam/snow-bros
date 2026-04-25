@@ -18,7 +18,7 @@ Game::Game()
 
     
     gameLevel(playerData, scoreSystem, gemSystem, eventBus, keyBindings,
-        "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\"),
+        "assets\\"),
     twoPlayerMode(false)
 {
     player1.respawn(100.0, 200.0);
@@ -31,7 +31,7 @@ Game::Game()
 }
 
 void Game::loadAllFonts() {
-    string fontPath = "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\fonts\\PressStart2P-Regular.ttf";
+    string fontPath = "assets\\fonts\\PressStart2P-Regular.ttf";
 
     loginScreen.loadFont(fontPath);
     mainMenu.loadFont(fontPath);
@@ -129,8 +129,8 @@ void Game::handleLoginEvents(sf::Event& event) {
 void Game::handleMainMenuEvents(sf::Event& event) {
     MainMenuResult result = mainMenu.handleEvent(event);
     if (result == MainMenuResult::START_GAME) {
-        player1.loadTexture("D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\images\\Nick.png");
-        player2.loadTexture("D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\images\\Player_Blue.png");
+        player1.loadTexture("assets\\images\\Nick.png");
+        player2.loadTexture("assets\\images\\Player_Blue.png");
         levelsManager.SpecificLevel(playerData.getCurrentLevel());
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
         currentState = GameState::PLAYING;
@@ -183,8 +183,8 @@ void Game::handleGameOverEvents(sf::Event& event) {
         playerData.setLives(2);
         playerData.setCurrentLevel(1);
         levelsManager.SpecificLevel(1);
-        player1.loadTexture("D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\images\\Nick.png");
-        player2.loadTexture("D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\images\\Player_Blue.png");
+        player1.loadTexture("assets\\images\\Nick.png");
+        player2.loadTexture("assets\\images\\Player_Blue.png");
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
         gameOverScreen.reset();
         currentState = GameState::PLAYING;
