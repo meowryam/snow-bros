@@ -8,6 +8,13 @@
     <ClCompile Include="StarLevel.cpp" />
     <ClCompile Include="ShopScreen.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="EnemyFactory.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Botom.cpp" />
+    <ClCompile Include="FlyingFoogaFoog.cpp" />
+    <ClCompile Include="Tornado.cpp" />
+    <ClCompile Include="Gamakichi.cpp" />
+    <ClCompile Include="Mogera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -30,53 +37,43 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PlayerData.h">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager.h">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="GemSystem.h">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\entities\Entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\entities\Enemy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\entities\Projectile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Levelblueprint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelsManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShopSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StarLevel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\entities\PoweUp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\EventBus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="Botom.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyFactory.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="EventBus.h" />
+    <ClInclude Include="FileManager.h" />
+    <ClInclude Include="FlyingFoogaFoog.h" />
+    <ClInclude Include="Gamakichi.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameOverScreen.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="GameStateManager.h" />
+    <ClInclude Include="GemSystem.h" />
+    <ClInclude Include="HUD.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="KeyBindings.h" />
+    <ClInclude Include="KeyRemapScreen.h" />
+    <ClInclude Include="Leaderboard.h" />
+    <ClInclude Include="LeaderboardScreen.h" />
+    <ClInclude Include="Levelblueprint.h" />
+    <ClInclude Include="LevelsManager.h" />
+    <ClInclude Include="LoginScreen.h" />
+    <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="Mogera.h" />
+    <ClInclude Include="PauseScreen.h" />
+    <ClInclude Include="PlayerData.h" />
+    <ClInclude Include="PoweUp.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="ScoreSystem.h" />
+    <ClInclude Include="ShopSystem.h" />
+    <ClInclude Include="Snowball.h" />
+    <ClInclude Include="SoundManager.h" />
+    <ClInclude Include="StarLevel.h" />
+    <ClInclude Include="Tornado.h" />
+    <ClInclude Include="Platform.h" />
+    <ClInclude Include="LevelLayout.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="GameLevel.h" />
   </ItemGroup>
 </Project>

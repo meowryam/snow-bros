@@ -37,14 +37,16 @@ public:
 		}
 	}
 
-	bool hasEvent(EventType type)
+	int hasEvent(EventType type)
 	{
 		for(int i=0;i<queuedevents;i++)
 		{
 			if (arr[i].type == type)
-				return true;
+				return arr[i].data;
+				//return true;
 		}
-	return false;
+		return -1;
+	//return false;
 	}
 
 	void clear()

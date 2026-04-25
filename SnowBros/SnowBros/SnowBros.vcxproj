@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -133,31 +133,60 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Botom.cpp" />
+    <ClCompile Include="EnemyFactory.cpp" />
+    <ClCompile Include="FlyingFoogaFoog.cpp" />
+    <ClCompile Include="Gamakichi.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Levelblueprint.cpp" />
     <ClCompile Include="LevelsManager.cpp" />
+    <ClCompile Include="Mogera.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="ShopScreen.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="StarLevel.cpp" />
+    <ClCompile Include="Tornado.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\core\EventBus.h" />
-    <ClInclude Include="..\..\src\entities\Enemy.h" />
-    <ClInclude Include="..\..\src\entities\Entity.h" />
-    <ClInclude Include="..\..\src\entities\PoweUp.h" />
-    <ClInclude Include="..\..\src\entities\Projectile.h" />
+    <ClInclude Include="Botom.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyFactory.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="EventBus.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="FlyingFoogaFoog.h" />
+    <ClInclude Include="Gamakichi.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameLevel.h" />
+    <ClInclude Include="GameOverScreen.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GemSystem.h" />
+    <ClInclude Include="HUD.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="KeyBindings.h" />
+    <ClInclude Include="KeyRemapScreen.h" />
+    <ClInclude Include="Leaderboard.h" />
+    <ClInclude Include="LeaderboardScreen.h" />
     <ClInclude Include="Levelblueprint.h" />
+    <ClInclude Include="LevelLayout.h" />
     <ClInclude Include="LevelsManager.h" />
+    <ClInclude Include="LoginScreen.h" />
+    <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="Mogera.h" />
+    <ClInclude Include="PauseScreen.h" />
+    <ClInclude Include="Platform.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerData.h" />
+    <ClInclude Include="PoweUp.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="ScoreSystem.h" />
     <ClInclude Include="ShopSystem.h" />
+    <ClInclude Include="Snowball.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="StarLevel.h" />
+    <ClInclude Include="Tornado.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
