@@ -271,15 +271,15 @@ public:
         platformCount = LevelLayout::getLayout(lvl.getLevelno(), platforms);
 
         // Load background
-        string bgPath = assetPath + "images\\lvl" + to_string(lvl.getLevelno()) + ".png";
-        bgLoaded = bgTexture.loadFromFile(bgPath);
+        //string bgPath = assetPath + "images\\lvl" + to_string(lvl.getLevelno()) + ".png";
+        /*bgLoaded = bgTexture.loadFromFile(bgPath);
         if (bgLoaded) {
             bgSprite->setTexture(bgTexture);
             // Scale to fit 800x600
             sf::Vector2u ts = bgTexture.getSize();
             bgSprite->setScale({ 800.f / ts.x, 600.f / ts.y });
         }
-
+        */
         float speedMult = lvl.getEnemyspeedIncreaser();
 
         // Spawn enemies based on blueprint
