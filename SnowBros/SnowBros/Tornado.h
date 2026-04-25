@@ -90,7 +90,7 @@ public:
 
     void setPlayerPos(double px, double py) { targetX = px; targetY = py; }
 
-    void hitBySnow() {
+    void receiveSnowballHit() {
         snowHits++;
         if (snowHits >= 2) {
             fullyTrapped = true; fullyTrappedPublic = true;

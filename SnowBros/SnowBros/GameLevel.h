@@ -98,8 +98,8 @@ private:
                     gemSystem.enemykilled();
                     eventBus.post(GameEvent::ENEMY_KILLED);
                 }
-                else if (!botoms[ei]->fullyTrapped) {
-                    botoms[ei]->hitBySnow();
+                else if (!botoms[ei]->gettrap()) {
+                    botoms[ei]->receiveSnowballHit();
                     sb->setalive(false);
                 }
             }
@@ -115,7 +115,7 @@ private:
                     eventBus.post(GameEvent::ENEMY_KILLED);
                 }
                 else {
-                    foogas[ei]->hitBySnow();
+                    foogas[ei]->receiveSnowballHit();
                     sb->setalive(false);
                 }
             }
@@ -131,7 +131,7 @@ private:
                     eventBus.post(GameEvent::ENEMY_KILLED);
                 }
                 else {
-                    tornados[ei]->hitBySnow();
+                    tornados[ei]->receiveSnowballHit();
                     sb->setalive(false);
                 }
             }
@@ -171,7 +171,7 @@ private:
             sf::FloatRect phb = p.getHitbox();
             for (int ei = 0; ei < botomCount; ei++) {
                 if (!botoms[ei]->getalive()) continue;
-                if (botoms[ei]->fullyTrapped && !botoms[ei]->rolling) {
+                if (botoms[ei]->gettrap() && !botoms[ei]->isRolling()) {
                     if (phb.findIntersection(botoms[ei]->getHitbox())) {
                         double dir = (p.getPosition().x < botoms[ei]->getx()) ? 1.0 : -1.0;
                         botoms[ei]->startRolling(dir);
@@ -188,7 +188,7 @@ private:
             sf::FloatRect phb = p.getHitbox();
 
             for (int ei = 0; ei < botomCount; ei++) {
-                if (!botoms[ei]->getalive() || botoms[ei]->fullyTrapped) continue;
+                if (!botoms[ei]->getalive() || botoms[ei]->gettrap() )  continue;
                 if (phb.findIntersection(botoms[ei]->getHitbox())) { p.takeDamage(); return; }
             }
             for (int ei = 0; ei < foogaCount; ei++) {

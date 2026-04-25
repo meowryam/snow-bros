@@ -33,12 +33,12 @@ private:
         animTimer += dt;
         if (animTimer >= FRAME_TIME) {
             animTimer = 0.f;
-            int maxF = fullyTrapped ? TRAP_FRAMES : (isFlying ? FLY_FRAMES : WALK_FRAMES);
+            int maxF = gettrap() ? TRAP_FRAMES : (isFlying ? FLY_FRAMES : WALK_FRAMES);
             currentFrame = (currentFrame + 1) % maxF;
         }
-        int ay = fullyTrapped ? TRAP_Y : (isFlying ? FLY_Y : WALK_Y);
-        int ah = fullyTrapped ? TRAP_H : (isFlying ? FLY_H  : WALK_H);
-        int afw= fullyTrapped ? TRAP_FW: (isFlying ? FLY_FW : WALK_FW);
+        int ay = gettrap() ? TRAP_Y : (isFlying ? FLY_Y : WALK_Y);
+        int ah = gettrap() ? TRAP_H : (isFlying ? FLY_H  : WALK_H);
+        int afw= gettrap() ? TRAP_FW: (isFlying ? FLY_FW : WALK_FW);
         sprite->setTextureRect(sf::IntRect(
             sf::Vector2i(currentFrame * afw, ay),
             sf::Vector2i(afw, ah)
@@ -72,7 +72,7 @@ public:
         return true;
     }
 
-    void hitBySnow() {
+    void receiveSnowballHit() {
         snowHits++;
         if (snowHits >= 2) {
             fullyTrapped = true;
