@@ -171,7 +171,7 @@ private:
             sf::FloatRect phb = p.getHitbox();
             for (int ei = 0; ei < botomCount; ei++) {
                 if (!botoms[ei]->getalive()) continue;
-                if (botoms[ei]->gettrap() && !botoms[ei]->isRolling()) {
+               if (botoms[ei]->gettrap() && !botoms[ei]->isRolling()) {
                     if (phb.findIntersection(botoms[ei]->getHitbox())) {
                         double dir = (p.getPosition().x < botoms[ei]->getx()) ? 1.0 : -1.0;
                         botoms[ei]->startRolling(dir);
@@ -192,11 +192,11 @@ private:
                 if (phb.findIntersection(botoms[ei]->getHitbox())) { p.takeDamage(); return; }
             }
             for (int ei = 0; ei < foogaCount; ei++) {
-                if (!foogas[ei]->getalive() || foogas[ei]->fullyTrappedPublic) continue;
+                if (!foogas[ei]->getalive() || foogas[ei]->gettrap()) continue;
                 if (phb.findIntersection(foogas[ei]->getHitbox())) { p.takeDamage(); return; }
             }
             for (int ei = 0; ei < tornadoCount; ei++) {
-                if (!tornados[ei]->getalive() || tornados[ei]->fullyTrappedPublic) continue;
+                if (!tornados[ei]->getalive() || tornados[ei]->gettrap()) continue;
                 if (phb.findIntersection(tornados[ei]->getHitbox())) { p.takeDamage(); return; }
                 // knife hits
                 for (int k = 0; k < Tornado::MAX_KNIVES; k++) {
