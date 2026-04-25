@@ -93,6 +93,28 @@ public:
         return sf::FloatRect(sf::Vector2f((float)x + 4, (float)y + 4), sf::Vector2f(44.f, 44.f));
     }
 
+
+    void resolvePlatforms(Platform platforms[], int count) {
+        for (int i = 0; i < count; i++) {
+            sf::FloatRect& p = platforms[i].rect;
+
+            // horizontal overlap check
+            if ((float)x + 44 <= p.position.x || (float)x >= p.position.x + p.size.x)
+                continue;
+
+            float feet = (float)y + 44.f;
+            float platTop = p.position.y;
+
+            // if feet are within 30 pixels above or inside the platform top, snap
+            if (yspeed >= 0 && feet >= platTop - 30.f && feet <= platTop + p.size.y) {
+                y = platTop - 44;
+                yspeed = 0;
+                return;
+            }
+        }
+    }
+
+    /*
     void resolvePlatforms(Platform platforms[], int count) {
         bool onGround = false;
         for (int i = 0; i < count; i++) {
@@ -104,9 +126,9 @@ public:
                 yspeed = 0;
                 onGround = true;
             }
-        }
-        if (!onGround) yspeed += 900.0 * 0.033;
-    }
+        } */
+      //  if (!onGround) yspeed += 900.0 * 0.033;
+    
 
     void update(double deltaTime) override {
         if (!alive) return;

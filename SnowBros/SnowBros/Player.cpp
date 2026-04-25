@@ -9,6 +9,7 @@ Player::Player()
     position = Vector2f(100.f, 500.f);
     velocity = Vector2f(0.f, 0.f);
     speed = BASE_SPEED;
+    invincibleTimer = 3.f;  // 3 seconds of spawn protection
     isOnGround = false;
     canJump = true;
     isAlive = true;
@@ -119,7 +120,8 @@ void Player::handleInput() {
 }
 void Player::update(float deltaTime) {
     if (!isAlive) return; 
-
+    if (invincibleTimer > 0.f)
+        invincibleTimer -= deltaTime;
 //gravity-validity
     if (!isOnGround && !balloonModeActive) {
        
@@ -206,7 +208,7 @@ void Player::update(float deltaTime) {
     }
 }
 void Player::draw(RenderWindow& window) const {
-    if (!isAlive) return; 
+   // if (!isAlive) return; 
     window.draw(sprite);
 
     if (showDebug) {
@@ -264,6 +266,7 @@ void Player::resetForNewLevel(Vector2f spawnPosition) {
     velocity = Vector2f(0.f, 0.f);
     isOnGround = false;
     canJump = true;
+    invincibleTimer = 3.f;  // 3 seconds of s
     isAlive = true;
     state = PlayerState::FALLING; 
     facing = Direction::RIGHT;

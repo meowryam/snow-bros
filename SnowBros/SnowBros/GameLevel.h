@@ -232,7 +232,7 @@ private:
         checkDamage(player1);
         if (player2) checkDamage(*player2);
     }
-
+    /*
     bool allEnemiesDead() {
         for (int i = 0; i < botomCount; i++)   if (botoms[i]->getalive())   return false;
         for (int i = 0; i < foogaCount; i++)   if (foogas[i]->getalive())   return false;
@@ -241,6 +241,16 @@ private:
         if (hasGamakichi && gamakichi->getalive()) return false;
         return true;
     }
+    */
+    bool allEnemiesDead() {
+        for (int i = 0; i < botomCount; i++)   if (botoms[i]->getalive())   return false;
+        for (int i = 0; i < foogaCount; i++)   if (foogas[i]->getalive())   return false;
+        for (int i = 0; i < tornadoCount; i++) if (tornados[i]->getalive()) return false;
+        if (hasMogera && mogera->getalive())    return false;
+        if (hasGamakichi && gamakichi->getalive()) return false;
+        return true;
+    }
+
 
 public:
     bool levelComplete;
@@ -270,6 +280,7 @@ public:
         // Load platform layout
         platformCount = LevelLayout::getLayout(lvl.getLevelno(), platforms);
 
+
         // Load background
         //string bgPath = assetPath + "images\\lvl" + to_string(lvl.getLevelno()) + ".png";
         /*bgLoaded = bgTexture.loadFromFile(bgPath);
@@ -286,12 +297,12 @@ public:
         if (lvl.isBosslevel()) {
             if (lvl.getLevelno() == 5) {
                 mogera = new Mogera(295, 420);
-                mogera->loadTexture(assetPath + "images\\Mogera.png");
+              //  mogera->loadTexture(assetPath + "images\\Mogera.png");
                 hasMogera = true;
             }
             else {
                 gamakichi = new Gamakichi(220, 380);
-                gamakichi->loadTexture(assetPath + "images\\Gamakichi.png");
+              //  gamakichi->loadTexture(assetPath + "images\\Gamakichi.png");
                 hasGamakichi = true;
             }
         }
@@ -300,7 +311,7 @@ public:
             for (int i = 0; i < lvl.getBottomcount() && botomCount < MAX_ENEMIES; i++) {
                 float sx = 50.f + i * 140.f;
                 Botom* b = new Botom(sx, 200);
-                b->loadTexture(assetPath + "images\\Botom_Blue.png");
+             //   b->loadTexture(assetPath + "images\\Botom_Blue.png");
                 b->setxspeed(80.0 * speedMult * ((i % 2 == 0) ? 1 : -1));
                 botoms[botomCount++] = b;
             }
@@ -308,14 +319,14 @@ public:
             for (int i = 0; i < lvl.getFoogacount() && foogaCount < MAX_ENEMIES; i++) {
                 float sx = 100.f + i * 160.f;
                 FlyingFoogaFoog* f = new FlyingFoogaFoog(sx, 150);
-                f->loadTexture(assetPath + "images\\FlyingFoogaFoog_Blue.png");
+            //    f->loadTexture(assetPath + "images\\FlyingFoogaFoog_Blue.png");
                 foogas[foogaCount++] = f;
             }
             // Spawn tornados
             for (int i = 0; i < lvl.getTornadocount() && tornadoCount < MAX_ENEMIES; i++) {
                 float sx = 200.f + i * 200.f;
                 Tornado* t = new Tornado(sx, 100);
-                t->loadTexture(assetPath + "images\\Tornado_Blue.png");
+               // t->loadTexture(assetPath + "images\\Tornado_Blue.png");
                 tornados[tornadoCount++] = t;
             }
         }
@@ -385,9 +396,13 @@ public:
             }
         }
 
-        if (allEnemiesDead()) levelComplete = true;
+       // if (allEnemiesDead()) levelComplete = true;
+        if (allEnemiesDead() && (botomCount + foogaCount + tornadoCount > 0 || hasMogera || hasGamakichi))
+            levelComplete = true;
 
-        eventBus.clear();
+        
+
+       eventBus.clear();
     }
 
     void draw(sf::RenderWindow& window, Player& player1, Player* player2 = nullptr) {

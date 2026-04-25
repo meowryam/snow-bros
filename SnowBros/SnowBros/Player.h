@@ -44,6 +44,7 @@ private:
     bool isAlive;
     sf::FloatRect hitbox;
     bool showDebug;
+    float invincibleTimer;
     sf::RectangleShape debugBox;
     bool speedBoostActive;
     float speedBoostTimer;      
@@ -81,6 +82,7 @@ public:
     bool isBalloonModeActive() const;
     void setShowDebug(bool show);
     void setOnGround(bool onGround);
-    bool isInvincible() const { return false; }
+    // remove: bool isInvincible() const { return false; }
+    bool isInvincible() const { return invincibleTimer > 0.f; }
     void resolvePlatforms(Platform platforms[], int count);
 };
