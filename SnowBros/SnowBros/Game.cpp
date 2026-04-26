@@ -141,10 +141,9 @@ void Game::handleMainMenuEvents(sf::Event& event) {
      //   player1.loadTexture("assets\\images\\Nick.png");
        // player2.loadTexture("assets\\images\\Player_Blue.png");
        //
-       // levelsManager.SpecificLevel(playerData.getCurrentLevel());
+        levelsManager.SpecificLevel(playerData.getCurrentLevel());
 
         
-        levelsManager.SpecificLevel(6);
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
         currentState = GameState::PLAYING;
         soundManager.playMusic();
