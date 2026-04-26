@@ -327,7 +327,7 @@ public:
             for (int i = 0; i < lvl.getBottomcount() && botomCount < MAX_ENEMIES; i++) {
                 float sx = 50.f + i * 140.f;
                 Botom* b = new Botom(sx, 200);
-              b->loadTexture(assetPath + "images\\Botom_Orange.png");
+              b->loadTexture(assetPath + "images\\Botom_Pink.png");
                 b->setxspeed(80.0 * speedMult * ((i % 2 == 0) ? 1 : -1));
                 botoms[botomCount++] = b;
             }
@@ -342,7 +342,7 @@ public:
             for (int i = 0; i < lvl.getTornadocount() && tornadoCount < MAX_ENEMIES; i++) {
                 float sx = 200.f + i * 200.f;
                 Tornado* t = new Tornado(sx, 100);
-               // t->loadTexture(assetPath + "images\\Tornado_Blue.png");
+               t->loadTexture(assetPath + "images\\Tornado_Red.png");
                 tornados[tornadoCount++] = t;
             }
         }

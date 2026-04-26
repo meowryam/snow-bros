@@ -95,7 +95,7 @@ void Tornado::update(double deltaTime) {
 }
 
 
-
+/*
 
 void Tornado::draw(RenderWindow& window) {
     if (!alive) return;
@@ -120,4 +120,83 @@ void Tornado::draw(RenderWindow& window) {
     for (int i = 0; i < MAX_KNIVES; i++) {
         knives[i].draw(window);
     }
+}
+
+*/
+
+void Tornado::loadTexture(const std::string& path) {
+    tornadoTextureLoaded = tornadoTexture.loadFromFile(path);
+    if (tornadoTextureLoaded) {
+        tornadoSprite.emplace(tornadoTexture);
+        tornadoSprite->setTextureRect(t_idle);
+        float scaleX = hitboxbotom_width / static_cast<float>(t_idle.size.x);
+        float scaleY = hitboxbotom_height / static_cast<float>(t_idle.size.y);
+        tornadoSprite->setScale({ scaleX, scaleY });
+    }
+}
+
+void Tornado::draw(sf::RenderWindow& window) {
+    if (!alive) return;
+
+    if (tornadoTextureLoaded && tornadoSprite) {
+        sf::IntRect chosenFrame = t_idle;
+
+        if (trap) {
+            chosenFrame = (animFrame % 2 == 0) ? t_trapped1 : t_trapped2;
+        }
+        else if (inFlight) {
+            // cycle through spin frames while flying
+            sf::IntRect spinFrames[9] = {
+                t_spin1, t_spin2, t_spin3, t_spin4,
+                t_spin5, t_spin6, t_spin7, t_spin8, t_spin9
+            };
+            chosenFrame = spinFrames[animFrame % 9];
+        }
+        else if (knifeTimer < 0.3f) {
+            // about to throw — show throw windup
+            chosenFrame = (animFrame % 2 == 0) ? t_throw1 : t_throw2;
+        }
+        else {
+            // grounded — run cycle
+            sf::IntRect runFrames[3] = { t_run1, t_run2, t_run3 };
+            chosenFrame = runFrames[animFrame % 3];
+        }
+
+        tornadoSprite->setTextureRect(chosenFrame);
+        float scaleX = hitboxbotom_width / static_cast<float>(chosenFrame.size.x);
+        float scaleY = hitboxbotom_height / static_cast<float>(chosenFrame.size.y);
+
+        float drawX = static_cast<float>(x);
+        if (xspeed < 0) {
+            tornadoSprite->setScale({ -scaleX, scaleY });
+            drawX += hitboxbotom_width;
+        }
+        else {
+            tornadoSprite->setScale({ scaleX, scaleY });
+        }
+        tornadoSprite->setPosition({ drawX, static_cast<float>(y) });
+        window.draw(*tornadoSprite);
+    }
+    else {
+        // fallback rectangle
+        sf::RectangleShape rect(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
+        rect.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        if (trap)                rect.setFillColor(sf::Color::White);
+        else if (hitFlashTimer > 0.f) rect.setFillColor(sf::Color(220, 180, 255));
+        else if (inFlight)            rect.setFillColor(sf::Color(200, 0, 200));
+        else                          rect.setFillColor(sf::Color(120, 0, 180));
+        window.draw(rect);
+    }
+
+    if (showDebug) {
+        sf::RectangleShape outline(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
+        outline.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        outline.setFillColor(sf::Color::Transparent);
+        outline.setOutlineThickness(1.f);
+        outline.setOutlineColor(sf::Color::Red);
+        window.draw(outline);
+    }
+
+    for (int i = 0; i < MAX_KNIVES; i++)
+        knives[i].draw(window);
 }
