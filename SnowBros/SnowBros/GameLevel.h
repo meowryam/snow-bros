@@ -291,6 +291,22 @@ public:
             bgSprite->setScale({ 800.f / ts.x, 600.f / ts.y });
         }
         */
+        // Load background image for this level
+// File naming convention: assets\images\lvl1.png, lvl2.png, etc.
+        string bgPath = assetPath + "images\\Level" + to_string(lvl.getLevelno()) + "_bg.png";
+        bgLoaded = bgTexture.loadFromFile(bgPath);
+        if (bgLoaded) {
+            // In SFML 3, Sprite is constructed WITH the texture — not set after
+            bgSprite.emplace(bgTexture);
+            // Scale whatever image size Gemini/ChatGPT gave us to fit 800x600
+            sf::Vector2u ts = bgTexture.getSize();
+            bgSprite->setScale({
+                800.f / static_cast<float>(ts.x),
+                600.f / static_cast<float>(ts.y)
+                });
+        }
+
+
         float speedMult = lvl.getEnemyspeedIncreaser();
 
         // Spawn enemies based on blueprint
