@@ -140,7 +140,9 @@ void Game::handleMainMenuEvents(sf::Event& event) {
     if (result == MainMenuResult::START_GAME) {
      //   player1.loadTexture("assets\\images\\Nick.png");
        // player2.loadTexture("assets\\images\\Player_Blue.png");
-        levelsManager.SpecificLevel(playerData.getCurrentLevel());
+       //
+       // levelsManager.SpecificLevel(playerData.getCurrentLevel());
+        levelsManager.SpecificLevel(4);
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
         currentState = GameState::PLAYING;
         soundManager.playMusic();
@@ -239,6 +241,7 @@ void Game::update(float deltaTime) {
 
     if (currentState == GameState::PLAYING) {
         gameLevel.update(deltaTime, player1, twoPlayerMode ? &player2 : nullptr);
+   
         if (gameLevel.levelComplete) {
             playerData.setCurrentLevel(playerData.getCurrentLevel() + 1);
             levelsManager.NextLevel();
