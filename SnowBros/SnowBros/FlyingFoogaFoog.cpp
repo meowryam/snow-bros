@@ -1,6 +1,7 @@
 #include "FlyingFoogaFoog.h"
 #include <cstdlib>   
 #include <cmath>     
+
 FlyingFoogaFoog::FlyingFoogaFoog(double startX, double startY, float scrW, float scrH) : Botom(startX, startY, scrW, scrH)
 {
     inFlight = false;

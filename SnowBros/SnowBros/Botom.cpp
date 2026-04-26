@@ -31,14 +31,12 @@ void Botom::update(double deltaTime) {
 
     if (trap && rolling) {
         x += xspeed * deltaTime;
-        // Count down shakeout — enemy escapes if player ignores it
         shakeoutTimer -= static_cast<float>(deltaTime);
         if (shakeoutTimer <= 0.f) {
-            // Enemy shakes free — reset everything
             trap = false;
             snowballHits = 0;
             shakeoutTimer = SHAKEOUT_DURATION;
-            xspeed = speed;  // resume walking
+            xspeed = speed;  
         }
         if (!isOnGround) {
             yspeed += GRAVITY * deltaTime;

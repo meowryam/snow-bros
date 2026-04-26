@@ -31,6 +31,8 @@ struct Knife {
     }
 };
 
+
+
 class Tornado : public FlyingFoogaFoog {
 public:
     static const int MAX_KNIVES = 6;  
