@@ -27,8 +27,8 @@ Game::Game()
 
 
 
-    player1.setShowDebug(true);
-    player2.setShowDebug(true);
+    //player1.setShowDebug(true);
+   // player2.setShowDebug(true);
 
 
 

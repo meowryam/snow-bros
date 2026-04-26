@@ -110,12 +110,12 @@ void Player::handleInput() {
     if (Keyboard::isKeyPressed(keyLeft)) {
         velocity.x = -speed; 
         facing = Direction::LEFT;
-        sprite.setScale(sf::Vector2f(-1.5f, 1.5f));
+       // sprite.setScale(sf::Vector2f(-1.5f, 1.5f));
     }
     else if (Keyboard::isKeyPressed(keyRight)) {
         velocity.x = speed; 
         facing = Direction::RIGHT;
-        sprite.setScale(sf::Vector2f(1.5f, 1.5f));
+        //sprite.setScale(sf::Vector2f(1.5f, 1.5f));
     }
     if (Keyboard::isKeyPressed(keyJump)) {
         if (isOnGround && canJump) {
@@ -184,12 +184,12 @@ void Player::update(float deltaTime) {
     }
 
 //sync hitbox
-    if (facing == Direction::LEFT) {
+  /*  if (facing == Direction::LEFT) {
         sprite.setPosition(Vector2f(position.x + spriteWidth, position.y));
          }
     else {
         sprite.setPosition(position);
-    }
+    } */
     hitbox = FloatRect(
         Vector2f(position.x + 6.f, position.y + 2.f),
         Vector2f(36.f, 44.f)
@@ -224,15 +224,23 @@ void Player::update(float deltaTime) {
         state = PlayerState::IDLE;     
     }
 
-    // ── Animate ──────────────────────────────────────────
+    if (state != prevState) {
+        animFrame = 0;
+        animTimer = 0.f;
+        prevState = state;
+    }
+   
+
     animTimer += deltaTime;
     if (animTimer >= FRAME_DURATION) {
         animTimer = 0.f;
         animFrame++;
     }
 
+    // Compute scale + flip ONCE here, use everywhere below
     float scaleX = 36.f / 220.f;
     float scaleY = 44.f / 275.f;
+    float flipX = (facing == Direction::LEFT) ? -scaleX : scaleX;
 
     if (state == PlayerState::DEAD) {
         sf::IntRect hurtFrames[7] = {
@@ -240,19 +248,16 @@ void Player::update(float deltaTime) {
         };
         int idx = std::min(animFrame, 6);
         sprite.setTextureRect(hurtFrames[idx]);
-        sprite.setScale({ scaleX, scaleY });
     }
     else if (state == PlayerState::THROWING) {
         sf::IntRect throwFrames[7] = {
             throw1, throw2, throw3, throw4, throw5, throw6, throw7
         };
         sprite.setTextureRect(throwFrames[animFrame % 7]);
-        sprite.setScale({ scaleX, scaleY });
     }
     else if (state == PlayerState::JUMPING || state == PlayerState::FALLING) {
         sf::IntRect jumpFrames[3] = { jump1, jump2, jump3 };
         sprite.setTextureRect(jumpFrames[animFrame % 3]);
-        sprite.setScale({ scaleX, scaleY });
     }
     else if (state == PlayerState::WALKING) {
         if (facing == Direction::RIGHT) {
@@ -260,7 +265,6 @@ void Player::update(float deltaTime) {
                 walk_right1, walk_right2, walk_right3, walk_right4, walk_right5
             };
             sprite.setTextureRect(walkR[animFrame % 5]);
-            sprite.setScale({ scaleX, scaleY });
         }
         else {
             sf::IntRect walkL[6] = {
@@ -268,15 +272,24 @@ void Player::update(float deltaTime) {
                 walk_left4, walk_left5, walk_left6
             };
             sprite.setTextureRect(walkL[animFrame % 6]);
-            sprite.setScale({ scaleX, scaleY });
         }
     }
     else { // IDLE
         sprite.setTextureRect(walk_right1);
-        sprite.setScale({ scaleX, scaleY });
     }
 
+    // Apply scale + flip ONCE at the end — not inside every branch
+    sprite.setScale({ flipX, scaleY });
+
+    // Fix sprite anchor when flipped so it doesn't shift right
+    if (facing == Direction::LEFT) {
+        sprite.setPosition(Vector2f(position.x + 36.f, position.y));
+    }
+    else {
+        sprite.setPosition(position);
+    }
 }
+
 void Player::draw(RenderWindow& window) const {
    // if (!isAlive) return; 
     window.draw(sprite);

@@ -33,7 +33,7 @@ private:
     bool canJump;
     float screenWidth;
     float screenHeight;
-  
+    PlayerState prevState = PlayerState::IDLE;
     Keyboard::Key keyLeft;
     Keyboard::Key keyRight;
     Keyboard::Key keyJump;
