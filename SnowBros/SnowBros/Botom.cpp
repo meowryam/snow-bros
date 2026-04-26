@@ -120,10 +120,14 @@ void Botom::update(double deltaTime) {
     }
 
     // Flip sprite horizontally based on movement direction
+  // In update(), replace the flip block with:
+    float scaleX = hitboxbotom_width / static_cast<float>(idle.size.x);
+    float scaleY = hitboxbotom_height / static_cast<float>(idle.size.y);
+
     if (xspeed < 0)
-        sprite->setScale({ -1.f, 1.f });
+        sprite->setScale({ -scaleX, scaleY });
     else
-        sprite->setScale({ 1.f, 1.f });
+        sprite->setScale({ scaleX, scaleY });
 }
 
 
@@ -156,10 +160,12 @@ void Botom::draw(sf::RenderWindow& window) {
 
     if (textureLoaded && sprite) {
         // Position the sprite; account for horizontal flip offset
+      ;
         float drawX = static_cast<float>(x);
         if (xspeed < 0)
-            drawX += hitboxbotom_width;   // flip anchor correction
+            drawX += hitboxbotom_width;   // this stays the same, hitbox width is already in pixels
         sprite->setPosition({ drawX, static_cast<float>(y) });
+
         window.draw(*sprite);
     }
     else {
@@ -241,6 +247,11 @@ void Botom::loadTexture(const std::string& path) {
     textureLoaded = texture.loadFromFile(path);
     if (textureLoaded) {
         sprite.emplace(texture);
-        sprite->setTextureRect(idle);   // start on idle frame
+        sprite->setTextureRect(idle);
+
+        // Scale sprite so it visually matches the hitbox size
+        float scaleX = hitboxbotom_width / static_cast<float>(idle.size.x);
+        float scaleY = hitboxbotom_height / static_cast<float>(idle.size.y);
+        sprite->setScale({ scaleX, scaleY });
     }
 }
