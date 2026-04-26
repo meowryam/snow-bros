@@ -81,14 +81,28 @@ Player::Player(PlayerData& data, int playerNum, float screenW, float screenH)
 
     sprite.setPosition(position);
    }
-
+/*
 bool Player::loadTexture(const string& path) {
 
     if (!texture.loadFromFile(path)) {  return false; }
     sprite.setTexture(texture);
     sprite.setScale(Vector2f(1.5f, 1.5f));
     return true;
+} */
+
+bool Player::loadTexture(const string& path) {
+    if (!texture.loadFromFile(path)) return false;
+    sprite.setTexture(texture);
+    // Scale sprite frame to match hitbox size (36x44)
+    // walk_right1 is 220x275 — use it as reference
+    float scaleX = 36.f / 220.f;
+    float scaleY = 44.f / 275.f;
+    sprite.setScale({ scaleX, scaleY });
+    sprite.setTextureRect(walk_right1);
+    return true;
 }
+
+
 void Player::handleInput() {
     if (!isAlive) return;
     velocity.x = 0.f; //no key pressed
@@ -209,6 +223,59 @@ void Player::update(float deltaTime) {
     else {
         state = PlayerState::IDLE;     
     }
+
+    // ── Animate ──────────────────────────────────────────
+    animTimer += deltaTime;
+    if (animTimer >= FRAME_DURATION) {
+        animTimer = 0.f;
+        animFrame++;
+    }
+
+    float scaleX = 36.f / 220.f;
+    float scaleY = 44.f / 275.f;
+
+    if (state == PlayerState::DEAD) {
+        sf::IntRect hurtFrames[7] = {
+            hurt1, hurt2, hurt3, hurt4, hurt5, hurt6, hurt7
+        };
+        int idx = std::min(animFrame, 6);
+        sprite.setTextureRect(hurtFrames[idx]);
+        sprite.setScale({ scaleX, scaleY });
+    }
+    else if (state == PlayerState::THROWING) {
+        sf::IntRect throwFrames[7] = {
+            throw1, throw2, throw3, throw4, throw5, throw6, throw7
+        };
+        sprite.setTextureRect(throwFrames[animFrame % 7]);
+        sprite.setScale({ scaleX, scaleY });
+    }
+    else if (state == PlayerState::JUMPING || state == PlayerState::FALLING) {
+        sf::IntRect jumpFrames[3] = { jump1, jump2, jump3 };
+        sprite.setTextureRect(jumpFrames[animFrame % 3]);
+        sprite.setScale({ scaleX, scaleY });
+    }
+    else if (state == PlayerState::WALKING) {
+        if (facing == Direction::RIGHT) {
+            sf::IntRect walkR[5] = {
+                walk_right1, walk_right2, walk_right3, walk_right4, walk_right5
+            };
+            sprite.setTextureRect(walkR[animFrame % 5]);
+            sprite.setScale({ scaleX, scaleY });
+        }
+        else {
+            sf::IntRect walkL[6] = {
+                walk_left1, walk_left2, walk_left3,
+                walk_left4, walk_left5, walk_left6
+            };
+            sprite.setTextureRect(walkL[animFrame % 6]);
+            sprite.setScale({ scaleX, scaleY });
+        }
+    }
+    else { // IDLE
+        sprite.setTextureRect(walk_right1);
+        sprite.setScale({ scaleX, scaleY });
+    }
+
 }
 void Player::draw(RenderWindow& window) const {
    // if (!isAlive) return; 
@@ -310,3 +377,4 @@ bool Player::isDistanceIncreaseActive() const {return distanceIncreaseActive;}
 bool Player::isBalloonModeActive() const {return balloonModeActive;}
 void Player::setShowDebug(bool show) {showDebug = show; }
 void Player::setOnGround(bool onGround) {isOnGround = onGround; }
+

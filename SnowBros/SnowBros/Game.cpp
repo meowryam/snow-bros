@@ -138,7 +138,8 @@ void Game::handleLoginEvents(sf::Event& event) {
 void Game::handleMainMenuEvents(sf::Event& event) {
     MainMenuResult result = mainMenu.handleEvent(event);
     if (result == MainMenuResult::START_GAME) {
-     //   player1.loadTexture("assets\\images\\Nick.png");
+     
+        player1.loadTexture("assets\\images\\Nick.png");
        // player2.loadTexture("assets\\images\\Player_Blue.png");
        //
         levelsManager.SpecificLevel(playerData.getCurrentLevel());
@@ -194,7 +195,7 @@ void Game::handleGameOverEvents(sf::Event& event) {
         playerData.setLives(2);
         playerData.setCurrentLevel(1);
         levelsManager.SpecificLevel(1);
-       // player1.loadTexture("assets\\images\\Nick.png");
+        player1.loadTexture("assets\\images\\Nick.png");
         ///player2.loadTexture("assets\\images\\Player_Blue.png");
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
         gameOverScreen.reset();
