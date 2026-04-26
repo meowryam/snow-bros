@@ -1,5 +1,6 @@
  #include "Botom.h"
 #include <cstdlib>   
+
 #include "sfmlcolours.h"
 using namespace sfmlcolours;
 
@@ -79,10 +80,54 @@ void Botom::update(double deltaTime) {
    
     if (hitFlashTimer > 0.f)
         hitFlashTimer -= static_cast<float>(deltaTime);
+
+
+    // ── Animate ──────────────────────────────────────────
+    animTimer += static_cast<float>(deltaTime);
+    if (animTimer >= FRAME_DURATION) {
+        animTimer = 0.f;
+        animFrame++;
+    }
+
+    if (!textureLoaded || !sprite) return;
+
+    if (!alive) {
+        // cycle through dying frames
+        sf::IntRect dyingFrames[9] = {
+            dying_frame1, dying_frame2, dying_frame3,
+            dying_frame4, dying_frame5, dying_frame6,
+            dying_frame7, dying_frame8, dying_frame9
+        };
+        int idx = std::min(animFrame, 8);   // clamp so it stays on last frame
+        sprite->setTextureRect(dyingFrames[idx]);
+    }
+    else if (trap && rolling) {
+        // alternate between the two topped frames while rolling
+        sprite->setTextureRect(animFrame % 2 == 0 ? topped_frame1 : topped_frame2);
+    }
+    else if (trap) {
+        // encased — alternate unsheathing frames (shaking in place)
+        sf::IntRect unsheathFrames[3] = { unsheathing_frame1, unsheathing_frame2, unsheathing_frame3 };
+        sprite->setTextureRect(unsheathFrames[animFrame % 3]);
+    }
+    else if (std::abs(xspeed) > speed * 1.5) {
+        // charging — flip between the two charge frames
+        sprite->setTextureRect(animFrame % 2 == 0 ? charging_frame1 : charging_frame2);
+    }
+    else {
+        // normal walk — alternate idle and walking
+        sprite->setTextureRect(animFrame % 2 == 0 ? idle : walking);
+    }
+
+    // Flip sprite horizontally based on movement direction
+    if (xspeed < 0)
+        sprite->setScale({ -1.f, 1.f });
+    else
+        sprite->setScale({ 1.f, 1.f });
 }
 
 
-
+/*
 void Botom::draw(RenderWindow& window) {
     if (!alive) return;
 
@@ -95,6 +140,38 @@ void Botom::draw(RenderWindow& window) {
     window.draw(rect);
 
     
+    if (showDebug) {
+        sf::RectangleShape outline(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
+        outline.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        outline.setFillColor(sf::Color::Transparent);
+        outline.setOutlineThickness(1.f);
+        outline.setOutlineColor(sf::Color::Red);
+        window.draw(outline);
+    }
+}
+
+*/
+void Botom::draw(sf::RenderWindow& window) {
+    if (!alive) return;
+
+    if (textureLoaded && sprite) {
+        // Position the sprite; account for horizontal flip offset
+        float drawX = static_cast<float>(x);
+        if (xspeed < 0)
+            drawX += hitboxbotom_width;   // flip anchor correction
+        sprite->setPosition({ drawX, static_cast<float>(y) });
+        window.draw(*sprite);
+    }
+    else {
+        // Fallback colored rectangle if texture failed to load
+        sf::RectangleShape rect(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
+        rect.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        if (trap)                   rect.setFillColor(sf::Color::White);
+        else if (hitFlashTimer > 0.f) rect.setFillColor(sf::Color::Yellow);
+        else                        rect.setFillColor(sf::Color::Red);
+        window.draw(rect);
+    }
+
     if (showDebug) {
         sf::RectangleShape outline(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
         outline.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
@@ -158,4 +235,12 @@ void Botom::startRolling(double dir) {
 
 bool Botom::isRolling() const {
     return rolling;
+}
+
+void Botom::loadTexture(const std::string& path) {
+    textureLoaded = texture.loadFromFile(path);
+    if (textureLoaded) {
+        sprite.emplace(texture);
+        sprite->setTextureRect(idle);   // start on idle frame
+    }
 }
