@@ -335,7 +335,7 @@ public:
             for (int i = 0; i < lvl.getFoogacount() && foogaCount < MAX_ENEMIES; i++) {
                 float sx = 100.f + i * 160.f;
                 FlyingFoogaFoog* f = new FlyingFoogaFoog(sx, 150);
-            //    f->loadTexture(assetPath + "images\\FlyingFoogaFoog_Blue.png");
+               f->loadTexture(assetPath + "images\\FlyingFoogaFoog_Blue.png");
                 foogas[foogaCount++] = f;
             }
             // Spawn tornados

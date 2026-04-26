@@ -103,7 +103,7 @@ void FlyingFoogaFoog::update(double deltaTime) {
     }
 }
 
-
+/*
 
 void FlyingFoogaFoog::draw(RenderWindow& window) {
     if (!alive) return;
@@ -125,5 +125,80 @@ void FlyingFoogaFoog::draw(RenderWindow& window) {
         outline.setOutlineThickness(1.f);
         outline.setOutlineColor(Color::Red);
         window.draw(outline);
+    }
+}
+*/
+
+
+void FlyingFoogaFoog::draw(sf::RenderWindow& window) {
+    if (!alive) return;
+
+    if (textureLoaded && sprite) {
+        // Pick correct animation frame
+        if (trap) {
+            sf::IntRect toppedFrames[3] = {
+                topped_fooga_frame1, topped_fooga_frame2, topped_fooga_frame3
+            };
+            sprite->setTextureRect(toppedFrames[animFrame % 3]);
+        }
+        else if (inFlight) {
+            // alternate between fly frames while airborne
+            sf::IntRect flyFrames[3] = { fly_frame1, fly_frame2, fly_frame3 };
+            sprite->setTextureRect(flyFrames[animFrame % 3]);
+        }
+        else {
+            // on ground — use glide/hover frames
+            sf::IntRect glideFrames[3] = { glide_frame1, glide_frame2, glide_frame3 };
+            sprite->setTextureRect(glideFrames[animFrame % 3]);
+        }
+
+        // Scale + flip
+        float scaleX = hitboxbotom_width / static_cast<float>(fly_frame1.size.x);
+        float scaleY = hitboxbotom_height / static_cast<float>(fly_frame1.size.y);
+
+        float drawX = static_cast<float>(x);
+        if (xspeed < 0) {
+            sprite->setScale({ -scaleX, scaleY });
+            drawX += hitboxbotom_width;
+        }
+        else {
+            sprite->setScale({ scaleX, scaleY });
+        }
+
+        sprite->setPosition({ drawX, static_cast<float>(y) });
+        window.draw(*sprite);
+    }
+    else {
+        // Fallback rectangle
+        sf::RectangleShape rect(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
+        rect.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        if (trap)               rect.setFillColor(sf::Color::White);
+        else if (hitFlashTimer > 0.f) rect.setFillColor(sf::Color(173, 216, 230));
+        else if (inFlight)           rect.setFillColor(sf::Color(0, 150, 255));
+        else                         rect.setFillColor(sf::Color(65, 105, 225));
+        window.draw(rect);
+    }
+
+    if (showDebug) {
+        sf::RectangleShape outline(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
+        outline.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        outline.setFillColor(sf::Color::Transparent);
+        outline.setOutlineThickness(1.f);
+        outline.setOutlineColor(sf::Color::Red);
+        window.draw(outline);
+    }
+}
+
+
+
+void FlyingFoogaFoog::loadTexture(const std::string& path) {
+    textureLoaded = texture.loadFromFile(path);
+    if (textureLoaded) {
+        sprite.emplace(texture);
+        sprite->setTextureRect(fly_frame1);
+
+        float scaleX = hitboxbotom_width / static_cast<float>(fly_frame1.size.x);
+        float scaleY = hitboxbotom_height / static_cast<float>(fly_frame1.size.y);
+        sprite->setScale({ scaleX, scaleY });
     }
 }
