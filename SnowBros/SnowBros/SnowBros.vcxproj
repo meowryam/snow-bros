@@ -143,6 +143,7 @@
     <ClCompile Include="LevelsManager.cpp" />
     <ClCompile Include="Mogera.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="sfmlcolours.cpp" />
     <ClCompile Include="ShopScreen.cpp" />
     <ClCompile Include="SnowBall.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -151,12 +152,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Botom.h" />
+    <ClInclude Include="botomvariant.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyFactory.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EventBus.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="FlyingFoogaFoog.h" />
+    <ClInclude Include="foogavariant.h" />
     <ClInclude Include="Gamakichi.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLevel.h" />
@@ -183,6 +186,7 @@
     <ClInclude Include="PoweUp.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="ScoreSystem.h" />
+    <ClInclude Include="sfmlcolours.h" />
     <ClInclude Include="ShopSystem.h" />
     <ClInclude Include="Snowball.h" />
     <ClInclude Include="SoundManager.h" />

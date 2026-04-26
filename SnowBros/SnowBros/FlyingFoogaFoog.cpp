@@ -1,6 +1,8 @@
 #include "FlyingFoogaFoog.h"
 #include <cstdlib>   
 #include <cmath>     
+#include "sfmlcolours.h"
+using namespace sfmlcolours;
 
 FlyingFoogaFoog::FlyingFoogaFoog(double startX, double startY, float scrW, float scrH) : Botom(startX, startY, scrW, scrH)
 {
@@ -110,9 +112,9 @@ void FlyingFoogaFoog::draw(RenderWindow& window) {
     rect.setPosition(Vector2f(static_cast<float>(x), static_cast<float>(y)));
 
     if (trap) {rect.setFillColor(Color::White); }
-    else if (hitFlashTimer > 0.f) {  rect.setFillColor(sf::Color(200, 200, 255));}
-    else if (inFlight) {rect.setFillColor(sf::Color(0, 220, 255));}
-    else { rect.setFillColor(Color(50, 100, 220));}
+    else if (hitFlashTimer > 0.f) {  rect.setFillColor(PaleBlue);}
+    else if (inFlight) {rect.setFillColor(AquaBlue);}
+    else { rect.setFillColor(RoyalBlue);}
 
     window.draw(rect);
 

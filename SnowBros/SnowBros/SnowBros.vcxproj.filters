@@ -16,6 +16,7 @@
     <ClCompile Include="Gamakichi.cpp" />
     <ClCompile Include="Mogera.cpp" />
     <ClCompile Include="SnowBall.cpp" />
+    <ClCompile Include="sfmlcolours.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -76,5 +77,8 @@
     <ClInclude Include="LevelLayout.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="GameLevel.h" />
+    <ClInclude Include="botomvariant.h" />
+    <ClInclude Include="sfmlcolours.h" />
+    <ClInclude Include="foogavariant.h" />
   </ItemGroup>
 </Project>

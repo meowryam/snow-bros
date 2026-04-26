@@ -1,6 +1,7 @@
  #include "Botom.h"
 #include <cstdlib>   
-
+#include "sfmlcolours.h"
+using namespace sfmlcolours;
 
 static float randFloat(float low, float high) {
     return low + static_cast<float>(rand()) / RAND_MAX * (high - low);
@@ -88,15 +89,9 @@ void Botom::draw(RenderWindow& window) {
     RectangleShape rect(Vector2f(hitboxbotom_width, hitboxbotom_height));
     rect.setPosition(Vector2f(static_cast<float>(x), static_cast<float>(y)));
 
-    if (trap) {
-        rect.setFillColor(Color::White);
-    }
-    else if (hitFlashTimer > 0.f) {
-        rect.setFillColor(Color(255, 255, 200));
-    }
-    else {
-        rect.setFillColor(Color(200, 50, 50));
-    }
+    if (trap) { rect.setFillColor(Color::White); }
+    else if (hitFlashTimer > 0.f) {rect.setFillColor(PaleYellow); }
+    else {  rect.setFillColor(Crimson); }
     window.draw(rect);
 
     
