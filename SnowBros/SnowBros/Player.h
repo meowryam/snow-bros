@@ -61,20 +61,18 @@ private:
     int   animFrame = 0;
     static constexpr float FRAME_DURATION = 0.12f;
 
-    // Walk Right (5 frames)
-    sf::IntRect walk_right1{ {110,  76}, {220, 275} };
-    sf::IntRect walk_right2{ {407,  74}, {196, 281} };
-    sf::IntRect walk_right3{ {702,  70}, {226, 287} };
-    sf::IntRect walk_right4{ {1003, 67}, {213, 276} };
-    sf::IntRect walk_right5{ {1287, 55}, {243, 305} };
-
-    // Walk Left (6 frames)
-    sf::IntRect walk_left1{ { 61, 367}, {297, 275} };
-    sf::IntRect walk_left2{ {381, 354}, {269, 245} };
-    sf::IntRect walk_left3{ {672, 364}, {273, 254} };
-    sf::IntRect walk_left4{ {1002,369}, {230, 281} };
-    sf::IntRect walk_left5{ {1295,373}, {282, 269} };
-    sf::IntRect walk_left6{ {1595,376}, {278, 262} };
+    // All walk frames face RIGHT — flip via scale for left
+    sf::IntRect walk1{ { 110,  76}, {220, 275} };
+    sf::IntRect walk2{ { 407,  74}, {196, 281} };
+    sf::IntRect walk3{ { 702,  70}, {226, 287} };
+    sf::IntRect walk4{ {1003,  67}, {213, 276} };
+    sf::IntRect walk5{ {1287,  55}, {243, 305} };
+    sf::IntRect walk6{ {  61, 367}, {297, 275} };
+    sf::IntRect walk7{ { 381, 354}, {269, 245} };
+    sf::IntRect walk8{ { 672, 364}, {273, 254} };
+    sf::IntRect walk9{ {1002, 369}, {230, 281} };
+    sf::IntRect walk10{ {1295, 373}, {282, 269} };
+    sf::IntRect walk11{ {1595, 376}, {278, 262} };
 
     // Jump (3 frames)
     sf::IntRect jump1{ {1579,660}, {318, 312} };

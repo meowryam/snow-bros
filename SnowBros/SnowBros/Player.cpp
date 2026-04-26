@@ -89,19 +89,13 @@ bool Player::loadTexture(const string& path) {
     sprite.setScale(Vector2f(1.5f, 1.5f));
     return true;
 } */
-
 bool Player::loadTexture(const string& path) {
     if (!texture.loadFromFile(path)) return false;
     sprite.setTexture(texture);
-    // Scale sprite frame to match hitbox size (36x44)
-    // walk_right1 is 220x275 — use it as reference
-    float scaleX = 36.f / 220.f;
-    float scaleY = 44.f / 275.f;
-    sprite.setScale({ scaleX, scaleY });
-    sprite.setTextureRect(walk_right1);
+    sprite.setTextureRect(walk1);
+    sprite.setOrigin({ 0.f, 0.f });   // default: no flip, faces LEFT naturally
     return true;
 }
-
 
 void Player::handleInput() {
     if (!isAlive) return;
@@ -136,44 +130,44 @@ void Player::handleInput() {
     }
 }
 void Player::update(float deltaTime) {
-    if (!isAlive) return; 
+    if (!isAlive) return;
     if (invincibleTimer > 0.f)
         invincibleTimer -= deltaTime;
-//gravity-validity
+    //gravity-validity
     if (!isOnGround && !balloonModeActive) {
-       
+
         velocity.y += GRAVITY * deltaTime;
         if (velocity.y > MAX_FALL_SPEED) {
             velocity.y = MAX_FALL_SPEED;
         }
     }
 
-//balloon
+    //balloon
     if (balloonModeActive) {
-        velocity.y = -80.f; 
+        velocity.y = -80.f;
         balloonModeTimer -= deltaTime;
         if (balloonModeTimer <= 0.f) {
             balloonModeActive = false;
             balloonModeTimer = 0.f;
-            velocity.y = 0.f;  
+            velocity.y = 0.f;
         }
     }
 
-//speedboost
+    //speedboost
     if (speedBoostActive) {
         speedBoostTimer -= deltaTime;
         if (speedBoostTimer <= 0.f) {
             speedBoostActive = false;
             speedBoostTimer = 0.f;
-            speed = BASE_SPEED;  
+            speed = BASE_SPEED;
         }
     }
 
-//playermovement
+    //playermovement
     position.x += velocity.x * deltaTime;
     position.y += velocity.y * deltaTime;
 
-//screen wrapping
+    //screen wrapping
     const float spriteWidth = 48.f;
 
     if (position.x + spriteWidth < 0.f) {
@@ -183,53 +177,24 @@ void Player::update(float deltaTime) {
         position.x = -spriteWidth;
     }
 
-//sync hitbox
-  /*  if (facing == Direction::LEFT) {
-        sprite.setPosition(Vector2f(position.x + spriteWidth, position.y));
-         }
-    else {
-        sprite.setPosition(position);
-    } */
-    hitbox = FloatRect(
-        Vector2f(position.x + 6.f, position.y + 2.f),
-        Vector2f(36.f, 44.f)
-    );
-    debugBox.setPosition(Vector2f(hitbox.position.x, hitbox.position.y));
-
-//animation
-    if (state == PlayerState::THROWING) {
-        if (!isOnGround) {
-            state = (velocity.y < 0.f) ? PlayerState::JUMPING : PlayerState::FALLING;
-        }
-        else if (velocity.x != 0.f) {
-            state = PlayerState::WALKING;
-        }
+    //sync hitbox
+      /*  if (facing == Direction::LEFT) {
+            sprite.setPosition(Vector2f(position.x + spriteWidth, position.y));
+             }
         else {
-            state = PlayerState::IDLE;
+            sprite.setPosition(position);
         }
-    }
-    else if (!isOnGround) {
-     // In the air
-        if (velocity.y < 0.f) {
-            state = PlayerState::JUMPING;   
-        }
-        else {
-            state = PlayerState::FALLING;  
-        }
-    }
-    else if (velocity.x != 0.f) {
-        state = PlayerState::WALKING;  
-    }
-    else {
-        state = PlayerState::IDLE;     
-    }
-
+        hitbox = FloatRect(
+            Vector2f(position.x + 6.f, position.y + 2.f),
+            Vector2f(36.f, 44.f)
+        );
+        debugBox.setPosition(Vector2f(hitbox.position.x, hitbox.position.y));
+        */
     if (state != prevState) {
         animFrame = 0;
         animTimer = 0.f;
         prevState = state;
     }
-   
 
     animTimer += deltaTime;
     if (animTimer >= FRAME_DURATION) {
@@ -237,17 +202,12 @@ void Player::update(float deltaTime) {
         animFrame++;
     }
 
-    // Compute scale + flip ONCE here, use everywhere below
-    float scaleX = 36.f / 220.f;
-    float scaleY = 44.f / 275.f;
-    float flipX = (facing == Direction::LEFT) ? -scaleX : scaleX;
-
+    // Pick frame
     if (state == PlayerState::DEAD) {
         sf::IntRect hurtFrames[7] = {
             hurt1, hurt2, hurt3, hurt4, hurt5, hurt6, hurt7
         };
-        int idx = std::min(animFrame, 6);
-        sprite.setTextureRect(hurtFrames[idx]);
+        sprite.setTextureRect(hurtFrames[std::min(animFrame, 6)]);
     }
     else if (state == PlayerState::THROWING) {
         sf::IntRect throwFrames[7] = {
@@ -260,36 +220,39 @@ void Player::update(float deltaTime) {
         sprite.setTextureRect(jumpFrames[animFrame % 3]);
     }
     else if (state == PlayerState::WALKING) {
-        if (facing == Direction::RIGHT) {
-            sf::IntRect walkR[5] = {
-                walk_right1, walk_right2, walk_right3, walk_right4, walk_right5
-            };
-            sprite.setTextureRect(walkR[animFrame % 5]);
-        }
-        else {
-            sf::IntRect walkL[6] = {
-                walk_left1, walk_left2, walk_left3,
-                walk_left4, walk_left5, walk_left6
-            };
-            sprite.setTextureRect(walkL[animFrame % 6]);
-        }
-    }
-    else { // IDLE
-        sprite.setTextureRect(walk_right1);
-    }
-
-    // Apply scale + flip ONCE at the end — not inside every branch
-    sprite.setScale({ flipX, scaleY });
-
-    // Fix sprite anchor when flipped so it doesn't shift right
-    if (facing == Direction::LEFT) {
-        sprite.setPosition(Vector2f(position.x + 36.f, position.y));
+        sf::IntRect walkFrames[11] = {
+            walk1, walk2, walk3, walk4, walk5,
+            walk6, walk7, walk8, walk9, walk10, walk11
+        };
+        sprite.setTextureRect(walkFrames[animFrame % 11]);
     }
     else {
+        sprite.setTextureRect(walk1); // idle
+    }
+
+    // Scale — use current frame size for correct proportions
+    sf::IntRect cur = sprite.getTextureRect();
+    float scaleX = 36.f / static_cast<float>(cur.size.x);
+    float scaleY = 44.f / static_cast<float>(cur.size.y);
+
+    if (facing == Direction::LEFT) {
+        // flip: set origin to right edge of frame, mirror X
+        sprite.setOrigin({ static_cast<float>(cur.size.x), 0.f });
+        sprite.setScale({ scaleX, scaleY });
+        sprite.setPosition(position);   // position is always top-left of hitbox area
+    }
+    else {
+        sprite.setOrigin({ 0.f, 0.f });
+        sprite.setScale({ -scaleX, scaleY });
         sprite.setPosition(position);
     }
-}
 
+    hitbox = FloatRect(
+        Vector2f(position.x + 6.f, position.y + 2.f),
+        Vector2f(36.f, 44.f)
+    );
+    debugBox.setPosition(Vector2f(hitbox.position.x, hitbox.position.y));
+}
 void Player::draw(RenderWindow& window) const {
    // if (!isAlive) return; 
     window.draw(sprite);
