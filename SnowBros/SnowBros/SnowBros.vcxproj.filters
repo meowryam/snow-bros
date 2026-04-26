@@ -80,5 +80,6 @@
     <ClInclude Include="botomvariant.h" />
     <ClInclude Include="sfmlcolours.h" />
     <ClInclude Include="foogavariant.h" />
+    <ClInclude Include="Tornadovariant.h" />
   </ItemGroup>
 </Project>

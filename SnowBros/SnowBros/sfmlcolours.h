@@ -20,4 +20,10 @@ namespace sfmlcolours {
 	extern const Color Lilac;
 	extern const Color LightPurple;
 	extern const Color DarkPurple;
+	extern const Color BrightGreen;
+	extern const Color ForestGreen;
+	extern const Color BrightBlue;
+	extern const Color OceanBlue;
+	extern const Color BrightPurple;
+	extern const Color DarkestPurple;
 }
