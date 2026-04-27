@@ -16,19 +16,21 @@ private:
     static constexpr float FRAME_DURATION = 0.12f;
 
     // Flying snowball frames (from Player_Blue.png ROW 10)
-    sf::IntRect proj1{ { 16, 814}, {63, 63} };
-    sf::IntRect proj2{ {101, 821}, {63, 56} };
-    sf::IntRect proj3{ {178, 834}, {69, 43} };
-    sf::IntRect proj4{ {253, 843}, {80, 33} };
-    sf::IntRect proj5{ {338, 854}, {84, 21} };
+// Replace proj1-5 in Snowball.h with these round snowball frames
+    sf::IntRect proj1{ { 13, 919}, {57, 49} };
+    sf::IntRect proj2{ { 83, 903}, {65, 65} };
+    sf::IntRect proj3{ {176, 899}, {72, 70} };
+    sf::IntRect proj4{ {260, 883}, {69, 86} };
+    sf::IntRect proj5{ {  6, 968}, {74, 84} };
 
     // Rolling snowball frames (ROW 9 fat/rolling — grows as it rolls)
-    sf::IntRect roll1{ {  8, 683}, { 70, 112} };
-    sf::IntRect roll2{ { 77, 675}, { 91, 115} };
-    sf::IntRect roll3{ {172, 674}, {115, 123} };
-    sf::IntRect roll4{ {292, 672}, {119, 131} };
-    sf::IntRect roll5{ {419, 673}, {122, 127} };
-    sf::IntRect roll6{ {544, 669}, {125, 129} };
+  // CORRECT — actual snowball growing frames
+    sf::IntRect roll1{ { 13, 919}, {57, 49} };
+    sf::IntRect roll2{ { 83, 903}, {65, 65} };
+    sf::IntRect roll3{ {176, 899}, {72, 70} };
+    sf::IntRect roll4{ {260, 883}, {69, 86} };
+    sf::IntRect roll5{ {  6, 968}, {74, 84} };
+    sf::IntRect roll6{ { 88, 971}, {75, 81} };
 
     float screenWidth;
     float screenHeight;

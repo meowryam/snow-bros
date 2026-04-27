@@ -80,43 +80,72 @@ private:
         snowballs[snowballCount++] = sb;
     }
     void checkCollisions(Player& player1, Player* player2) {
-        // Snowball vs enemy
-       // Rolling Botom vs other enemies
-        for (int ri = 0; ri < botomCount; ri++) {
-            if (!botoms[ri]->getalive() || !botoms[ri]->isRolling()) continue;
-            sf::FloatRect rollingHB = botoms[ri]->getHitbox();
 
-            // vs other botoms
+        // ?? 1. Flying Snowball vs enemies ??????????????????????
+        for (int si = 0; si < snowballCount; si++) {
+            Snowball* sb = snowballs[si];
+            if (!sb || !sb->getalive()) continue;
+            sf::FloatRect sbHB = sb->getHitbox();
+
             for (int ei = 0; ei < botomCount; ei++) {
-                if (ei == ri || !botoms[ei]->getalive()) continue;
-                if (rollingHB.findIntersection(botoms[ei]->getHitbox())) {
-                    botoms[ei]->setalive(false);
-                    scoreSystem.onBottomKilled();
-                    gemSystem.enemykilled();
-                    eventBus.post(GameEvent::ENEMY_KILLED);
-                }
+                if (!botoms[ei]->getalive() || botoms[ei]->gettrap()) continue;
+                if (!sbHB.findIntersection(botoms[ei]->getHitbox())) continue;
+                botoms[ei]->receiveSnowballHit();
+                sb->setalive(false);
+                break;
             }
-            // vs foogas
+            if (!sb->getalive()) continue;
+
             for (int ei = 0; ei < foogaCount; ei++) {
-                if (!foogas[ei]->getalive()) continue;
-                if (rollingHB.findIntersection(foogas[ei]->getHitbox())) {
-                    foogas[ei]->setalive(false);
-                    scoreSystem.onFoogaKilled();
-                    gemSystem.enemykilled();
-                    eventBus.post(GameEvent::ENEMY_KILLED);
+                if (!foogas[ei]->getalive() || foogas[ei]->gettrap()) continue;
+                if (!sbHB.findIntersection(foogas[ei]->getHitbox())) continue;
+                foogas[ei]->receiveSnowballHit();
+                sb->setalive(false);
+                break;
+            }
+            if (!sb->getalive()) continue;
+
+            for (int ei = 0; ei < tornadoCount; ei++) {
+                if (!tornados[ei]->getalive() || tornados[ei]->gettrap()) continue;
+                if (!sbHB.findIntersection(tornados[ei]->getHitbox())) continue;
+                tornados[ei]->receiveSnowballHit();
+                sb->setalive(false);
+                break;
+            }
+            if (!sb->getalive()) continue;
+
+            // vs mogera
+            if (hasMogera && mogera->getalive()) {
+                if (sbHB.findIntersection(mogera->getHitbox())) {
+                    mogera->healthreduce(1);
+                    sb->setalive(false);
+                    if (mogera->gethealth() <= 0) {
+                        mogera->setalive(false);
+                        scoreSystem.onMogeraKilled();
+                        gemSystem.Mogerakilled();
+                        eventBus.post(GameEvent::ENEMY_KILLED);
+                    }
                 }
             }
-            // vs tornados
-            for (int ei = 0; ei < tornadoCount; ei++) {
-                if (!tornados[ei]->getalive()) continue;
-                if (rollingHB.findIntersection(tornados[ei]->getHitbox())) {
-                    tornados[ei]->setalive(false);
-                    scoreSystem.onTornadoKilled();
-                    gemSystem.enemykilled();
-                    eventBus.post(GameEvent::ENEMY_KILLED);
+            if (!sb->getalive()) continue;
+
+            // vs gamakichi
+            if (hasGamakichi && gamakichi->getalive()) {
+                if (sbHB.findIntersection(gamakichi->getHitbox())) {
+                    gamakichi->healthreduce(1);
+                    sb->setalive(false);
+                    if (gamakichi->gethealth() <= 0) {
+                        gamakichi->setalive(false);
+                        scoreSystem.onGamakichiKilled();
+                        gemSystem.gamakichikilled();
+                        eventBus.post(GameEvent::ENEMY_KILLED);
+                    }
                 }
             }
         }
+
+        // ?? 2. Rolling Botom vs other enemies ??????????????????
+        // ... (your existing rolling botom block stays here)
         // Player vs trapped enemy — kick to start rolling
         auto checkKick = [&](Player& p) {
             if (!p.getIsAlive()) return;
