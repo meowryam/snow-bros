@@ -97,6 +97,16 @@ void Game::run() {
                     keyRemapScreen.done = false;
                 }
                 break;
+                // Game.cpp — inside run(), in the switch(currentState) block
+// ADD this case, right before the default: break
+
+            case GameState::SHOP:
+                shopScreen.handleEvent(*event);
+                if (shopScreen.done) {
+                    shopScreen.done = false;
+                    currentState = GameState::MENU;
+                }
+                break;
             default: break;
             }
         }

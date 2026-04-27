@@ -1,4 +1,4 @@
-#include "ShopSystem.h"
+/*#include "ShopSystem.h"
 
 // ── loadFont ─────────────────────────────────────────────────────────────────
 // FIX: sf::Text requires a font at construction in SFML 3.
@@ -251,3 +251,4 @@ void ShopScreen::handleClick(sf::Vector2f mousePos) {
         return;
     }
 }
+*/

@@ -15,7 +15,7 @@ public:
 		username = "Maryam";
 		currentlevel = 1;
 		lives = 2;
-		gemCount = 0;
+		gemCount = 500;
 		highscore = 0;
 	}
 	PlayerData(string username, int currentlevel, int lives, int gemCount, int highscore) {
