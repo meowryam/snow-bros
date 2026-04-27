@@ -22,7 +22,9 @@ private:
     // platforms
     Platform platforms[LevelLayout::MAX_PLATFORMS];
     int      platformCount;
-
+    // Add this as a member in GameLevel private section:
+    sf::Texture platformTexture;
+    bool platformTexLoaded = false;
     // enemies — fixed arrays, no STL
     static const int MAX_ENEMIES = 16;
     Botom* botoms[MAX_ENEMIES];
@@ -271,7 +273,25 @@ public:
 
         // Load platform layout
         platformCount = LevelLayout::getLayout(lvl.getLevelno(), platforms);
+        // Load once
+      // Load once, with mask
+        if (!platformTexLoaded) {
+            sf::Image img;
+            if (img.loadFromFile(assetPath + "images\\platform.png")) {
+                if (platformTexture.loadFromImage(img)) {
+                    platformTexLoaded = true;
+                    platformTexture.setSmooth(false);
+                    platformTexture.setRepeated(true);
+                }
+            }
+            cout << "Tex loaded: " << platformTexLoaded << endl;
+        }
 
+        // Assign to all platforms
+        if (platformTexLoaded) {
+            for (int i = 0; i < platformCount; i++)
+                platforms[i].tileTexture = &platformTexture;
+        }
 
         // Load background
         //string bgPath = assetPath + "images\\lvl" + to_string(lvl.getLevelno()) + ".png";

@@ -47,6 +47,14 @@ public:
 	int totalGems() const {
 		return playerData.getGemCount();
 	}
+    // Add inside ShopSystem class:
+    bool buyLuckyScroll() {
+        if (playerData.getGemCount() >= 40) {
+            playerData.setGemCount(playerData.getGemCount() - 40);
+            return true;  // caller decides which power-up was granted
+        }
+        return false;
+    }
 };
 /*
 
@@ -207,7 +215,7 @@ private:
 { "Snowball Pwr", "1-hit encase",         30, true,  348, 185,  97, 139 },
 { "Distance+",    "Full-screen throw",    25, true,  348, 342,  97, 141 },
 { "Balloon Mode", "Float+immune, 30s",    35, false, 348, 500,  97, 141 },
-{ "Extra Life",   "+1 life now",          50, false, 320, 647, 131, 155 },
+{ "Lucky Scroll", "Random power-up!",     40, false,  17, 974, 256, 345 },
     };
 
     // ── state ──────────────────────────────────────────────────
@@ -497,7 +505,7 @@ inline void ShopScreen::tryBuy(int i) {
     case 2: ok = shop.buySnowBallPower();    break;
     case 3: ok = shop.buyDistanceIncrease(); break;
     case 4: ok = shop.buyBalloonMode();      break;
-    case 5: ok = shop.buyExtraLife();        break;  // placeholder
+    case 5: ok = shop.buyLuckyScroll(); break;
     }
 
     if (ok) {
