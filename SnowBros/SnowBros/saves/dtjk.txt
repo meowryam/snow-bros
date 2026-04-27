@@ -1,5 +1,5 @@
-username=wareesha
+username=dtjk
 current_level=1
-lives=2
+lives=0
 gem_count=0
 high_score=0

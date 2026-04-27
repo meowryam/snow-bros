@@ -139,7 +139,7 @@ public:
         T(titleText).setString("SNOW BROS");
         T(titleText).setCharacterSize(48);
         T(titleText).setFillColor(gold);
-        T(titleText).setLetterSpacing(4.f);
+        T(titleText).setLetterSpacing(3.f);
         sf::FloatRect tb = T(titleText).getLocalBounds();
         T(titleText).setOrigin({ tb.size.x / 2.f, 0.f });
         T(titleText).setPosition({ W / 2.f, 80.f });
