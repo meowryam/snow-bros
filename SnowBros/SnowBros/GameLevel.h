@@ -75,96 +75,48 @@ private:
 
     void spawnSnowball(double x, double y, double dir, bool powerful, bool longRange) {
         if (snowballCount >= MAX_SNOWBALLS) return;
-        Snowball* sb = new Snowball(x, y, dir);
-        if (powerful)   sb->addSnow(); // start already powered
-        if (longRange)  sb->setxspeed(dir * 600.0); // faster = longer range
+        Snowball* sb = new Snowball(x, y, dir, powerful, longRange);
+        sb->loadTexture(assetPath + "images\\Player_Blue.png");
         snowballs[snowballCount++] = sb;
     }
-
     void checkCollisions(Player& player1, Player* player2) {
         // Snowball vs enemy
-        for (int si = 0; si < snowballCount; si++) {
-            Snowball* sb = snowballs[si];
-            if (!sb || !sb->getalive()) continue;
-            sf::FloatRect sbHB(sf::Vector2f((float)sb->getx(), (float)sb->gety()), sf::Vector2f(24.f, 24.f));
+       // Rolling Botom vs other enemies
+        for (int ri = 0; ri < botomCount; ri++) {
+            if (!botoms[ri]->getalive() || !botoms[ri]->isRolling()) continue;
+            sf::FloatRect rollingHB = botoms[ri]->getHitbox();
 
-            // vs botoms
+            // vs other botoms
             for (int ei = 0; ei < botomCount; ei++) {
-                if (!botoms[ei]->getalive()) continue;
-                if (!sbHB.findIntersection(botoms[ei]->getHitbox())) continue;
-                if (sb->isRolling()) {
+                if (ei == ri || !botoms[ei]->getalive()) continue;
+                if (rollingHB.findIntersection(botoms[ei]->getHitbox())) {
                     botoms[ei]->setalive(false);
                     scoreSystem.onBottomKilled();
                     gemSystem.enemykilled();
                     eventBus.post(GameEvent::ENEMY_KILLED);
                 }
-                else if (!botoms[ei]->gettrap()) {
-                    botoms[ei]->receiveSnowballHit();
-                    sb->setalive(false);
-                }
             }
-
             // vs foogas
             for (int ei = 0; ei < foogaCount; ei++) {
                 if (!foogas[ei]->getalive()) continue;
-                if (!sbHB.findIntersection(foogas[ei]->getHitbox())) continue;
-                if (sb->isRolling()) {
+                if (rollingHB.findIntersection(foogas[ei]->getHitbox())) {
                     foogas[ei]->setalive(false);
                     scoreSystem.onFoogaKilled();
                     gemSystem.enemykilled();
                     eventBus.post(GameEvent::ENEMY_KILLED);
                 }
-                else {
-                    foogas[ei]->receiveSnowballHit();
-                    sb->setalive(false);
-                }
             }
-
             // vs tornados
             for (int ei = 0; ei < tornadoCount; ei++) {
                 if (!tornados[ei]->getalive()) continue;
-                if (!sbHB.findIntersection(tornados[ei]->getHitbox())) continue;
-                if (sb->isRolling()) {
+                if (rollingHB.findIntersection(tornados[ei]->getHitbox())) {
                     tornados[ei]->setalive(false);
                     scoreSystem.onTornadoKilled();
                     gemSystem.enemykilled();
                     eventBus.post(GameEvent::ENEMY_KILLED);
                 }
-                else {
-                    tornados[ei]->receiveSnowballHit();
-                    sb->setalive(false);
-                }
-            }
-
-            // vs mogera
-            if (hasMogera && mogera->getalive()) {
-                if (sbHB.findIntersection(mogera->getHitbox())) {
-                    mogera->healthreduce(1);
-                    sb->setalive(false);
-                    if (mogera->gethealth() <= 0) {
-                        mogera->setalive(false);
-                        scoreSystem.onMogeraKilled();
-                        gemSystem.Mogerakilled();
-                        eventBus.post(GameEvent::ENEMY_KILLED);
-                    }
-                }
-            }
-
-            // vs gamakichi
-            if (hasGamakichi && gamakichi->getalive()) {
-                if (sbHB.findIntersection(gamakichi->getHitbox())) {
-                    gamakichi->healthreduce(1);
-                    sb->setalive(false);
-                    if (gamakichi->gethealth() <= 0) {
-                        gamakichi->setalive(false);
-                        scoreSystem.onGamakichiKilled();
-                        gemSystem.gamakichikilled();
-                        eventBus.post(GameEvent::ENEMY_KILLED);
-                    }
-                }
             }
         }
-
         // Player vs trapped enemy — kick to start rolling
         auto checkKick = [&](Player& p) {
             if (!p.getIsAlive()) return;
@@ -361,14 +313,16 @@ public:
         player1.resolvePlatforms(platforms, platformCount);
 
         // Spawn snowball if requested
-        if (player1.getWantsToThrow()) {
+        static bool throwHeld = false;
+        if (player1.getWantsToThrow() && !throwHeld) {
+            throwHeld = true;
             bool powerful = player1.isSnowballPowerActive();
             bool longRange = player1.isDistanceIncreaseActive();
             double dir = player1.getFacing() == Direction::RIGHT ? 1.0 : -1.0;
             spawnSnowball(player1.getPosition().x + (dir > 0 ? 48 : 0), player1.getPosition().y + 20, dir, powerful, longRange);
             scoreSystem.resetChain();
         }
-
+        if (!player1.getWantsToThrow()) throwHeld = false;
         if (player2) {
             // player2 uses arrow keys by default
             player2->update(deltaTime);
