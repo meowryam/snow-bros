@@ -33,13 +33,14 @@ void Botom::update(double deltaTime) {
 
     if (trap && rolling) {
         x += xspeed * deltaTime;
-        shakeoutTimer -= static_cast<float>(deltaTime);
-        if (shakeoutTimer <= 0.f) {
-            trap = false;
-            snowballHits = 0;
-            shakeoutTimer = SHAKEOUT_DURATION;
-            xspeed = speed;  
-        }
+       
+            // in update(), replace the shakeoutTimer block:
+            shakeoutTimer -= static_cast<float>(deltaTime);
+            if (shakeoutTimer <= 0.f) {
+                alive = false;  // died from rolling too long
+                return;
+            }
+        
         if (!isOnGround) {
             yspeed += GRAVITY * deltaTime;
             if (yspeed > MAX_FALL) yspeed = MAX_FALL;

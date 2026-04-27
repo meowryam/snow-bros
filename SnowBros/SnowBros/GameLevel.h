@@ -163,13 +163,24 @@ private:
         checkKick(player1);
         if (player2) checkKick(*player2);
 
+        // Kill rolling botoms that hit screen edges
+        for (int ei = 0; ei < botomCount; ei++) {
+            if (!botoms[ei]->getalive() || !botoms[ei]->isRolling()) continue;
+            float bx = static_cast<float>(botoms[ei]->getx());
+            if (bx < -50.f || bx > 850.f) {
+                botoms[ei]->setalive(false);
+                scoreSystem.onBottomKilled();  // ? was onEnemyKilled()
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+        }
+
         // Player vs enemy — take damage
         auto checkDamage = [&](Player& p) {
             if (!p.getIsAlive() || p.isInvincible()) return;
             sf::FloatRect phb = p.getHitbox();
 
             for (int ei = 0; ei < botomCount; ei++) {
-                if (!botoms[ei]->getalive() || botoms[ei]->gettrap() )  continue;
+                if (!botoms[ei]->getalive() || (botoms[ei]->gettrap() && !botoms[ei]->isRolling())) continue;
                 if (phb.findIntersection(botoms[ei]->getHitbox())) { p.takeDamage(); return; }
             }
             for (int ei = 0; ei < foogaCount; ei++) {
@@ -389,12 +400,10 @@ public:
 
         // Handle player death
         if (!player1.getIsAlive()) {
-            playerData.setLives(playerData.getLives() - 1);
             if (playerData.getLives() > 0) {
                 player1.resetForNewLevel(Vector2f(100.f, 200.f));
             }
         }
-
        // if (allEnemiesDead()) levelComplete = true;
         if (allEnemiesDead() && (botomCount + foogaCount + tornadoCount > 0 || hasMogera || hasGamakichi))
             levelComplete = true;
