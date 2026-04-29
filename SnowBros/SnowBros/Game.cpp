@@ -21,9 +21,8 @@ Game::Game()
         "assets\\"),
     twoPlayerMode(false)
 {
-    player1.resetForNewLevel(Vector2f(100.f, 200.f));
-    player2.resetForNewLevel(Vector2f(200.f, 200.f));
-
+    player1.resetForNewLevel(Vector2f(100.f, 500.f));  // just above floor
+    player2.resetForNewLevel(Vector2f(200.f, 500.f));
 
 
 
@@ -152,8 +151,8 @@ void Game::handleMainMenuEvents(sf::Event& event) {
         player1.loadTexture("assets\\images\\Nick.png");
        // player2.loadTexture("assets\\images\\Player_Blue.png");
        //
-        levelsManager.SpecificLevel(playerData.getCurrentLevel());
-       // levelsManager.SpecificLevel(9);
+       // levelsManager.SpecificLevel(playerData.getCurrentLevel());
+      levelsManager.SpecificLevel(2);
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
         currentState = GameState::PLAYING;
         soundManager.playMusic();
