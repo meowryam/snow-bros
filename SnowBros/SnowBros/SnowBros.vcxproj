@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="Botom.h" />
     <ClInclude Include="botomvariant.h" />
+    <ClInclude Include="Collectable.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyFactory.h" />
     <ClInclude Include="Entity.h" />

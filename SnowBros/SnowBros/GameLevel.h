@@ -15,6 +15,7 @@
 #include "KeyBindings.h"
 #include "EventBus.h"
 #include "Entity.h"
+#include "Collectable.h"
 using namespace std;
 
 class GameLevel {
@@ -37,7 +38,9 @@ private:
     bool             hasMogera;
     Gamakichi* gamakichi;
     bool             hasGamakichi;
-
+    static const int MAX_COLLECTABLES = 32;
+    Collectable* collectables[MAX_COLLECTABLES];
+    int collectableCount = 0;
     // snowballs
     static const int MAX_SNOWBALLS = 8;
     Snowball* snowballs[MAX_SNOWBALLS];
@@ -80,6 +83,14 @@ private:
         Snowball* sb = new Snowball(x, y, dir, powerful, longRange);
         sb->loadTexture(assetPath + "images\\Player_Blue.png");
         snowballs[snowballCount++] = sb;
+    }
+    void clearCollectables() {
+        for (int i = 0; i < collectableCount; i++) { delete collectables[i]; collectables[i] = nullptr; }
+        collectableCount = 0;
+    }
+    void spawnGem(double x, double y) {
+        if (collectableCount >= MAX_COLLECTABLES) return;
+        collectables[collectableCount++] = new GemCollectable(x, y);
     }
     void checkCollisions(Player& player1, Player* player2) {
 
@@ -172,6 +183,8 @@ private:
             if (bx < -50.f || bx > 850.f) {
                 botoms[ei]->setalive(false);
                 scoreSystem.onBottomKilled();  // ? was onEnemyKilled()
+                gemSystem.enemykilled();                                      // add
+                spawnGem(botoms[ei]->getx(), botoms[ei]->gety());
                 eventBus.post(GameEvent::ENEMY_KILLED);
             }
         }
@@ -255,12 +268,14 @@ public:
         for (int i = 0; i < MAX_SNOWBALLS; i++) snowballs[i] = nullptr;
     }
 
-    ~GameLevel() { clearEnemies(); clearSnowballs(); }
+    ~GameLevel() { clearEnemies(); clearSnowballs(); clearCollectables(); }
 
     void loadLevel(const Levelblueprint& lvl) {
-        clearEnemies();
-        clearSnowballs();
-        levelComplete = false;
+      
+            clearEnemies();
+            clearSnowballs();
+            clearCollectables();   // add this
+            levelComplete = false;
 
         // Load platform layout
         platformCount = LevelLayout::getLayout(lvl.getLevelno(), platforms);
@@ -308,7 +323,7 @@ public:
         // Spawn enemies based on blueprint
         if (lvl.isBosslevel()) {
             if (lvl.getLevelno() == 5) {
-                mogera = new Mogera(450, 290);
+                mogera = new Mogera(250, 200);
                mogera->loadTexture(assetPath + "images\\Mogera.png");
                 hasMogera = true;
             }
@@ -403,7 +418,13 @@ public:
         }
 
         checkCollisions(player1, player2);
-
+        for (int i = 0; i < collectableCount; i++) {
+            if (collectables[i] && collectables[i]->isAlive()) {
+                collectables[i]->update(deltaTime);
+                collectables[i]->checkCollect(player1);
+                if (player2) collectables[i]->checkCollect(*player2);
+            }
+        }
         // Handle player death
         if (!player1.getIsAlive()) {
             if (playerData.getLives() > 0) {
@@ -439,7 +460,9 @@ public:
             if (snowballs[i] && snowballs[i]->getalive())
                 snowballs[i]->draw(window);
         }
-
+        for (int i = 0; i < collectableCount; i++)
+            if (collectables[i] && collectables[i]->isAlive())
+                collectables[i]->draw(window);
         // Players
         player1.draw(window);
         if (player2) player2->draw(window);
