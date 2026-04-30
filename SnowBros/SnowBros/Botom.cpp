@@ -116,8 +116,9 @@ void Botom::update(double deltaTime) {
         sprite->setTextureRect(animFrame % 2 == 0 ? charging_frame1 : charging_frame2);
     }
     else {
-        // normal walk — alternate idle and walking
-        sprite->setTextureRect(animFrame % 2 == 0 ? idle : walking);
+        // normal walk — cycle through 3 walk frames
+        sf::IntRect walkFrames[3] = { idle, walking, walking_frame2 };
+        sprite->setTextureRect(walkFrames[animFrame % 3]);
     }
 
     // Flip sprite horizontally based on movement direction
