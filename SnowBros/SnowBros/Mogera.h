@@ -157,7 +157,8 @@ public:
         legSprite.emplace(texture);
         legSprite->setTextureRect(legs);
         legSprite->setScale({ LEGS_W / 528.f, LEGS_H / 357.f });
-
+        legSprite->setTextureRect(tail_top);
+        legSprite->setScale({ LEGS_W / 543.f, LEGS_H / 192.f });
         textureLoaded = true;
 
         for (int i = 0; i < MAX_CHILDREN; i++)
@@ -175,16 +176,17 @@ public:
     void update(double deltaTime) override {
         if (!alive) return;
 
+        // update children
         for (int i = 0; i < MAX_CHILDREN; i++)
             children[i].update(deltaTime);
 
+        // spawn a child every SPAWN_INTERVAL seconds
         spawnTimer += deltaTime;
         if (spawnTimer >= SPAWN_INTERVAL) {
             spawnTimer = 0.0;
             for (int i = 0; i < MAX_CHILDREN; i++) {
                 if (!children[i].alive) {
                     double dir = (rand() % 2) ? 1.0 : -1.0;
-                    // spawn from base of mogera
                     children[i].spawn(
                         x + BOSS_W * 0.3,
                         y + BOSS_H - MogeraChild::H,
@@ -195,17 +197,30 @@ public:
             }
         }
 
-        // cycle head frames
+        // animate — cycle through 3 frames
         animTimer += static_cast<float>(deltaTime);
         if (animTimer >= FRAME_DURATION) {
             animTimer = 0.f;
             animFrame = (animFrame + 1) % 3;
         }
 
-        if (!textureLoaded || !sprite) return;
-        sf::IntRect frames[3] = { head_frame1, head_frame2, head_frame3 };
-        sprite->setTextureRect(frames[animFrame]);
-        sprite->setScale({ BOSS_W / static_cast<float>(frames[animFrame].size.x), BOSS_H / 504.f });
+        if (!textureLoaded || !sprite || !legSprite) return;
+
+        // head and legs animate in sync
+        sf::IntRect headFrames[3] = { head_frame1, head_frame2, head_frame3 };
+        sf::IntRect legFrames[3] = { tail_top, tail_mid, tail_bot };
+
+        sprite->setTextureRect(headFrames[animFrame]);
+        sprite->setScale({
+            BOSS_W / static_cast<float>(headFrames[animFrame].size.x),
+            BOSS_H / 504.f
+            });
+
+        legSprite->setTextureRect(legFrames[animFrame]);
+        legSprite->setScale({
+            LEGS_W / static_cast<float>(legFrames[animFrame].size.x),
+            LEGS_H / static_cast<float>(legFrames[animFrame].size.y)
+            });
     }
 
     void draw(sf::RenderWindow& window) override {
