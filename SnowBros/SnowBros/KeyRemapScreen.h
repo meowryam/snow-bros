@@ -139,7 +139,7 @@ public:
             window.draw(T(actionTexts[i]));
 
             string keyStr = (waitingForKey && isSelected) ?
-                "[ press any key... ]" : keyName(*keyPtrs[i]);
+                "[ Press any key... ]" : keyName(*keyPtrs[i]);
             T(keyTexts[i]).setString(keyStr);
             T(keyTexts[i]).setCharacterSize(20);
             T(keyTexts[i]).setFillColor(isSelected ?
@@ -149,7 +149,7 @@ public:
         }
 
         string hint = waitingForKey ?
-            "press any key to bind..." :
+            "Press any key to Bind..." :
             "Up/Down to select   |   Enter to rebind   |   Esc to save & exit";
         T(hintText).setString(hint);
         T(hintText).setCharacterSize(12);
