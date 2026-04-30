@@ -289,7 +289,7 @@ public:
 
         // Assign to all platforms
         if (platformTexLoaded) {
-            for (int i = 0; i < platformCount; i++)
+            for (int i = 1; i < platformCount; i++)
                 platforms[i].tileTexture = &platformTexture;
         }
 
