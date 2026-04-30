@@ -2,7 +2,8 @@
 #include <cstdlib>   
 #include <cmath>     
 
-static float randFloatT(float low, float high) {
+static float randFloatT(float low, float high) 
+{
     return low + static_cast<float>(rand()) / RAND_MAX * (high - low  );
 }
 

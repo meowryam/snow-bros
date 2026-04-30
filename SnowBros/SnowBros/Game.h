@@ -41,6 +41,7 @@ private:
     GameLevel  gameLevel;
     bool       twoPlayerMode;
     PlayerData   playerData;
+    PlayerData   player2Data;
     KeyBindings  keyBindings;
     Leaderboard  leaderboard;
 

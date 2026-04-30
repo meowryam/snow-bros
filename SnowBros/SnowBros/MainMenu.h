@@ -6,6 +6,7 @@ using namespace std;
 enum class MainMenuResult {
     NONE,
     START_GAME,
+    START_2PLAYER,
     OPEN_SHOP,
     OPEN_KEYREMAP,
     LOGOUT,
@@ -17,7 +18,7 @@ private:
     sf::Font font;
     optional<sf::Text> titleText;
     optional<sf::Text> subtitleText;
-    optional<sf::Text> optionTexts[5];
+    optional<sf::Text> optionTexts[6];
     optional<sf::Text> hintText;
 
     sf::RectangleShape background;
@@ -45,7 +46,7 @@ public:
         titleText.emplace(font);
         subtitleText.emplace(font);
         hintText.emplace(font);
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 6; i++)
             optionTexts[i].emplace(font);
         return true;
     }
@@ -56,15 +57,16 @@ public:
     MainMenuResult handleEvent(sf::Event& event) {
         if (auto* kp = event.getIf<sf::Event::KeyPressed>()) {
             if (kp->code == sf::Keyboard::Key::Up)
-                selectedOption = (selectedOption - 1 + 5) % 5;
+                selectedOption = (selectedOption - 1 + 6) % 6;  // was 5
             else if (kp->code == sf::Keyboard::Key::Down)
-                selectedOption = (selectedOption + 1) % 5;
+                selectedOption = (selectedOption + 1) % 6;       // was 5
             else if (kp->code == sf::Keyboard::Key::Enter) {
                 if (selectedOption == 0) return MainMenuResult::START_GAME;
-                if (selectedOption == 1) return MainMenuResult::OPEN_SHOP;
-                if (selectedOption == 2) return MainMenuResult::OPEN_KEYREMAP;
-                if (selectedOption == 3) return MainMenuResult::LOGOUT;
-                if (selectedOption == 4) return MainMenuResult::QUIT;
+                if (selectedOption == 1) return MainMenuResult::START_2PLAYER; // NEW
+                if (selectedOption == 2) return MainMenuResult::OPEN_SHOP;
+                if (selectedOption == 3) return MainMenuResult::OPEN_KEYREMAP;
+                if (selectedOption == 4) return MainMenuResult::LOGOUT;
+                if (selectedOption == 5) return MainMenuResult::QUIT;
             }
         }
         return MainMenuResult::NONE;
@@ -94,7 +96,7 @@ public:
         T(titleText).setString("SNOW BROS");
         T(titleText).setCharacterSize(56);
         T(titleText).setFillColor(titleColor);
-        T(titleText).setLetterSpacing(5.f);
+        T(titleText).setLetterSpacing(2.f);
         sf::FloatRect tb = T(titleText).getLocalBounds();
         T(titleText).setOrigin({ tb.size.x / 2.f, 0.f });
         T(titleText).setPosition({ W / 2.f, 70.f });
@@ -106,18 +108,18 @@ public:
         T(subtitleText).setFillColor(subColor);
         sf::FloatRect sub = T(subtitleText).getLocalBounds();
         T(subtitleText).setOrigin({ sub.size.x / 2.f, 0.f });
-        T(subtitleText).setPosition({ W / 2.f, 150.f });
+        T(subtitleText).setPosition({ W / 2.f, 170.f });
         window.draw(T(subtitleText));
 
         // menu options
-        string opts[5] = { "Start Game", "Shop", "Key Bindings", "Logout", "Quit" };
-        for (int i = 0; i < 5; i++) {
+        string opts[6] = { "1 Player", "2 Player", "Shop", "Key Bindings", "Logout", "Quit" };
+        for (int i = 0; i < 6; i++) {
             T(optionTexts[i]).setString((selectedOption == i ? ">  " : "   ") + opts[i]);
             T(optionTexts[i]).setCharacterSize(26);
             T(optionTexts[i]).setFillColor(selectedOption == i ? selectedCol : normalCol);
             sf::FloatRect ob = T(optionTexts[i]).getLocalBounds();
             T(optionTexts[i]).setOrigin({ ob.size.x / 2.f, 0.f });
-            T(optionTexts[i]).setPosition({ W / 2.f, 220.f + i * 55.f });
+            T(optionTexts[i]).setPosition({ W / 2.f - 50.f, 220.f + i * 55.f });
             window.draw(T(optionTexts[i]));
         }
 

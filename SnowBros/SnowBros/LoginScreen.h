@@ -147,7 +147,7 @@ public:
 
         if (waitingForInput) {
             // prompt
-            T(promptText).setString("enter your username:");
+            T(promptText).setString("Enter Your Username:");
             T(promptText).setCharacterSize(18);
             T(promptText).setFillColor(mutedColor);
             sf::FloatRect pb = T(promptText).getLocalBounds();
@@ -181,7 +181,7 @@ public:
                 window.draw(T(errorText));
             }
 
-            T(promptText).setString("press Enter to continue");
+            T(promptText).setString("Press Enter to Continue");
             T(promptText).setCharacterSize(13);
             T(promptText).setFillColor(mutedColor);
             sf::FloatRect pb2 = T(promptText).getLocalBounds();
@@ -192,12 +192,12 @@ public:
         }
         else {
             // show username
-            T(promptText).setString("welcome, " + usernameInput + "!");
+            T(promptText).setString("Welcome " + usernameInput + "!");
             T(promptText).setCharacterSize(20);
             T(promptText).setFillColor(greenOk);
             sf::FloatRect pb = T(promptText).getLocalBounds();
             T(promptText).setOrigin({ pb.size.x / 2.f, 0.f });
-            T(promptText).setPosition({ W / 2.f, 200.f });
+            T(promptText).setPosition({ W / 2.f - 15.f, 200.f });
             window.draw(T(promptText));
 
             // menu options
@@ -222,11 +222,11 @@ public:
                 T(*textPtrs[i]).setFillColor(selectedOption == i ? gold : mutedColor);
                 sf::FloatRect ob = T(*textPtrs[i]).getLocalBounds();
                 T(*textPtrs[i]).setOrigin({ ob.size.x / 2.f, 0.f });
-                T(*textPtrs[i]).setPosition({ W / 2.f, 270.f + i * 50.f });
+                T(*textPtrs[i]).setPosition({ W / 2.f - 30.f, 270.f + i * 50.f });
                 window.draw(T(*textPtrs[i]));
             }
 
-            T(errorText).setString("ESC to retype username   |   arrows to navigate   |   Enter to select");
+            T(errorText).setString("ESC to Retype Username   |   Arrows to Navigate   |   Enter to Select");
             T(errorText).setCharacterSize(11);
             T(errorText).setFillColor(mutedColor);
             sf::FloatRect eb = T(errorText).getLocalBounds();

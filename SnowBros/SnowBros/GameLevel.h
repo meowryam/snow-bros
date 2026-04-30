@@ -385,9 +385,31 @@ public:
         if (!player1.getWantsToThrow()) throwHeld = false;
         if (player2)
         {
-            // player2 uses arrow keys by default
+            player2->handleInput();   // ADD THIS — was missing!
             player2->update(deltaTime);
             player2->resolvePlatforms(platforms, platformCount);
+
+            // Player 2 snowball throwing
+            static bool p2ThrowHeld = false;
+            if (player2->getWantsToThrow() && !p2ThrowHeld) {
+                p2ThrowHeld = true;
+                bool powerful = player2->isSnowballPowerActive();
+                bool longRange = player2->isDistanceIncreaseActive();
+                double dir = player2->getFacing() == Direction::RIGHT ? 1.0 : -1.0;
+                spawnSnowball(
+                    player2->getPosition().x + (dir > 0 ? 48 : 0),
+                    player2->getPosition().y + 20,
+                    dir, powerful, longRange
+                );
+            }
+            if (!player2->getWantsToThrow()) p2ThrowHeld = false;
+
+            // Respawn player 2 on death
+            if (!player2->getIsAlive()) {
+                if (playerData.getLives() > 0) {
+                    player2->resetForNewLevel(sf::Vector2f(600.f, 200.f));
+                }
+            }
         }
 
         // Update snowballs

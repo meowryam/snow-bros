@@ -17,8 +17,10 @@ Game::Game()
         "assets\\"),
     twoPlayerMode(false)
 {
-    player1.resetForNewLevel(Vector2f(100.f, 500.f));//Spawns both players at their starting positions above the floor.
-    player2.resetForNewLevel(Vector2f(200.f, 500.f));
+    // Initialize player 2 data with same lives
+    player2Data = PlayerData();
+    player2Data.setUsername("Player2");
+    player2Data.setLives(2);
 
     //player1.setShowDebug(true);
    // player2.setShowDebug(true);
@@ -158,6 +160,7 @@ void Game::handleMainMenuEvents(sf::Event& event)
     MainMenuResult result = mainMenu.handleEvent(event);
     if (result == MainMenuResult::START_GAME)
     {
+        twoPlayerMode = false; // to make sure multiplayer is off
         player1.loadTexture("assets\\images\\Nick.png");
        // player2.loadTexture("assets\\images\\Player_Blue.png");
        levelsManager.SpecificLevel(playerData.getCurrentLevel());
@@ -166,6 +169,19 @@ void Game::handleMainMenuEvents(sf::Event& event)
         currentState = GameState::PLAYING;
         soundManager.playMusic();
     }
+
+    else if (result == MainMenuResult::START_2PLAYER)
+    {
+        twoPlayerMode = true;
+        player1.loadTexture("assets\\images\\Nick.png");
+        player2.loadTexture("assets\\images\\Nick.png"); // or a different texture
+        levelsManager.SpecificLevel(playerData.getCurrentLevel());
+        gameLevel.loadLevel(levelsManager.getCurrentLevel());
+        currentState = GameState::PLAYING;
+        player2.resetForNewLevel(sf::Vector2f(600.f, 500.f));
+        soundManager.playMusic();
+    }
+
     else if (result == MainMenuResult::OPEN_SHOP) {
         shopScreen.reset();
         currentState = GameState::SHOP;

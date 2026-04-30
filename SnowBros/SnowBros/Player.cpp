@@ -57,7 +57,7 @@ Player::Player(PlayerData& data, int playerNum, float screenW, float screenH)
         keyLeft = Keyboard::Key::A;
         keyRight = Keyboard::Key::D;
         keyJump = Keyboard::Key::W;
-        keyThrow = Keyboard::Key::Space;
+        keyThrow = Keyboard::Key::S;
     }
     state = PlayerState::FALLING;
     facing = Direction::RIGHT;     
