@@ -226,16 +226,7 @@ private:
         checkDamage(player1);
         if (player2) checkDamage(*player2);
     }
-    /*
-    bool allEnemiesDead() {
-        for (int i = 0; i < botomCount; i++)   if (botoms[i]->getalive())   return false;
-        for (int i = 0; i < foogaCount; i++)   if (foogas[i]->getalive())   return false;
-        for (int i = 0; i < tornadoCount; i++) if (tornados[i]->getalive()) return false;
-        if (hasMogera && mogera->getalive())    return false;
-        if (hasGamakichi && gamakichi->getalive()) return false;
-        return true;
-    }
-    */
+    
     bool allEnemiesDead() {
         for (int i = 0; i < botomCount; i++)   if (botoms[i]->getalive())   return false;
         for (int i = 0; i < foogaCount; i++)   if (foogas[i]->getalive())   return false;
@@ -273,7 +264,7 @@ public:
 
         // Load platform layout
         platformCount = LevelLayout::getLayout(lvl.getLevelno(), platforms);
-        // Load once
+        
       // Load once, with mask
         if (!platformTexLoaded) {
             sf::Image img;
@@ -295,14 +286,7 @@ public:
 
         // Load background
         //string bgPath = assetPath + "images\\lvl" + to_string(lvl.getLevelno()) + ".png";
-        /*bgLoaded = bgTexture.loadFromFile(bgPath);
-        if (bgLoaded) {
-            bgSprite->setTexture(bgTexture);
-            // Scale to fit 800x600
-            sf::Vector2u ts = bgTexture.getSize();
-            bgSprite->setScale({ 800.f / ts.x, 600.f / ts.y });
-        }
-        */
+        
         // Load background image for this level
 // File naming convention: assets\images\lvl1.png, lvl2.png, etc.
         string bgPath = assetPath + "images\\Level" + to_string(lvl.getLevelno()) + "_bg.png";
@@ -360,7 +344,8 @@ public:
         }
     }
 
-    void update(double deltaTime, Player& player1, Player* player2 = nullptr) {
+    void update(double deltaTime, Player& player1, Player* player2 = nullptr) 
+    {
         if (levelComplete) return;
 
         // Toggle hitboxes
@@ -383,7 +368,8 @@ public:
             scoreSystem.resetChain();
         }
         if (!player1.getWantsToThrow()) throwHeld = false;
-        if (player2) {
+        if (player2)
+        {
             // player2 uses arrow keys by default
             player2->update(deltaTime);
             player2->resolvePlatforms(platforms, platformCount);

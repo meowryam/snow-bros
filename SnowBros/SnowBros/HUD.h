@@ -4,7 +4,8 @@
 using namespace std;
 
 // In-game overlay — shows lives, gems, level, score
-class HUD {
+class HUD
+{
 private:
     sf::Font font;
     optional<sf::Text> livesText;
@@ -21,11 +22,16 @@ private:
     sf::Color yellow = sf::Color(255, 220, 50, 255);
     sf::Color white = sf::Color(255, 255, 255, 255);
 
-    sf::Text& T(optional<sf::Text>& t) { return t.value(); }
+    sf::Text& T(optional<sf::Text>& t) 
+    { 
+        return t.value();
+    }
 
 public:
-    bool loadFont(const string& path) {
-        if (!font.openFromFile(path)) return false;
+    bool loadFont(const string& path)
+    {
+        if (!font.openFromFile(path))
+            return false;
         livesText.emplace(font);
         gemsText.emplace(font);
         levelText.emplace(font);
@@ -33,7 +39,8 @@ public:
         return true;
     }
 
-    void draw(sf::RenderWindow& window, const PlayerData& data) {
+    void draw(sf::RenderWindow& window, const PlayerData& data) 
+    {
         float W = (float)window.getSize().x;
 
         // top bar background
@@ -44,30 +51,30 @@ public:
 
         // lives
         T(livesText).setString("LIVES: " + to_string(data.getLives()));
-        T(livesText).setCharacterSize(18);
-        T(livesText).setFillColor(redLife);
+        T(livesText).setCharacterSize(16);
+        T(livesText).setFillColor(white);
         T(livesText).setPosition({ 20.f, 12.f });
         window.draw(T(livesText));
 
         // gems
         T(gemsText).setString("GEMS: " + to_string(data.getGemCount()));
-        T(gemsText).setCharacterSize(18);
-        T(gemsText).setFillColor(gemBlue);
+        T(gemsText).setCharacterSize(16);
+        T(gemsText).setFillColor(white);
         T(gemsText).setPosition({ 200.f, 12.f });
         window.draw(T(gemsText));
 
         // level — centred
         T(levelText).setString("LEVEL " + to_string(data.getCurrentLevel()));
-        T(levelText).setCharacterSize(18);
-        T(levelText).setFillColor(yellow);
+        T(levelText).setCharacterSize(16);
+        T(levelText).setFillColor(white);
         sf::FloatRect lb = T(levelText).getLocalBounds();
         T(levelText).setOrigin({ lb.size.x / 2.f, 0.f });
-        T(levelText).setPosition({ W / 2.f, 12.f });
+        T(levelText).setPosition({ W / 2.f + 50.f, 12.f });
         window.draw(T(levelText));
 
         // score — right side
         T(scoreText).setString("SCORE: " + to_string(data.getHighscore()));
-        T(scoreText).setCharacterSize(18);
+        T(scoreText).setCharacterSize(16);
         T(scoreText).setFillColor(white);
         sf::FloatRect sb = T(scoreText).getLocalBounds();
         T(scoreText).setOrigin({ sb.size.x, 0.f });
