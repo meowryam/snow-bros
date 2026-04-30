@@ -102,17 +102,30 @@ private:
 
     double spawnTimer = 0.0;
     static constexpr double SPAWN_INTERVAL = 2.5;
+private:
 
-    // Top row upright head frames
+    optional<sf::Sprite> legSprite;
+
+    // just use tail_bot — the actual feet piece
+    sf::IntRect legs{ {1935, 435}, {528, 357} };
+
+    static constexpr float BOSS_W = 280.f;
+    static constexpr float BOSS_H = 200.f;   // head portion height
+    static constexpr float LEGS_W = 200.f;
+    static constexpr float LEGS_H = 100.f;   // leg portion height
+    // second sprite for the tail
+    
+
+    // Main head/body frames (top row)
     sf::IntRect head_frame1{ {   0,   3}, {576, 504} };
     sf::IntRect head_frame2{ { 576,   3}, {573, 495} };
     sf::IntRect head_frame3{ {1155,   3}, {585, 483} };
 
+    // Tail/legs pieces (right side, circled in blue)
+    sf::IntRect tail_top{ {1920,   0}, {543, 192} };
+    sf::IntRect tail_mid{ {1950, 180}, {519, 261} };
+    sf::IntRect tail_bot{ {1935, 435}, {528, 357} };
     // Display size on screen - big and imposing like original
-
-// TO THIS:
-    static constexpr float BOSS_W = 300.f;
-    static constexpr float BOSS_H = 280.f;
 
     sf::RectangleShape healthBarBg;
     sf::RectangleShape healthBar;
@@ -138,13 +151,15 @@ public:
         texturePath = path;
         if (!texture.loadFromFile(path)) return false;
         sprite.emplace(texture);
-        textureLoaded = true;
         sprite->setTextureRect(head_frame1);
-        sprite->setScale({
-            BOSS_W / 576.f,
-            BOSS_H / 504.f
-            });
-        // load children textures too
+        sprite->setScale({ BOSS_W / 576.f, BOSS_H / 504.f });
+
+        legSprite.emplace(texture);
+        legSprite->setTextureRect(legs);
+        legSprite->setScale({ LEGS_W / 528.f, LEGS_H / 357.f });
+
+        textureLoaded = true;
+
         for (int i = 0; i < MAX_CHILDREN; i++)
             children[i].loadTexture(path);
         return true;
@@ -190,10 +205,7 @@ public:
         if (!textureLoaded || !sprite) return;
         sf::IntRect frames[3] = { head_frame1, head_frame2, head_frame3 };
         sprite->setTextureRect(frames[animFrame]);
-        sprite->setScale({
-            BOSS_W / static_cast<float>(frames[animFrame].size.x),
-            BOSS_H / static_cast<float>(frames[animFrame].size.y)
-            });
+        sprite->setScale({ BOSS_W / static_cast<float>(frames[animFrame].size.x), BOSS_H / 504.f });
     }
 
     void draw(sf::RenderWindow& window) override {
@@ -201,10 +213,15 @@ public:
 
         for (int i = 0; i < MAX_CHILDREN; i++)
             children[i].draw(window);
-
-        if (textureLoaded && sprite) {
+        if (textureLoaded && sprite && legSprite) {
+            // head/body
             sprite->setPosition({ (float)x, (float)y });
             window.draw(*sprite);
+
+            // legs connect right below head, slightly overlapping
+            legSprite->setPosition({ (float)x + 20.f, (float)y + BOSS_H - 20.f });
+            window.draw(*legSprite);
+        
         }
         else {
             sf::RectangleShape r(sf::Vector2f(BOSS_W, BOSS_H));
@@ -213,12 +230,11 @@ public:
             window.draw(r);
         }
 
-        // Health bar at top-center of screen
-        float barX = 400.f - 150.f;  // centered on 800px screen
-        float barY = 55.f;           // just below HUD
+        // health bar
+        float barX = 400.f - 150.f;
+        float barY = 55.f;
         healthBarBg.setPosition({ barX, barY });
         window.draw(healthBarBg);
-
         float pct = (float)gethealth() / 20.f;
         healthBar.setSize({ 300.f * pct, 20.f });
         healthBar.setPosition({ barX, barY });

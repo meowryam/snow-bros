@@ -308,7 +308,7 @@ public:
         // Spawn enemies based on blueprint
         if (lvl.isBosslevel()) {
             if (lvl.getLevelno() == 5) {
-                mogera = new Mogera(450, 290);
+                mogera = new Mogera(250, 230);
                mogera->loadTexture(assetPath + "images\\Mogera.png");
                 hasMogera = true;
             }
