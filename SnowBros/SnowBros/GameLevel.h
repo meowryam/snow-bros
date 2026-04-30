@@ -88,6 +88,7 @@ private:
         for (int i = 0; i < collectableCount; i++) { delete collectables[i]; collectables[i] = nullptr; }
         collectableCount = 0;
     }
+   
     void spawnGem(double x, double y) {
         if (collectableCount >= MAX_COLLECTABLES) return;
         collectables[collectableCount++] = new GemCollectable(x, y);
@@ -275,6 +276,17 @@ public:
             clearEnemies();
             clearSnowballs();
             clearCollectables();   // add this
+            // Load collectable textures once
+          
+
+            std::string itemsPath = assetPath + "images\\Items.png";
+            GemCollectable::loadSharedTexture(itemsPath);
+            SpeedBoostPickup::loadSharedTexture(itemsPath);
+            SnowballPowerPickup::loadSharedTexture(itemsPath);
+            DistanceIncreasePickup::loadSharedTexture(itemsPath);
+            BalloonModePickup::loadSharedTexture(itemsPath);
+            ExtraLifePickup::loadSharedTexture(itemsPath);
+            BonusCashBundle::loadSharedTexture(itemsPath);
             levelComplete = false;
 
         // Load platform layout

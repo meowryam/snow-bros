@@ -3,7 +3,7 @@
 #include "Player.h"
 
 // ============================================================
-//  Collectable  �  abstract base for all pickups
+//  Collectable  -  abstract base for all pickups
 //  Spec section 8: power-ups + gems drop from defeated enemies
 // ============================================================
 class Collectable {
@@ -11,26 +11,27 @@ protected:
     double x, y;
     bool   alive;
 
-    // Gentle bob animation
     float  bobTimer = 0.f;
     float  bobOffset = 0.f;
 
-    // Auto-despawn after a while so the screen doesn't fill up
     float  lifetime;
-    static constexpr float DEFAULT_LIFETIME = 8.f;   // seconds
+    static constexpr float DEFAULT_LIFETIME = 8.f;
 
-    sf::RectangleShape shape;   // fallback if no texture
+    sf::Sprite  sprite;
+    bool        hasSprite = false;
+
+    // Fallback rectangle (used if texture not loaded)
+    sf::RectangleShape shape;
 
 public:
     Collectable(double spawnX, double spawnY, float life = DEFAULT_LIFETIME)
-        : x(spawnX), y(spawnY), alive(true), lifetime(life)
+        : x(spawnX), y(spawnY), alive(true), lifetime(life),
+        sprite(getDummyTexture())   // SFML 3: Sprite requires a texture at construction
     {
     }
 
     virtual ~Collectable() = default;
 
-    // ── core interface ─────────────────────────────────────
-    // Returns true if the player overlaps this pickup
     bool checkCollect(Player& player) {
         if (!alive) return false;
         sf::FloatRect myBox(sf::Vector2f((float)x, (float)y), getSize());
@@ -44,20 +45,23 @@ public:
 
     virtual void update(double deltaTime) {
         if (!alive) return;
-
-        // bob up/down
         bobTimer += (float)deltaTime;
         bobOffset = std::sin(bobTimer * 4.f) * 4.f;
-
-        // auto-despawn
         lifetime -= (float)deltaTime;
         if (lifetime <= 0.f) alive = false;
     }
 
     virtual void draw(sf::RenderWindow& window) {
         if (!alive) return;
-        shape.setPosition(sf::Vector2f((float)x, (float)y + bobOffset));
-        window.draw(shape);
+        sf::Vector2f drawPos((float)x, (float)y + bobOffset);
+        if (hasSprite) {
+            sprite.setPosition(drawPos);
+            window.draw(sprite);
+        }
+        else {
+            shape.setPosition(drawPos);
+            window.draw(shape);
+        }
     }
 
     bool   isAlive() const { return alive; }
@@ -65,180 +69,318 @@ public:
     double getY()    const { return y; }
 
 protected:
-    // Subclasses implement: what size is the hitbox?
-    virtual sf::Vector2f getSize() const = 0;
-    // Subclasses implement: what happens when collected?
-    virtual void onCollect(Player& player) = 0;
+    virtual sf::Vector2f getSize()          const = 0;
+    virtual void         onCollect(Player&) = 0;
+
+    // Sets sprite from a texture + rect, scales it to targetSize
+    void initSprite(sf::Texture& tex, sf::IntRect rect, sf::Vector2f targetSize) {
+        sprite.setTexture(tex);
+        sprite.setTextureRect(rect);
+        sf::Vector2f frameSize((float)rect.size.x, (float)rect.size.y);
+        sprite.setScale({ targetSize.x / frameSize.x, targetSize.y / frameSize.y });
+        hasSprite = true;
+    }
+
+private:
+    // SFML 3 requires a texture in the Sprite constructor.
+    // This returns a reference to a persistent 1x1 dummy so the
+    // base constructor compiles cleanly before subclasses set the real texture.
+    static sf::Texture& getDummyTexture() {
+        static sf::Texture dummy;
+        static bool made = false;
+        if (!made) {
+            sf::Image img({ 1, 1 }, sf::Color::Transparent);
+            dummy.loadFromImage(img);
+            made = true;
+        }
+        return dummy;
+    }
 };
 
 
 // ============================================================
-//  GemCollectable  �  drops 1 gem, worth 1-5 gems via GemSystem
-//  Kept simple: just adds directly to player data via callback.
-//  Caller (GameLevel) handles gem accounting through GemSystem.
+//  GemCollectable
+//  Sprite: face_pink_border from Items.png
+//  { {309, 639}, {179, 185} }
 // ============================================================
 class GemCollectable : public Collectable {
+private:
+    static sf::Texture sharedTex;
+    static bool        texLoaded;
 public:
+    static bool loadSharedTexture(const std::string& path) {
+        if (texLoaded) return true;
+        texLoaded = sharedTex.loadFromFile(path);
+        return texLoaded;
+    }
+
     GemCollectable(double spawnX, double spawnY)
         : Collectable(spawnX, spawnY, 6.f)
     {
-        shape.setSize({ 14.f, 14.f });
-        shape.setFillColor(sf::Color(80, 200, 255));   // bright cyan gem
-        shape.setOutlineColor(sf::Color::White);
-        shape.setOutlineThickness(1.f);
+        if (texLoaded) {
+            initSprite(sharedTex, sf::IntRect({ 309, 639 }, { 179, 185 }), { 24.f, 24.f });
+        }
+        else {
+            shape.setSize({ 14.f, 14.f });
+            shape.setFillColor(sf::Color(80, 200, 255));
+            shape.setOutlineColor(sf::Color::White);
+            shape.setOutlineThickness(1.f);
+        }
     }
 
 protected:
-    sf::Vector2f getSize() const override { return { 14.f, 14.f }; }
-    void onCollect(Player&) override {}  // GameLevel calls gemSystem.enemykilled()
+    sf::Vector2f getSize() const override { return { 24.f, 24.f }; }
+    void onCollect(Player&) override {}   // GameLevel handles gem count via GemSystem
 };
+inline sf::Texture GemCollectable::sharedTex;
+inline bool        GemCollectable::texLoaded = false;
 
 
 // ============================================================
-//  SpeedBoostPickup  �  spec 8.2: +50% speed for 15 seconds
+//  SpeedBoostPickup  -  spec 8.2: +50% speed for 15 seconds
+//  Sprite: potion_red_full from Items.png
+//  { {325, 17}, {140, 161} }
 // ============================================================
 class SpeedBoostPickup : public Collectable {
+private:
+    static sf::Texture sharedTex;
+    static bool        texLoaded;
 public:
+    static bool loadSharedTexture(const std::string& path) {
+        if (texLoaded) return true;
+        texLoaded = sharedTex.loadFromFile(path);
+        return texLoaded;
+    }
+
     SpeedBoostPickup(double spawnX, double spawnY)
         : Collectable(spawnX, spawnY)
     {
-        shape.setSize({ 18.f, 18.f });
-        shape.setFillColor(sf::Color(255, 165, 0));   // orange shoe colour
-        shape.setOutlineColor(sf::Color::Yellow);
-        shape.setOutlineThickness(1.f);
+        if (texLoaded) {
+            initSprite(sharedTex, sf::IntRect({ 325, 17 }, { 140, 161 }), { 20.f, 24.f });
+        }
+        else {
+            shape.setSize({ 18.f, 18.f });
+            shape.setFillColor(sf::Color(255, 165, 0));
+            shape.setOutlineColor(sf::Color::Yellow);
+            shape.setOutlineThickness(1.f);
+        }
     }
 
 protected:
-    sf::Vector2f getSize() const override { return { 18.f, 18.f }; }
-    void onCollect(Player& player) override {
-        player.activateSpeedBoost(15.f);   // spec: 15 seconds
-    }
+    sf::Vector2f getSize() const override { return { 20.f, 24.f }; }
+    void onCollect(Player& player) override { player.activateSpeedBoost(15.f); }
 };
+inline sf::Texture SpeedBoostPickup::sharedTex;
+inline bool        SpeedBoostPickup::texLoaded = false;
 
 
 // ============================================================
-//  SnowballPowerPickup  �  spec 8.2: 1-hit encase, until level end
+//  SnowballPowerPickup  -  spec 8.2: 1-hit encase, until level end
+//  Sprite: potion_blue_full from Items.png
+//  { {325, 166}, {137, 166} }
 // ============================================================
 class SnowballPowerPickup : public Collectable {
+private:
+    static sf::Texture sharedTex;
+    static bool        texLoaded;
 public:
+    static bool loadSharedTexture(const std::string& path) {
+        if (texLoaded) return true;
+        texLoaded = sharedTex.loadFromFile(path);
+        return texLoaded;
+    }
+
     SnowballPowerPickup(double spawnX, double spawnY)
         : Collectable(spawnX, spawnY)
     {
-        shape.setSize({ 18.f, 18.f });
-        shape.setFillColor(sf::Color(200, 230, 255));  // icy white-blue
-        shape.setOutlineColor(sf::Color(100, 180, 255));
-        shape.setOutlineThickness(1.f);
+        if (texLoaded) {
+            initSprite(sharedTex, sf::IntRect({ 325, 166 }, { 137, 166 }), { 20.f, 24.f });
+        }
+        else {
+            shape.setSize({ 18.f, 18.f });
+            shape.setFillColor(sf::Color(200, 230, 255));
+            shape.setOutlineColor(sf::Color(100, 180, 255));
+            shape.setOutlineThickness(1.f);
+        }
     }
 
 protected:
-    sf::Vector2f getSize() const override { return { 18.f, 18.f }; }
-    void onCollect(Player& player) override {
-        player.activateSnowballPower();    // flag stays until resetForNewLevel
-    }
+    sf::Vector2f getSize() const override { return { 20.f, 24.f }; }
+    void onCollect(Player& player) override { player.activateSnowballPower(); }
 };
+inline sf::Texture SnowballPowerPickup::sharedTex;
+inline bool        SnowballPowerPickup::texLoaded = false;
 
 
 // ============================================================
-//  DistanceIncreasePickup  �  spec 8.2: full-width throw, until level end
+//  DistanceIncreasePickup  -  spec 8.2: full-width throw, until level end
+//  Sprite: potion_yellow_full from Items.png
+//  { {333, 326}, {126, 163} }
 // ============================================================
 class DistanceIncreasePickup : public Collectable {
+private:
+    static sf::Texture sharedTex;
+    static bool        texLoaded;
 public:
+    static bool loadSharedTexture(const std::string& path) {
+        if (texLoaded) return true;
+        texLoaded = sharedTex.loadFromFile(path);
+        return texLoaded;
+    }
+
     DistanceIncreasePickup(double spawnX, double spawnY)
         : Collectable(spawnX, spawnY)
     {
-        shape.setSize({ 18.f, 18.f });
-        shape.setFillColor(sf::Color(150, 255, 150));  // green arrow
-        shape.setOutlineColor(sf::Color(50, 200, 50));
-        shape.setOutlineThickness(1.f);
+        if (texLoaded) {
+            initSprite(sharedTex, sf::IntRect({ 333, 326 }, { 126, 163 }), { 20.f, 24.f });
+        }
+        else {
+            shape.setSize({ 18.f, 18.f });
+            shape.setFillColor(sf::Color(150, 255, 150));
+            shape.setOutlineColor(sf::Color(50, 200, 50));
+            shape.setOutlineThickness(1.f);
+        }
     }
 
 protected:
-    sf::Vector2f getSize() const override { return { 18.f, 18.f }; }
-    void onCollect(Player& player) override {
-        player.activateDistanceIncrease();
-    }
+    sf::Vector2f getSize() const override { return { 20.f, 24.f }; }
+    void onCollect(Player& player) override { player.activateDistanceIncrease(); }
 };
+inline sf::Texture DistanceIncreasePickup::sharedTex;
+inline bool        DistanceIncreasePickup::texLoaded = false;
 
 
 // ============================================================
-//  BalloonModePickup  �  spec 8.2: float upward for 10 seconds
+//  BalloonModePickup  -  spec 8.2: float upward for 10 seconds
+//  Sprite: potion_green_full from Items.png
+//  { {349, 485}, {118, 163} }
 // ============================================================
 class BalloonModePickup : public Collectable {
+private:
+    static sf::Texture sharedTex;
+    static bool        texLoaded;
 public:
+    static bool loadSharedTexture(const std::string& path) {
+        if (texLoaded) return true;
+        texLoaded = sharedTex.loadFromFile(path);
+        return texLoaded;
+    }
+
     BalloonModePickup(double spawnX, double spawnY)
         : Collectable(spawnX, spawnY)
     {
-        shape.setSize({ 18.f, 18.f });
-        shape.setFillColor(sf::Color(255, 100, 200));  // pink balloon
-        shape.setOutlineColor(sf::Color(200, 50, 150));
-        shape.setOutlineThickness(1.f);
+        if (texLoaded) {
+            initSprite(sharedTex, sf::IntRect({ 349, 485 }, { 118, 163 }), { 20.f, 24.f });
+        }
+        else {
+            shape.setSize({ 18.f, 18.f });
+            shape.setFillColor(sf::Color(255, 100, 200));
+            shape.setOutlineColor(sf::Color(200, 50, 150));
+            shape.setOutlineThickness(1.f);
+        }
     }
 
 protected:
-    sf::Vector2f getSize() const override { return { 18.f, 18.f }; }
-    void onCollect(Player& player) override {
-        player.activateBalloonMode(10.f);  // spec: 10 seconds
-    }
+    sf::Vector2f getSize() const override { return { 20.f, 24.f }; }
+    void onCollect(Player& player) override { player.activateBalloonMode(10.f); }
 };
+inline sf::Texture BalloonModePickup::sharedTex;
+inline bool        BalloonModePickup::texLoaded = false;
 
 
 // ============================================================
-//  ExtraLifePickup  �  spec 8.2 / 7.3: +1 life, no cap enforced here
+//  ExtraLifePickup  -  spec 8.2 / 7.3: +1 life
+//  Sprite: potion_red_select (boxed red) from Items.png
+//  { {309, 1262}, {177, 171} }
 // ============================================================
 class ExtraLifePickup : public Collectable {
+private:
+    static sf::Texture sharedTex;
+    static bool        texLoaded;
 public:
+    static bool loadSharedTexture(const std::string& path) {
+        if (texLoaded) return true;
+        texLoaded = sharedTex.loadFromFile(path);
+        return texLoaded;
+    }
+
     ExtraLifePickup(double spawnX, double spawnY)
         : Collectable(spawnX, spawnY)
     {
-        shape.setSize({ 18.f, 18.f });
-        shape.setFillColor(sf::Color(255, 80, 80));    // red heart
-        shape.setOutlineColor(sf::Color(200, 20, 20));
-        shape.setOutlineThickness(1.f);
+        if (texLoaded) {
+            initSprite(sharedTex, sf::IntRect({ 309, 1262 }, { 177, 171 }), { 24.f, 24.f });
+        }
+        else {
+            shape.setSize({ 18.f, 18.f });
+            shape.setFillColor(sf::Color(255, 80, 80));
+            shape.setOutlineColor(sf::Color(200, 20, 20));
+            shape.setOutlineThickness(1.f);
+        }
     }
 
 protected:
-    sf::Vector2f getSize() const override { return { 18.f, 18.f }; }
-    void onCollect(Player& player) override {
-        player.collectLife();
-    }
+    sf::Vector2f getSize() const override { return { 24.f, 24.f }; }
+    void onCollect(Player& player) override { player.collectLife(); }
 };
+inline sf::Texture ExtraLifePickup::sharedTex;
+inline bool        ExtraLifePickup::texLoaded = false;
 
 
 // ============================================================
-//  BonusCashBundle  �  spec 9.2: bonus level rain, +1000pts +10 gems each
-//  These fall from the top; GameLevel calls scoreSystem.onBonusBundleCollected()
+//  BonusCashBundle  -  spec 9.2: bonus level rain
+//  Sprite: scroll_book from Items.png
+//  { {17, 974}, {256, 345} }
 // ============================================================
 class BonusCashBundle : public Collectable {
 private:
+    static sf::Texture sharedTex;
+    static bool        texLoaded;
     double fallSpeed = 180.0;
-
 public:
+    static bool loadSharedTexture(const std::string& path) {
+        if (texLoaded) return true;
+        texLoaded = sharedTex.loadFromFile(path);
+        return texLoaded;
+    }
+
     BonusCashBundle(double spawnX)
-        : Collectable(spawnX, -20.0, 12.f)   // start above screen
+        : Collectable(spawnX, -20.0, 12.f)
     {
-        shape.setSize({ 20.f, 16.f });
-        shape.setFillColor(sf::Color(255, 215, 0));   // gold
-        shape.setOutlineColor(sf::Color(200, 160, 0));
-        shape.setOutlineThickness(1.f);
+        if (texLoaded) {
+            initSprite(sharedTex, sf::IntRect({ 17, 974 }, { 256, 345 }), { 20.f, 24.f });
+        }
+        else {
+            shape.setSize({ 20.f, 16.f });
+            shape.setFillColor(sf::Color(255, 215, 0));
+            shape.setOutlineColor(sf::Color(200, 160, 0));
+            shape.setOutlineThickness(1.f);
+        }
     }
 
     void update(double deltaTime) override {
         if (!alive) return;
         y += fallSpeed * deltaTime;
-        if (y > 640.0) alive = false;   // fell off screen uncollected
-
-        // bob timer still runs (shared base)
+        if (y > 640.0) alive = false;
         lifetime -= (float)deltaTime;
         if (lifetime <= 0.f) alive = false;
     }
 
     void draw(sf::RenderWindow& window) override {
         if (!alive) return;
-        shape.setPosition(sf::Vector2f((float)x, (float)y));
-        window.draw(shape);
+        sf::Vector2f drawPos((float)x, (float)y);
+        if (hasSprite) {
+            sprite.setPosition(drawPos);
+            window.draw(sprite);
+        }
+        else {
+            shape.setPosition(drawPos);
+            window.draw(shape);
+        }
     }
 
 protected:
-    sf::Vector2f getSize() const override { return { 20.f, 16.f }; }
+    sf::Vector2f getSize() const override { return { 20.f, 24.f }; }
     void onCollect(Player&) override {}   // GameLevel calls scoreSystem.onBonusBundleCollected()
 };
+inline sf::Texture BonusCashBundle::sharedTex;
+inline bool        BonusCashBundle::texLoaded = false;
