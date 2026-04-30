@@ -28,7 +28,7 @@ Player::Player()
     debugBox.setFillColor(Color::Transparent);
     debugBox.setOutlineColor(Color::Green);
     debugBox.setOutlineThickness(1.f);
-    hitbox = FloatRect(Vector2f(position.x + 6.f, position.y + 2.f), Vector2f(36.f, 44.f));
+    hitbox = FloatRect(Vector2f(position.x, position.y), Vector2f(36.f, 44.f));
 }
 
 Player::Player(PlayerData& data, int playerNum, float screenW, float screenH)
@@ -63,7 +63,7 @@ Player::Player(PlayerData& data, int playerNum, float screenW, float screenH)
     facing = Direction::RIGHT;     
     isAlive = true;
 
-    hitbox = FloatRect( Vector2f(position.x + 6.f, position.y + 2.f), Vector2f(36.f, 44.f) );
+    hitbox = FloatRect(Vector2f(position.x, position.y), Vector2f(36.f, 44.f));
     //(position, size) — both Vector2f.
 
     debugBox.setSize(Vector2f(36.f, 44.f));
@@ -248,7 +248,7 @@ void Player::update(float deltaTime) {
     }
 
     hitbox = FloatRect(
-        Vector2f(position.x + 6.f, position.y + 2.f),
+        Vector2f(position.x - 33.f, position.y),
         Vector2f(36.f, 44.f)
     );
     debugBox.setPosition(Vector2f(hitbox.position.x, hitbox.position.y));
