@@ -80,7 +80,9 @@ void Game::run() //The main game loop setup
                 window.close();
                 return;
             }
-            switch (currentState) {
+            switch (currentState)
+                //Routes each event to the correct handler depending on which screen is currently active.
+            {
             case GameState::LOGIN:
                 handleLoginEvents(*event); break;
             case GameState::MENU:
@@ -111,7 +113,10 @@ void Game::run() //The main game loop setup
             }
         }
 
-        while (timeSinceLastUpdate >= TIME_PER_FRAME) {
+        while (timeSinceLastUpdate >= TIME_PER_FRAME)
+        //A fixed timestep loop — only updates the game logic when enough time has accumulated.
+         //This keeps physics and movement consistent regardless of how fast the computer is running
+        {
             processInput();
             update(TIME_PER_FRAME);
             timeSinceLastUpdate -= TIME_PER_FRAME;
@@ -123,7 +128,9 @@ void Game::run() //The main game loop setup
 
 
 
-void Game::handleLoginEvents(sf::Event& event) {
+void Game::handleLoginEvents(sf::Event& event) 
+//Passes the event to the login screen, then reacts to whatever the user chose — new game resets all data, continue loads saved data, quit closes the window.
+{
     LoginResult result = loginScreen.handleEvent(event);
     if (result == LoginResult::NEW_GAME) {
         playerData = PlayerData();
@@ -145,13 +152,14 @@ void Game::handleLoginEvents(sf::Event& event) {
     }
 }
 
-void Game::handleMainMenuEvents(sf::Event& event) {
+void Game::handleMainMenuEvents(sf::Event& event)
+//Handles the main menu choices — starting the game loads a level and switches state to PLAYING. Other options open the shop, key remapping, or log out.
+{
     MainMenuResult result = mainMenu.handleEvent(event);
-    if (result == MainMenuResult::START_GAME) {
-     
+    if (result == MainMenuResult::START_GAME)
+    {
         player1.loadTexture("assets\\images\\Nick.png");
        // player2.loadTexture("assets\\images\\Player_Blue.png");
-       //
        // levelsManager.SpecificLevel(playerData.getCurrentLevel());
       levelsManager.SpecificLevel(2);
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
@@ -176,7 +184,8 @@ void Game::handleMainMenuEvents(sf::Event& event) {
     }
 }
 
-void Game::handlePauseEvents(sf::Event& event) {
+void Game::handlePauseEvents(sf::Event& event)
+{
     PauseResult result = pauseScreen.handleEvent(event);
     if (result == PauseResult::RESUME) {
         currentState = GameState::PLAYING;
@@ -220,7 +229,9 @@ void Game::handleGameOverEvents(sf::Event& event) {
     }
 }
 
-void Game::processInput() {
+void Game::processInput()
+//Only checks input during gameplay. If the pause key is held, switches to the paused state and pauses the music.
+{
     if (currentState == GameState::PLAYING) {
         if (inputManager.isKeyHeld(keyBindings.pause)) {
             currentState = GameState::PAUSED;
@@ -230,7 +241,9 @@ void Game::processInput() {
     }
 }
 
-void Game::update(float deltaTime) {
+void Game::update(float deltaTime)
+//Immediately exits if the game isn't in the PLAYING state — nothing should update while paused or on a menu.
+{
     if (currentState != GameState::PLAYING) return;
 
 
@@ -238,7 +251,7 @@ void Game::update(float deltaTime) {
     if (playerData.getLives() <= 0) {
         saveAndSubmitScore();
         gameOverScreen.reset();
-        currentState = GameState::GAME_OVER;
+        currentState = GameState::GAME_OVER; //If the player has run out of lives, saves the score and transitions to the game over screen.
         soundManager.stopMusic();
         return;
     }
@@ -250,17 +263,22 @@ void Game::update(float deltaTime) {
         soundManager.stopMusic();
     }
 
-    if (currentState == GameState::PLAYING) {
+    if (currentState == GameState::PLAYING) 
+    {
+        //Updates the current level. Passes player2 only if two-player mode is on, otherwise passes nullptr.
         gameLevel.update(deltaTime, player1, twoPlayerMode ? &player2 : nullptr);
    
-        if (gameLevel.levelComplete) {
+        if (gameLevel.levelComplete)
+        {
+            //When a level is cleared, increments the level counter and loads the next one
             playerData.setCurrentLevel(playerData.getCurrentLevel() + 1);
             levelsManager.NextLevel();
             if (levelsManager.isGameDone()) {
                 saveAndSubmitScore();
                 currentState = GameState::GAME_OVER;
             }
-            else {
+            else //If there are no more levels, the game ends. 
+            {
                 gameLevel.loadLevel(levelsManager.getCurrentLevel());
             }
         }
@@ -269,9 +287,11 @@ void Game::update(float deltaTime) {
 }
 
 void Game::draw() {
-    window.clear(sf::Color::Black);
+    window.clear(sf::Color::Black);//Clears the screen to black
 
-    switch (currentState) {
+    switch (currentState)  //draws whatever belongs to the current state, then displays it.
+        //how you move between menus, gameplay, pause, and game over.
+    {
     case GameState::LOGIN:
         loginScreen.draw(window);
         break;
@@ -297,10 +317,12 @@ void Game::draw() {
     default: break;
     }
 
-    window.display();
+    window.display(); // pushes the frame to the screen.
 }
 
-void Game::saveAndSubmitScore() {
+void Game::saveAndSubmitScore() 
+//Saves the player's data to disk and submits their score to the leaderboard with today's date.
+{
     FileManager::savePlayerData(playerData);
 
     time_t t = time(nullptr);
