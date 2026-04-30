@@ -3,8 +3,10 @@
 #include "PlayerData.h"
 using namespace std;
 
-enum class GameOverResult {
-    NONE,
+enum class GameOverResult
+    //Three possible outcomes from the game over screen
+{
+    NONE, //means the player hasn't chosen anything yet.
     RETRY,
     QUIT_TO_MENU
 };
@@ -12,13 +14,14 @@ enum class GameOverResult {
 class GameOverScreen {
 private:
     sf::Font font;
-    optional<sf::Text> titleText;
+    optional<sf::Text> titleText; //these texts may or may not exist yet
     optional<sf::Text> statsText;
     optional<sf::Text> optionTexts[2];
     optional<sf::Text> hintText;
 
-    sf::RectangleShape background;
-    sf::RectangleShape panel;
+    //Two rectangles 
+    sf::RectangleShape background; //background covers the whole screen
+    sf::RectangleShape panel; //panel is the smaller centered box that holds the menu.
 
     int selectedOption;
 
@@ -45,35 +48,48 @@ public:
         return true;
     }
 
-    void reset() { selectedOption = 0; }
+    void reset() //Resets the cursor back to the first option (Retry) whenever the screen is opened.
+    { 
+        selectedOption = 0;
+    }
 
     GameOverResult handleEvent(sf::Event& event) {
-        if (auto* kp = event.getIf<sf::Event::KeyPressed>()) {
+        if (auto* kp = event.getIf<sf::Event::KeyPressed>()) //Checks if the event is a key press. If it is, kp points to the key data, otherwise it's nullptr.
+        {
             if (kp->code == sf::Keyboard::Key::Up ||
                 kp->code == sf::Keyboard::Key::Down)
-                selectedOption = 1 - selectedOption; // toggle between 0 and 1
+                selectedOption = 1 - selectedOption; // toggle between 0 and 1, trick for flipping between two values
             else if (kp->code == sf::Keyboard::Key::Enter) {
                 if (selectedOption == 0) return GameOverResult::RETRY;
                 if (selectedOption == 1) return GameOverResult::QUIT_TO_MENU;
             }
         }
+        //If Enter is pressed, returns whichever option is selected. Otherwise returns NONE meaning nothing happened yet.
         return GameOverResult::NONE;
     }
 
-    void draw(sf::RenderWindow& window, const PlayerData& data) {
+    void draw(sf::RenderWindow& window, const PlayerData& data) 
+    {
+        //Gets the window dimensions so everything can be positioned relative to the screen size rather than hardcoded pixel values.
         float W = (float)window.getSize().x;
         float H = (float)window.getSize().y;
 
+        //Fills the entire screen with the dark red background color.
         background.setSize({ W, H });
         background.setFillColor(bgColor);
         window.draw(background);
 
+        //Centers the panel on screen by subtracting half its size from the center point.
         const float panelW = 400.f, panelH = 340.f;
         panel.setSize({ panelW, panelH });
         panel.setPosition({ W / 2.f - panelW / 2.f, H / 2.f - panelH / 2.f });
+
         panel.setFillColor(panelColor);
+
+        //Draws a red border around the panel.
         panel.setOutlineThickness(2.f);
         panel.setOutlineColor(redTitle);
+
         window.draw(panel);
 
         // title
@@ -86,10 +102,11 @@ public:
         T(titleText).setPosition({ W / 2.f, H / 2.f - panelH / 2.f + 20.f });
         window.draw(T(titleText));
 
-        // stats
+        // Builds the stats string dynamically from the player's actual data
         string stats = "Level: " + to_string(data.getCurrentLevel()) +
             "   Gems: " + to_string(data.getGemCount()) +
             "   Best: " + to_string(data.getHighscore());
+
         T(statsText).setString(stats);
         T(statsText).setCharacterSize(16);
         T(statsText).setFillColor(statsCol);
@@ -100,10 +117,13 @@ public:
 
         // options
         string opts[2] = { "Retry", "Quit to Menu" };
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++)
+        {
+            //If this option is currently selected, it adds "> " in front and colors it yellow. Otherwise it's indented with spaces and colored dim. This is how the cursor highlight works.
             T(optionTexts[i]).setString((selectedOption == i ? "> " : "  ") + opts[i]);
             T(optionTexts[i]).setCharacterSize(24);
             T(optionTexts[i]).setFillColor(selectedOption == i ? selectedCol : normalCol);
+
             sf::FloatRect ob = T(optionTexts[i]).getLocalBounds();
             T(optionTexts[i]).setOrigin({ ob.size.x / 2.f, 0.f });
             T(optionTexts[i]).setPosition({ W / 2.f, H / 2.f + 20.f + i * 55.f });
