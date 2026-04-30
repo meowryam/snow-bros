@@ -132,30 +132,7 @@ void Botom::update(double deltaTime) {
 }
 
 
-/*
-void Botom::draw(RenderWindow& window) {
-    if (!alive) return;
 
-    RectangleShape rect(Vector2f(hitboxbotom_width, hitboxbotom_height));
-    rect.setPosition(Vector2f(static_cast<float>(x), static_cast<float>(y)));
-
-    if (trap) { rect.setFillColor(Color::White); }
-    else if (hitFlashTimer > 0.f) {rect.setFillColor(PaleYellow); }
-    else {  rect.setFillColor(Crimson); }
-    window.draw(rect);
-
-    
-    if (showDebug) {
-        sf::RectangleShape outline(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
-        outline.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
-        outline.setFillColor(sf::Color::Transparent);
-        outline.setOutlineThickness(1.f);
-        outline.setOutlineColor(sf::Color::Red);
-        window.draw(outline);
-    }
-}
-
-*/
 void Botom::draw(sf::RenderWindow& window) {
     if (!alive) return;
 
