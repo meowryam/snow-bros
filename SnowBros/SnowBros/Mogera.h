@@ -58,7 +58,7 @@ struct MogeraChild {
             // flip based on direction
             float sx = W / 174.f;
             float sy = H / 186.f;
-            if (vx < 0) {
+            if (vx > 0) {
                 sprite->setOrigin({ 174.f, 0.f });
                 sprite->setScale({ -sx, sy });
             }
@@ -109,8 +109,10 @@ private:
     sf::IntRect head_frame3{ {1155,   3}, {585, 483} };
 
     // Display size on screen - big and imposing like original
-    static constexpr float BOSS_W = 280.f;
-    static constexpr float BOSS_H = 220.f;
+
+// TO THIS:
+    static constexpr float BOSS_W = 300.f;
+    static constexpr float BOSS_H = 280.f;
 
     sf::RectangleShape healthBarBg;
     sf::RectangleShape healthBar;
