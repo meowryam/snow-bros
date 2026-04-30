@@ -364,8 +364,8 @@ public:
         if (levelComplete) return;
 
         // Toggle hitboxes
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F1)) showHitboxes = true;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F2)) showHitboxes = false;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::H)) showHitboxes = true;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::U)) showHitboxes = false;
 
         // Handle player input
         player1.handleInput();
