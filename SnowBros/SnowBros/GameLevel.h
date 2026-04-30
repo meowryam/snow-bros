@@ -325,7 +325,7 @@ public:
         if (lvl.isBosslevel()) {
             if (lvl.getLevelno() == 5) {
                 mogera = new Mogera(295, 420);
-              //  mogera->loadTexture(assetPath + "images\\Mogera.png");
+               mogera->loadTexture(assetPath + "images\\Mogera.png");
                 hasMogera = true;
             }
             else {

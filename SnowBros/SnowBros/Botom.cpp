@@ -11,6 +11,9 @@ static float randFloat(float low, float high) {
 Botom::Botom(double startX, double startY, float scrW, float scrH)
     : Enemy(startX, startY, 2, 80.0)
 {
+    jumpTimer = randFloat(2.f, 4.f);
+    jumpInterval = jumpTimer;
+    isJumping = false;
     screenWidth = scrW;
     screenHeight = scrH;
     isOnGround = false;
@@ -120,7 +123,16 @@ void Botom::update(double deltaTime) {
         sf::IntRect walkFrames[3] = { idle, walking, walking_frame2 };
         sprite->setTextureRect(walkFrames[animFrame % 3]);
     }
+    // ── Jump timer ───────────────────────────────────
+    jumpTimer -= static_cast<float>(deltaTime);
+    if (jumpTimer <= 0.f && isOnGround) {
+        yspeed = JUMP_FORCE;
+        isOnGround = false;
+        isJumping = true;
+        jumpTimer = randFloat(2.f, 4.f);   // reset for next jump
+    }
 
+    if (yspeed >= 0.f) isJumping = false;  // falling, not jumping anymore
     // Flip sprite horizontally based on movement direction
   // In update(), replace the flip block with:
     float scaleX = hitboxbotom_width / static_cast<float>(idle.size.x);
