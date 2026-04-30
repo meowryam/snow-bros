@@ -233,16 +233,9 @@ public:
             sprite->setPosition({ (float)x, (float)y });
             window.draw(*sprite);
 
-            // legs connect right below head, slightly overlapping
-            legSprite->setPosition({ (float)x + 20.f, (float)y + BOSS_H - 20.f });
+            // legs — move up by 30px to reduce gap
+            legSprite->setPosition({ (float)x + 20.f, (float)y + BOSS_H - 50.f });
             window.draw(*legSprite);
-        
-        }
-        else {
-            sf::RectangleShape r(sf::Vector2f(BOSS_W, BOSS_H));
-            r.setPosition({ (float)x, (float)y });
-            r.setFillColor(sf::Color(80, 160, 80));
-            window.draw(r);
         }
 
         // health bar
