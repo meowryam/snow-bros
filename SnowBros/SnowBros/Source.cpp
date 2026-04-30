@@ -1,4 +1,4 @@
-/*
+
 #include "Game.h"
 
 int main() {
@@ -6,4 +6,3 @@ int main() {
     game.run(); // start the loop
     return 0;
 } 
-*/

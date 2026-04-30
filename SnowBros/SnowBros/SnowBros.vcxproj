@@ -194,9 +194,6 @@
     <ClInclude Include="Tornado.h" />
     <ClInclude Include="Tornadovariant.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Source1.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

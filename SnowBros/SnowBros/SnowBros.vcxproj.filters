@@ -82,7 +82,4 @@
     <ClInclude Include="foogavariant.h" />
     <ClInclude Include="Tornadovariant.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Source1.cpp" />
-  </ItemGroup>
 </Project>
