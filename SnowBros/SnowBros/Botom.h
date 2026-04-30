@@ -7,7 +7,10 @@ using namespace sf;
 class Botom : public Enemy {
 
 protected:
-
+    float jumpTimer;
+    float jumpInterval;   // how often it jumps
+    bool  isJumping;
+    static constexpr float JUMP_FORCE = -600.f;
     float screenWidth;
     float screenHeight;
     static constexpr float GRAVITY = 1200.f;
