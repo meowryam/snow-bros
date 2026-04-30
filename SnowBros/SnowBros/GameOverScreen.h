@@ -131,7 +131,7 @@ public:
         }
 
         // hint
-        T(hintText).setString("arrows to navigate  |  Enter to select");
+        T(hintText).setString("Arrows to navigate  |  Enter to select");
         T(hintText).setCharacterSize(11);
         T(hintText).setFillColor(hintCol);
         sf::FloatRect hb = T(hintText).getLocalBounds();

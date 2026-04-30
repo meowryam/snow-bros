@@ -15,7 +15,6 @@ private:
 
     sf::RectangleShape topBar;
 
-    // bright colorful theme
     sf::Color barColor = sf::Color(15, 15, 40, 200);
     sf::Color redLife = sf::Color(255, 80, 80, 255);
     sf::Color gemBlue = sf::Color(80, 200, 255, 255);

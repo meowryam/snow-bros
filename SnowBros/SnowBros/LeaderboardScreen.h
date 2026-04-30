@@ -86,7 +86,7 @@ public:
         window.draw(T(headerText));
 
         if (leaderboard.getCount() == 0) {
-            T(emptyText).setString("no scores yet — be the first!");
+            T(emptyText).setString("No scores yet — be the first!");
             T(emptyText).setCharacterSize(18);
             T(emptyText).setFillColor(normalCol);
             sf::FloatRect eb = T(emptyText).getLocalBounds();

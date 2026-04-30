@@ -101,7 +101,7 @@ public:
         window.draw(T(titleText));
 
         // subtitle with username
-        T(subtitleText).setString("welcome back, " + username + "!");
+        T(subtitleText).setString("Welcome Back " + username + "!");
         T(subtitleText).setCharacterSize(16);
         T(subtitleText).setFillColor(subColor);
         sf::FloatRect sub = T(subtitleText).getLocalBounds();
