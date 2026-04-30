@@ -2,43 +2,37 @@
 #include "MainMenu.h"
 #include <ctime>
 
-
-// Constructor — this runs once when Game object is created
 // Sets up the window at 800x600 pixels, titled "Snow Bros"
+//The constructor's initializer list. Creates the window at 800x600,sets the starting state to LOGIN
 Game::Game()    
     : window(sf::VideoMode({ 800u, 600u }), "Snow Bros"),
     currentState(GameState::LOGIN),
-    // initialize systems that need refs
     scoreSystem(playerData),
     gemSystem(playerData),
     shopSystem(playerData),
     leaderboardScreen(leaderboard),
     keyRemapScreen(keyBindings),
     shopScreen(shopSystem),
-
-    
     gameLevel(playerData, scoreSystem, gemSystem, eventBus, keyBindings,
         "assets\\"),
     twoPlayerMode(false)
 {
-    player1.resetForNewLevel(Vector2f(100.f, 500.f));  // just above floor
+    player1.resetForNewLevel(Vector2f(100.f, 500.f));//Spawns both players at their starting positions above the floor.
     player2.resetForNewLevel(Vector2f(200.f, 500.f));
-
-
 
     //player1.setShowDebug(true);
    // player2.setShowDebug(true);
 
-
-
-
     window.setFramerateLimit(30); // lock to 30 FPS
-    leaderboard.load();
-    loadAllFonts();
+    leaderboard.load(); // loads the leaderboard from disk
+    loadAllFonts(); // loads all fonts and sounds.
     loadAllSounds();
 }
 
-void Game::loadAllFonts() {
+
+
+void Game::loadAllFonts() //Loads the same font into every screen that displays text, so they all share a consistent look.
+{
     string fontPath = "assets\\fonts\\PressStart2P-Regular.ttf";
 
     loginScreen.loadFont(fontPath);
@@ -65,16 +59,23 @@ void Game::loadAllSounds() {
 
 
 
-void Game::run() {
-    sf::Clock clock;
+void Game::run() //The main game loop setup
+{
+    sf::Clock clock; //clock measures elapsed time
     float timeSinceLastUpdate = 0.f;
 
-    while (window.isOpen()) {
-        float deltaTime = clock.restart().asSeconds();
-        timeSinceLastUpdate += deltaTime;
+    while (window.isOpen()) 
+    {
+        float deltaTime = clock.restart().asSeconds(); //Each frame, gets how much real time passed since last frame and
+        timeSinceLastUpdate += deltaTime; //adds it to the accumulator.
+       
 
-        while (auto event = window.pollEvent()) {
-            if (event->is<sf::Event::Closed>()) {
+        while (auto event = window.pollEvent()) 
+        //Checks for any pending window events (key presses, mouse clicks, window close, etc.) and processes them one by one.
+        {
+            if (event->is<sf::Event::Closed>()) 
+             //If the user clicks the X button, saves the score and closes the game cleanly.
+            {
                 saveAndSubmitScore();
                 window.close();
                 return;
