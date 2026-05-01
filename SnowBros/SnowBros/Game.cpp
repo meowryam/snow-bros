@@ -36,18 +36,17 @@ Game::Game()
 
 
 
-void Game::loadAllFonts() //Loads the same font into every screen that displays text, so they all share a consistent look.
+void Game::loadAllFonts()
 {
-    string fontPath = "assets\\fonts\\PressStart2P-Regular.ttf";
-
-    loginScreen.loadFont(fontPath);
-    mainMenu.loadFont(fontPath);
-    hud.loadFont(fontPath);
-    pauseScreen.loadFont(fontPath);
-    gameOverScreen.loadFont(fontPath);
-    leaderboardScreen.loadFont(fontPath);
-    keyRemapScreen.loadFont(fontPath);
-    shopScreen.loadFont(fontPath);
+    // Title font (PressStart2P) — only for main title
+    loginScreen.loadFont(FONT_TITLE, FONT_UI);
+    mainMenu.loadFont(FONT_TITLE, FONT_UI);
+    hud.loadFont(FONT_UI);                    // HUD never shows title
+    pauseScreen.loadFont(FONT_UI);
+    gameOverScreen.loadFont(FONT_UI);
+    leaderboardScreen.loadFont(FONT_UI);
+    keyRemapScreen.loadFont(FONT_UI);
+    shopScreen.loadFont(FONT_UI);
 }
 
 void Game::loadAllSounds() {

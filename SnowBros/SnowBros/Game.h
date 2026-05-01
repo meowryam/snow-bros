@@ -87,6 +87,9 @@ private:
 
     void saveAndSubmitScore();
 
+    const string FONT_TITLE = "assets\\fonts\\PressStart2P-Regular.ttf";
+    const string FONT_UI = "assets\\fonts\\Orbitron Light.ttf";
+
 public:
     Game();   // sets up the window
     void run(); // starts the game loop

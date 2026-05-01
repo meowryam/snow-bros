@@ -37,7 +37,7 @@ public:
 
     bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
-        titleText.emplace(font);
+        titleText.emplace(font);    // "PAUSED" in Orbitron
         hintText.emplace(font);
         for (int i = 0; i < 4; i++)
             optionTexts[i].emplace(font);
