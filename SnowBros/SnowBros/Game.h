@@ -36,12 +36,12 @@ private:
     InputManager inputManager;      // handles keyboard
 
     // data
+    PlayerData   playerData;
+    PlayerData   player2Data;
     Player     player1;
     Player     player2;
     GameLevel  gameLevel;
     bool       twoPlayerMode;
-    PlayerData   playerData;
-    PlayerData   player2Data;
     KeyBindings  keyBindings;
     Leaderboard  leaderboard;
 

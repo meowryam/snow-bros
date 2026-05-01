@@ -7,6 +7,8 @@
 Game::Game()    
     : window(sf::VideoMode({ 800u, 600u }), "Snow Bros"),
     currentState(GameState::LOGIN),
+    player2Data(),          // ADD — initialize before player2
+    player2(player2Data, 2, 800.f, 600.f),
     scoreSystem(playerData),
     gemSystem(playerData),
     shopSystem(playerData),
@@ -21,6 +23,7 @@ Game::Game()
     player2Data = PlayerData();
     player2Data.setUsername("Player2");
     player2Data.setLives(2);
+    player2Data.setGemCount(0);
 
     //player1.setShowDebug(true);
    // player2.setShowDebug(true);
@@ -179,6 +182,8 @@ void Game::handleMainMenuEvents(sf::Event& event)
     else if (result == MainMenuResult::START_2PLAYER)
     {
         twoPlayerMode = true;
+        player2Data.setLives(2);      // reset lives on new game
+        player2Data.setGemCount(0);   // reset gems
         player1.loadTexture("assets\\images\\Nick.png");
         player2.loadTexture("assets\\images\\Nick.png"); // or a different texture
 
@@ -330,7 +335,8 @@ void Game::draw() {
         break;
     case GameState::PLAYING:
         gameLevel.draw(window, player1, twoPlayerMode ? &player2 : nullptr);
-        hud.draw(window, playerData);
+        hud.draw(window, playerData, twoPlayerMode ? &player2Data : nullptr);
+        //hud.draw(window, playerData); // this was when we had single player only
         break;
     case GameState::PAUSED:
         pauseScreen.draw(window);

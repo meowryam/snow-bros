@@ -124,13 +124,13 @@ public:
         else {
             // ?? Multiplayer layout ??
             // Player 1 on the LEFT side
-            T(livesText).setString("P1 LIVES: " + to_string(data.getLives()));
+            T(livesText).setString("P1 LV: " + to_string(data.getLives()));
             T(livesText).setCharacterSize(11);
             T(livesText).setFillColor(sf::Color(100, 220, 255, 255)); // blue tint for P1
             T(livesText).setPosition({ 10.f, 4.f });
             window.draw(T(livesText));
 
-            T(gemsText).setString("P1 GEMS: " + to_string(data.getGemCount()));
+            T(gemsText).setString("P1 GM: " + to_string(data.getGemCount()));
             T(gemsText).setCharacterSize(11);
             T(gemsText).setFillColor(sf::Color(100, 220, 255, 255));
             T(gemsText).setPosition({ 10.f, 24.f });
@@ -146,7 +146,7 @@ public:
             window.draw(T(levelText));
 
             // Player 2 on the RIGHT side
-            T(scoreText).setString("P2 LIVES: " + to_string(data2->getLives()));
+            T(scoreText).setString("P2 LV: " + to_string(data2->getLives()));
             T(scoreText).setCharacterSize(11);
             T(scoreText).setFillColor(sf::Color(255, 180, 80, 255)); // orange tint for P2
             sf::FloatRect sb = T(scoreText).getLocalBounds();
@@ -154,7 +154,7 @@ public:
             T(scoreText).setPosition({ W - 10.f, 4.f });
             window.draw(T(scoreText));
 
-            T(livesText).setString("P2 GEMS: " + to_string(data2->getGemCount()));
+            T(livesText).setString("P2 GM: " + to_string(data2->getGemCount()));
             T(livesText).setCharacterSize(11);
             T(livesText).setFillColor(sf::Color(255, 180, 80, 255));
             sf::FloatRect lb2 = T(livesText).getLocalBounds();
