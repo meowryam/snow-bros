@@ -63,6 +63,21 @@ private:
 
     // asset path helper
     string assetPath;
+    void spawnRandomPickup(double x, double y) {
+        if (collectableCount >= MAX_COLLECTABLES) return;
+
+        int roll = rand() % 10; // 0-9
+        Collectable* pickup = nullptr;
+
+        if (roll == 0) pickup = new ExtraLifePickup(x, y);
+        else if (roll <= 2) pickup = new SpeedBoostPickup(x, y);
+        else if (roll <= 4) pickup = new SnowballPowerPickup(x, y);
+        else if (roll <= 6) pickup = new DistanceIncreasePickup(x, y);
+        else if (roll <= 8) pickup = new BalloonModePickup(x, y);
+        // roll == 9: no pickup (10% chance of nothing)
+
+        if (pickup) collectables[collectableCount++] = pickup;
+    }
 
     void clearEnemies() {
         for (int i = 0; i < botomCount; i++) { delete botoms[i];   botoms[i] = nullptr; }
@@ -182,10 +197,14 @@ private:
             if (!botoms[ei]->getalive() || !botoms[ei]->isRolling()) continue;
             float bx = static_cast<float>(botoms[ei]->getx());
             if (bx < -50.f || bx > 850.f) {
+              
+
+                // Example — rolling botom goes off screen:
                 botoms[ei]->setalive(false);
-                scoreSystem.onBottomKilled();  // ? was onEnemyKilled()
-                gemSystem.enemykilled();                                      // add
+                scoreSystem.onBottomKilled();
+                gemSystem.enemykilled();
                 spawnGem(botoms[ei]->getx(), botoms[ei]->gety());
+                spawnRandomPickup(botoms[ei]->getx(), botoms[ei]->gety()); // ADD THIS
                 eventBus.post(GameEvent::ENEMY_KILLED);
             }
         }
@@ -288,8 +307,8 @@ public:
             ExtraLifePickup::loadSharedTexture(itemsPath);
             BonusCashBundle::loadSharedTexture(itemsPath);
             levelComplete = false;
-
-        // Load platform layout
+            // TEMP: spawn one of each to verify sprites show
+        
         platformCount = LevelLayout::getLayout(lvl.getLevelno(), platforms);
         
       // Load once, with mask
@@ -452,11 +471,19 @@ public:
         }
 
         checkCollisions(player1, player2);
+        // In GameLevel::update(), replace the collectable loop:
         for (int i = 0; i < collectableCount; i++) {
-            if (collectables[i] && collectables[i]->isAlive()) {
-                collectables[i]->update(deltaTime);
-                collectables[i]->checkCollect(player1);
-                if (player2) collectables[i]->checkCollect(*player2);
+            if (!collectables[i] || !collectables[i]->isAlive()) continue;
+            collectables[i]->update(deltaTime);
+
+            bool p1Collected = collectables[i]->checkCollect(player1);
+            bool p2Collected = player2 && collectables[i]->checkCollect(*player2);
+
+            if (p1Collected || p2Collected) {
+                // Check if it was a gem specifically
+                if (dynamic_cast<GemCollectable*>(collectables[i])) {
+                    gemSystem.addGems(1);
+                }
             }
         }
         // Handle player death
