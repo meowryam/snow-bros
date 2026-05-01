@@ -51,6 +51,11 @@ private:
     optional<sf::Sprite> bgSprite;
     bool        bgLoaded;
 
+    // Make them member variables instead of static locals
+// In GameLevel private:
+    bool throwHeld = false;
+    bool p2ThrowHeld = false;
+
     // debug
     bool showHitboxes;
 
@@ -129,7 +134,18 @@ private:
                 if (!foogas[ei]->getalive() || foogas[ei]->gettrap()) continue;
                 if (!sbHB.findIntersection(foogas[ei]->getHitbox())) continue;
                 foogas[ei]->receiveSnowballHit();
+
+         
                 sb->setalive(false);
+                if (!foogas[ei]->getalive()) {          // if receiveSnowballHit killed it
+                    scoreSystem.onFoogaKilled();         // whatever your score func is
+                    gemSystem.enemykilled();
+                    spawnGem(foogas[ei]->getx(), foogas[ei]->gety());
+                    spawnRandomPickup(foogas[ei]->getx(), foogas[ei]->gety());
+                    eventBus.post(GameEvent::ENEMY_KILLED);
+                }
+
+     
                 break;
             }
             if (!sb->getalive()) continue;
@@ -139,6 +155,15 @@ private:
                 if (!sbHB.findIntersection(tornados[ei]->getHitbox())) continue;
                 tornados[ei]->receiveSnowballHit();
                 sb->setalive(false);
+
+             ;
+                if (!tornados[ei]->getalive()) {          // if receiveSnowballHit killed it
+                    scoreSystem.onTornadoKilled();         // whatever your score func is
+                    gemSystem.enemykilled();
+                    spawnGem(tornados[ei]->getx(), tornados[ei]->gety());
+                    spawnRandomPickup(tornados[ei]->getx(), tornados[ei]->gety());
+                    eventBus.post(GameEvent::ENEMY_KILLED);
+                }
                 break;
             }
             if (!sb->getalive()) continue;
@@ -203,8 +228,12 @@ private:
                 botoms[ei]->setalive(false);
                 scoreSystem.onBottomKilled();
                 gemSystem.enemykilled();
-                spawnGem(botoms[ei]->getx(), botoms[ei]->gety());
-                spawnRandomPickup(botoms[ei]->getx(), botoms[ei]->gety()); // ADD THIS
+                // FIXED: clamp spawn position to screen edge
+                double gemX = (botoms[ei]->getx() < 0) ? 50.0 : 750.0;
+                double gemY = botoms[ei]->gety();
+                spawnGem(gemX, gemY);
+                spawnRandomPickup(gemX, gemY);
+               
                 eventBus.post(GameEvent::ENEMY_KILLED);
             }
         }
@@ -296,7 +325,8 @@ public:
             clearSnowballs();
             clearCollectables();   // add this
             // Load collectable textures once
-          
+            throwHeld = false;
+            p2ThrowHeld = false;
 
             std::string itemsPath = assetPath + "images\\Items.png";
             GemCollectable::loadSharedTexture(itemsPath);
@@ -404,7 +434,7 @@ public:
         player1.resolvePlatforms(platforms, platformCount);
 
         // Spawn snowball if requested
-        static bool throwHeld = false;
+   
         if (player1.getWantsToThrow() && !throwHeld) {
             throwHeld = true;
             bool powerful = player1.isSnowballPowerActive();
@@ -421,7 +451,7 @@ public:
             player2->resolvePlatforms(platforms, platformCount);
 
             // Player 2 snowball throwing
-            static bool p2ThrowHeld = false;
+        
             if (player2->getWantsToThrow() && !p2ThrowHeld) {
                 p2ThrowHeld = true;
                 bool powerful = player2->isSnowballPowerActive();
@@ -477,7 +507,7 @@ public:
             collectables[i]->update(deltaTime);
 
             bool p1Collected = collectables[i]->checkCollect(player1);
-            bool p2Collected = player2 && collectables[i]->checkCollect(*player2);
+            bool p2Collected = !p1Collected && player2 && collectables[i]->checkCollect(*player2);
 
             if (p1Collected || p2Collected) {
                 // Check if it was a gem specifically
