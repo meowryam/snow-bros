@@ -37,17 +37,19 @@ private:
     static constexpr int   ROWS = 2;
 
     // Medallion geometry — tuned to the generated background image
-    // Row 1 centres ~y=390, Row 2 centres ~y=535  (800x600 window)
-    static constexpr float MED_R = 68.f;   // radius of each medallion circle
-    static constexpr float MED_GAP_X = 10.f;   // horizontal gap between circles
-    // total row width = 5*(2*68) + 4*10 = 720 → left edge = (800-720)/2 = 40
-    static constexpr float GRID_LEFT = 40.f + MED_R;   // centre x of first col
-    static constexpr float ROW1_Y = 382.f;
-    static constexpr float ROW2_Y = 528.f;
+   
 
     static constexpr float TITLE_Y = 52.f;
     static constexpr float SUBTITLE_Y = 82.f;
 
+
+    // CHANGE these 4 constants:
+    static constexpr float MED_R = 58.f;   // was 68.f — slightly smaller
+    static constexpr float MED_GAP_X = 8.f;    // was 10.f
+    static constexpr float GRID_LEFT = 40.f + MED_R;  // keep same formula
+
+    static constexpr float ROW1_Y = 305.f;  // was 382.f
+    static constexpr float ROW2_Y = 440.f;  // was 528.f
     // ── state ──────────────────────────────────────────────────
     PlayerData& playerData;
     sf::Font    font;
@@ -186,7 +188,7 @@ inline void LevelSelectScreen::setupLayout() {
 
     // Back button — bottom centre
     backBtn.setSize({ 140.f, 32.f });
-    backBtn.setPosition({ 330.f, 558.f });
+    backBtn.setPosition({ 330.f, 510.f });
     backBtn.setFillColor(COL_BACK_BG);
     backBtn.setOutlineColor(COL_BACK_OUTLINE);
     backBtn.setOutlineThickness(1.5f);

@@ -94,6 +94,24 @@ void Game::run() //The main game loop setup
                 handlePauseEvents(*event); break;
             case GameState::GAME_OVER:
                 handleGameOverEvents(*event); break;
+            case GameState::LEVEL_SELECT:
+                levelSelectScreen.handleEvent(*event);
+                if (levelSelectScreen.done) {
+                    if (levelSelectScreen.result > 0) {
+                        levelsManager.SpecificLevel(levelSelectScreen.result);
+                        gameLevel.loadLevel(levelsManager.getCurrentLevel());
+                        if (twoPlayerMode)
+                            player2.resetForNewLevel(sf::Vector2f(600.f, 500.f));
+                        currentState = GameState::PLAYING;
+                        soundManager.playMusic();
+                    }
+                    else {
+                        // ESC / Back — return to menu
+                        currentState = GameState::MENU;
+                    }
+                    levelSelectScreen.reset();
+                }
+                break;
             case GameState::KEY_REMAP:
                 keyRemapScreen.handleEvent(*event);
                 if (keyRemapScreen.done) {
@@ -185,10 +203,12 @@ void Game::handleMainMenuEvents(sf::Event& event)
             Keyboard::Key::Space
         );
         player1.loadTexture("assets\\images\\Nick.png");
+        levelSelectScreen.reset();               // ADD
+        currentState = GameState::LEVEL_SELECT;  // CHANGE (was PLAYING)
        levelsManager.SpecificLevel(playerData.getCurrentLevel());
      // levelsManager.SpecificLevel(5);
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
-        currentState = GameState::PLAYING;
+    
         soundManager.playMusic();
     }
 
@@ -207,10 +227,11 @@ void Game::handleMainMenuEvents(sf::Event& event)
             Keyboard::Key::Space
             
         );
-
+        levelSelectScreen.reset();               // ADD
+        currentState = GameState::LEVEL_SELECT;  // CHANGE (was PLAYING)
         levelsManager.SpecificLevel(playerData.getCurrentLevel());
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
-        currentState = GameState::PLAYING;
+  
         player2.resetForNewLevel(sf::Vector2f(600.f, 500.f));
         soundManager.playMusic();
     }
@@ -365,6 +386,9 @@ void Game::draw() {
         break;
     case GameState::SHOP:
         shopScreen.draw(window);
+        break;
+    case GameState::LEVEL_SELECT:
+        levelSelectScreen.draw(window);
         break;
     default: break;
     }

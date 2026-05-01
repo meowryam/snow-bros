@@ -9,5 +9,6 @@ enum class GameState {
     PAUSED,
     GAME_OVER,
     KEY_REMAP,
-    SHOP
+    SHOP,
+    LEVEL_SELECT
 };
