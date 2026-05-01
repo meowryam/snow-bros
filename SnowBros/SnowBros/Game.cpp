@@ -203,10 +203,11 @@ void Game::handleMainMenuEvents(sf::Event& event)
         player2.loadTexture("assets\\images\\Nick.png"); // or a different texture
 
         player2.setKeys(
-            Keyboard::Key::A,
-            Keyboard::Key::D,
-            Keyboard::Key::W,
-            Keyboard::Key::S
+            Keyboard::Key::Left,
+            Keyboard::Key::Right,
+            Keyboard::Key::Up,
+            Keyboard::Key::Space
+            
         );
 
         levelsManager.SpecificLevel(playerData.getCurrentLevel());
@@ -217,6 +218,7 @@ void Game::handleMainMenuEvents(sf::Event& event)
     }
 
     else if (result == MainMenuResult::OPEN_SHOP) {
+        prevState = currentState;
         shopScreen.reset();
         currentState = GameState::SHOP;
     }
@@ -242,6 +244,7 @@ void Game::handlePauseEvents(sf::Event& event)
         soundManager.playMusic();
     }
     else if (result == PauseResult::OPEN_SHOP) {
+        prevState = currentState;
         shopScreen.reset();
         currentState = GameState::SHOP;
     }
