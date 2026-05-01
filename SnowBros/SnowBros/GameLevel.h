@@ -101,7 +101,7 @@ private:
     void spawnSnowball(double x, double y, double dir, bool powerful, bool longRange) {
         if (snowballCount >= MAX_SNOWBALLS) return;
         Snowball* sb = new Snowball(x, y, dir, powerful, longRange);
-        sb->loadTexture(assetPath + "images\\Player_Blue.png");
+        sb->loadTexture(assetPath + "images\\Nick.png");
         snowballs[snowballCount++] = sb;
     }
     void clearCollectables() {
