@@ -18,6 +18,7 @@ Game::Game()
     gameLevel(playerData, scoreSystem, gemSystem, eventBus, keyBindings,
         "assets\\"),
     twoPlayerMode(false)
+    , levelSelectScreen(playerData)
 {
     // Initialize player 2 data with same lives
     player2Data = PlayerData();
@@ -35,18 +36,16 @@ Game::Game()
 }
 
 
-
-void Game::loadAllFonts()
-{
-    // Title font (PressStart2P) — only for main title
+void Game::loadAllFonts() {
     loginScreen.loadFont(FONT_TITLE, FONT_UI);
     mainMenu.loadFont(FONT_TITLE, FONT_UI);
-    hud.loadFont(FONT_UI);                    // HUD never shows title
+    hud.loadFont(FONT_UI);
     pauseScreen.loadFont(FONT_UI);
     gameOverScreen.loadFont(FONT_UI);
     leaderboardScreen.loadFont(FONT_UI);
     keyRemapScreen.loadFont(FONT_UI);
     shopScreen.loadFont(FONT_UI);
+    levelSelectScreen.loadAssets(FONT_TITLE, "assets\\images\\LevelSelect_bg.png"); // ADD THIS
 }
 
 void Game::loadAllSounds() {

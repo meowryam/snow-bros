@@ -26,7 +26,7 @@
 
 #include "GameLevel.h"
 #include "Player.h"
-
+#include "LevelSelection.h"
 // This is the main Game class
 // It owns everything — the window, the loop, all the managers
 class Game {
@@ -64,7 +64,7 @@ private:
     LeaderboardScreen  leaderboardScreen;
     KeyRemapScreen     keyRemapScreen;
     ShopScreen         shopScreen;
-
+    LevelSelectScreen levelSelectScreen;
     int shopOpenedByPlayer = 1; // who opened the shop
 
     GameState prevState = GameState::MENU;
@@ -89,7 +89,7 @@ private:
 
     const string FONT_TITLE = "assets\\fonts\\PressStart2P-Regular.ttf";
     const string FONT_UI = "assets\\fonts\\Orbitron Light.ttf";
-
+ 
 public:
     Game();   // sets up the window
     void run(); // starts the game loop

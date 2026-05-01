@@ -82,5 +82,6 @@
     <ClInclude Include="foogavariant.h" />
     <ClInclude Include="Tornadovariant.h" />
     <ClInclude Include="Collectable.h" />
+    <ClInclude Include="LevelSelection.h" />
   </ItemGroup>
 </Project>

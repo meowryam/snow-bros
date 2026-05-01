@@ -176,6 +176,7 @@
     <ClInclude Include="LeaderboardScreen.h" />
     <ClInclude Include="Levelblueprint.h" />
     <ClInclude Include="LevelLayout.h" />
+    <ClInclude Include="LevelSelection.h" />
     <ClInclude Include="LevelsManager.h" />
     <ClInclude Include="LoginScreen.h" />
     <ClInclude Include="MainMenu.h" />
