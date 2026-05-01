@@ -41,15 +41,12 @@ private:
 
     static constexpr float TITLE_Y = 52.f;
     static constexpr float SUBTITLE_Y = 82.f;
+    static constexpr float MED_R = 62.f;
+    static constexpr float MED_GAP_X = 4.f;
+    static constexpr float GRID_LEFT = 82.f + MED_R;
 
-
-    // CHANGE these 4 constants:
-    static constexpr float MED_R = 58.f;   // was 68.f — slightly smaller
-    static constexpr float MED_GAP_X = 8.f;    // was 10.f
-    static constexpr float GRID_LEFT = 40.f + MED_R;  // keep same formula
-
-    static constexpr float ROW1_Y = 305.f;  // was 382.f
-    static constexpr float ROW2_Y = 440.f;  // was 528.f
+    static constexpr float ROW1_Y = 358.f;
+    static constexpr float ROW2_Y = 468.f;
     // ── state ──────────────────────────────────────────────────
     PlayerData& playerData;
     sf::Font    font;
@@ -188,7 +185,7 @@ inline void LevelSelectScreen::setupLayout() {
 
     // Back button — bottom centre
     backBtn.setSize({ 140.f, 32.f });
-    backBtn.setPosition({ 330.f, 510.f });
+    backBtn.setPosition({ 330.f, 540.f });
     backBtn.setFillColor(COL_BACK_BG);
     backBtn.setOutlineColor(COL_BACK_OUTLINE);
     backBtn.setOutlineThickness(1.5f);
