@@ -409,6 +409,7 @@ public:
                 float sx = 100.f + i * 160.f;
                 FlyingFoogaFoog* f = new FlyingFoogaFoog(sx, 150);
                f->loadTexture(assetPath + "images\\FlyingFoogaFoog_Blue.png");
+               f->loadSnowTexture(assetPath + "images\\Nick.png");
                 foogas[foogaCount++] = f;
             }
             // Spawn tornados

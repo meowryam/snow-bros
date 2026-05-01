@@ -45,7 +45,7 @@ void FlyingFoogaFoog::pickRandomFlightDirection() {
 
 void FlyingFoogaFoog::update(double deltaTime) {
     if (!alive) return;
-    if (trap) {
+    if (trap || snowballHits > 0) {
         Botom::update(deltaTime);
         return;
     }
