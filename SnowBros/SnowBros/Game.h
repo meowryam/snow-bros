@@ -67,7 +67,7 @@ private:
 
     int shopOpenedByPlayer = 1; // who opened the shop
 
-
+    GameState prevState = GameState::MENU;
 
     // 30 FPS means each frame lasts 1/30th of a second
     const float TIME_PER_FRAME = 1.f / 30.f;

@@ -107,11 +107,26 @@ void Game::run() //The main game loop setup
                 // Game.cpp — inside run(), in the switch(currentState) block
 // ADD this case, right before the default: break
 
-            case GameState::SHOP:
+            /*case GameState::SHOP:
                 shopScreen.handleEvent(*event);
                 if (shopScreen.done) {
                     shopScreen.done = false;
                     currentState = GameState::MENU;
+                }
+                break;*/
+
+            case GameState::SHOP:
+                shopScreen.handleEvent(*event);
+                if (shopScreen.done) {
+                    shopScreen.done = false;
+                    // Apply any active power-ups to player 2 as well in multiplayer
+                    if (twoPlayerMode) {
+                        if (player1.isSnowballPowerActive())
+                            player2.activateSnowballPower();
+                        if (player1.isDistanceIncreaseActive())
+                            player2.activateDistanceIncrease();
+                    }
+                    currentState = prevState;   // return to wherever we came from
                 }
                 break;
             default: break;
