@@ -2,7 +2,7 @@
 #include "PlayerData.h"
 #include <SFML/Graphics.hpp>
 #include <string>
-
+#include <cmath>
 class ShopSystem {
 private:
 	PlayerData& playerData;
@@ -251,43 +251,48 @@ private:
     optional<sf::Text> txtMessage;
     optional<sf::Text> txtBack;
 
-    // ── palette ────────────────────────────────────────────────
-    // Cards: semi-transparent so bg stone shows through
-    const sf::Color CARD_NORMAL{ 8,  6, 28, 175 };
-    const sf::Color CARD_SEL{ 45, 22, 95, 210 };
-    const sf::Color CARD_BOUGHT{ 8, 42, 22, 175 };
-    const sf::Color CARD_POOR{ 5,  4, 14, 120 };
+    // ── palette (Frozen / Ice Theme) ───────────────────────────
 
+  // Cards — deep frozen glass look
+    const sf::Color CARD_NORMAL{ 6, 18, 40, 185 };     // dark icy blue
+    const sf::Color CARD_SEL{ 20, 55, 110, 215 };      // brighter ice glow
+    const sf::Color CARD_BOUGHT{ 20, 95, 120, 235 }; // deeper, richer ice
+    const sf::Color CARD_POOR{ 20, 35, 60, 200 }; // visible but muted
     // Buttons
-    const sf::Color BTN_BUY{ 50,105, 60, 235 };
-    const sf::Color BTN_OFF{ 32, 20, 36, 145 };
-    const sf::Color BTN_OWN{ 22, 65, 38, 215 };
+    const sf::Color BTN_BUY{ 70, 170, 200, 235 };      // icy cyan
+    const sf::Color BTN_OFF{ 40, 60, 90, 180 };
+    const sf::Color BTN_OWN{ 60, 180, 170, 255 };
+    const sf::Color COL_BTN_OWN_TXT{ 230, 255, 250, 255 };
 
-    // Text colours — warm/cool contrast against the dark bg
-    const sf::Color COL_NAME_NORMAL{ 255, 230, 120, 255 };  // warm gold
-    const sf::Color COL_NAME_SEL{ 255, 245, 175, 255 };  // bright gold when selected
-    const sf::Color COL_NAME_POOR{ 140, 128, 100, 180 };  // dimmed gold
-    const sf::Color COL_NAME_OWNED{ 120, 245, 155, 255 };  // mint green
+    // Text colours — shift from gold → frost tones
+    const sf::Color COL_NAME_NORMAL{ 190, 230, 255, 255 };   // ice white-blue
+    const sf::Color COL_NAME_SEL{ 220, 245, 255, 255 };      // brighter frost
+    const sf::Color COL_NAME_POOR{ 160, 180, 200, 220 };
+    const sf::Color COL_DESC_POOR{ 130, 150, 170, 200 };
+    const sf::Color COL_COST_POOR{ 100, 130, 150, 200 };
 
-    const sf::Color COL_DESC_NORMAL{ 185, 210, 255, 210 };  // cool ice blue
-    const sf::Color COL_DESC_POOR{ 95, 100, 120, 150 };
-    const sf::Color COL_DESC_OWNED{ 95, 185, 120, 195 };
+    const sf::Color COL_DESC_NORMAL{ 160, 200, 235, 210 };   // soft ice blue
 
-    const sf::Color COL_COST{ 95, 210, 255, 255 };  // bright cyan
-    const sf::Color COL_COST_POOR{ 55,  80, 100, 160 };
 
-    const sf::Color COL_BTN_TXT{ 230, 245, 230, 255 };  // near-white
-    const sf::Color COL_BTN_OFF_TXT{ 90,  75,  95, 180 };
-    const sf::Color COL_BTN_OWN_TXT{ 120, 245, 155, 255 };
+    const sf::Color COL_COST{ 120, 220, 255, 255 };          // glowing cyan
 
-    const sf::Color OUTLINE_SEL{ 200, 160, 255, 255 };  // bright lavender
-    const sf::Color OUTLINE_NRM{ 50,  38,  85, 155 };
-    const sf::Color OUTLINE_POOR{ 32,  26,  45,  90 };
-    const sf::Color OUTLINE_OWNED{ 42, 120,  65, 185 };
 
-    const sf::Color GEM_COL{ 80, 200, 255, 255 };
-    const sf::Color GREEN_OK{ 65, 200, 115, 255 };
-    const sf::Color RED_ERR{ 220,  60,  60, 255 };
+    const sf::Color COL_BTN_TXT{ 240, 250, 255, 255 };       // frosty white
+    const sf::Color COL_BTN_OFF_TXT{ 120, 140, 160, 180 };
+   
+    // Outlines — icy glow instead of purple
+    const sf::Color OUTLINE_SEL{ 120, 220, 255, 255 };       // cyan glow
+    const sf::Color OUTLINE_NRM{ 40, 90, 140, 160 };
+    const sf::Color OUTLINE_POOR{ 25, 50, 80, 100 };
+    const sf::Color OUTLINE_OWNED{ 150, 255, 240, 255 }; // crisp icy glow
+    const sf::Color COL_NAME_OWNED{ 220, 255, 245, 255 };
+    const sf::Color COL_DESC_OWNED{ 180, 235, 225, 220 };
+   
+
+    // UI accents
+    const sf::Color GEM_COL{ 120, 220, 255, 255 };           // matches crystals
+    const sf::Color GREEN_OK{ 100, 255, 200, 255 };          // icy success
+    const sf::Color RED_ERR{ 220, 80, 80, 255 };             // keep readable
 
     // ── helpers ────────────────────────────────────────────────
     sf::Text& TX(optional<sf::Text>& t) { return t.value(); }
@@ -357,7 +362,7 @@ inline bool ShopScreen::loadFont(const string& path) {
 inline void ShopScreen::setupLayout() {
 
     // Title — on the blank wooden sign (~x=401, y=32)
-    TX(txtTitle).setFillColor(sf::Color(255, 218, 70, 255));
+    TX(txtTitle).setFillColor(sf::Color(200, 235, 255, 255));
     TX(txtTitle).setStyle(sf::Text::Bold);
     {
         auto lb = TX(txtTitle).getLocalBounds();
@@ -367,7 +372,7 @@ inline void ShopScreen::setupLayout() {
     // Gem counter — top right corner, compact
     gemBarBg.setSize({ 148.f, 40.f });
     gemBarBg.setPosition({ 638.f, 16.f });
-    gemBarBg.setFillColor(sf::Color(8, 4, 22, 190));
+    gemBarBg.setFillColor(sf::Color(6, 20, 40, 190));
     gemBarBg.setOutlineColor(GEM_COL);
     gemBarBg.setOutlineThickness(1.5f);
     TX(txtGemLabel).setFillColor(GEM_COL);
@@ -376,10 +381,14 @@ inline void ShopScreen::setupLayout() {
     // Back button — bottom centre on wood floor strip
     backBtn.setSize({ 140.f, 32.f });
     backBtn.setPosition({ 330.f, 558.f });
-    backBtn.setFillColor(sf::Color(14, 8, 36, 215));
-    backBtn.setOutlineColor(sf::Color(120, 85, 195, 210));
+    
+   
+    backBtn.setFillColor(sf::Color(10, 30, 60, 215));
+    backBtn.setOutlineColor(sf::Color(120, 220, 255, 210));
     backBtn.setOutlineThickness(1.5f);
-    TX(txtBack).setFillColor(sf::Color(210, 200, 240, 255));
+    TX(txtBack).setFillColor(sf::Color(220, 245, 255, 255));
+
+  
     {
         auto lb = TX(txtBack).getLocalBounds();
         TX(txtBack).setPosition({
@@ -458,6 +467,7 @@ inline void ShopScreen::refreshCard(int i) {
         TX(txtItemName[i]).setFillColor(COL_NAME_OWNED);
         TX(txtItemDesc[i]).setFillColor(COL_DESC_OWNED);
         TX(txtItemCost[i]).setFillColor(sf::Color(60, 130, 80, 180));
+        cards[i].setOutlineThickness(sel ? 2.8f : 2.2f);
     }
     else if (!canAfford) {
         cards[i].setFillColor(CARD_POOR);
@@ -603,7 +613,7 @@ inline void ShopScreen::draw(sf::RenderWindow& window) {
         window.draw(*bgSprite);
     else {
         sf::RectangleShape fb({ 800.f, 600.f });
-        fb.setFillColor(sf::Color(15, 6, 32, 255));
+        fb.setFillColor(sf::Color(5, 18, 35, 255));
         window.draw(fb);
     }
 
@@ -615,6 +625,7 @@ inline void ShopScreen::draw(sf::RenderWindow& window) {
 
     for (int i = 0; i < ITEM_COUNT; i++) {
         window.draw(cards[i]);
+
         if (icons[i]) window.draw(*icons[i]);
         window.draw(TX(txtItemName[i]));
         window.draw(TX(txtItemDesc[i]));
