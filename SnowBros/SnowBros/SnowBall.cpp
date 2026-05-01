@@ -49,15 +49,20 @@ void Snowball::draw(sf::RenderWindow& window) {
 
     if (textureLoaded && sprite) {
         sf::IntRect cur;
+
         if (snowState == SnowballState::ROLLING) {
-            sf::IntRect rollFrames[6] = { roll1, roll2, roll3, roll4, roll5, roll6 };
-            // grow with each enemy hit, clamp to last frame
-            int frameIdx = std::min(snowHits, 5);
+            sf::IntRect rollFrames[12] = {
+                roll1, roll2, roll3, roll4,
+                roll5, roll6, roll7, roll8,
+                roll9, roll10, roll11, roll12
+            };
+            int frameIdx = std::min(snowHits, 11);
             cur = rollFrames[frameIdx];
         }
         else {
-            sf::IntRect flyFrames[5] = { proj1, proj2, proj3, proj4, proj5 };
-            cur = flyFrames[animFrame % 5];
+            // Only use the round frames (proj1-proj2) for flying — proj3-5 are squish frames 
+            sf::IntRect flyFrames[2] = { proj1, proj2 }; 
+            cur = flyFrames[animFrame % 2];
         }
         sprite->setTextureRect(cur);
         float scaleX = snowballhitboxsize / static_cast<float>(cur.size.x);
