@@ -516,6 +516,18 @@ public:
                 }
             }
         }
+        // ADD THIS RIGHT AFTER — compact dead entries:
+        int alive = 0;
+        for (int i = 0; i < collectableCount; i++) {
+            if (collectables[i] && collectables[i]->isAlive()) {
+                collectables[alive++] = collectables[i];
+            }
+            else {
+                delete collectables[i];
+                collectables[i] = nullptr;
+            }
+        }
+        collectableCount = alive;
         // Handle player death
         if (!player1.getIsAlive()) {
             if (playerData.getLives() > 0) {
