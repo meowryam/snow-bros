@@ -129,4 +129,12 @@ public:
     void resolvePlatforms(Platform platforms[], int count);
     bool getWantsToThrow() const { return wantsToThrow; }
 
+    void setKeys(Keyboard::Key left, Keyboard::Key right,
+        Keyboard::Key jump, Keyboard::Key throwKey)
+    {
+        keyLeft = left;
+        keyRight = right;
+        keyJump = jump;
+        keyThrow = throwKey;
+    }
 };

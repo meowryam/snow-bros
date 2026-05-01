@@ -170,13 +170,19 @@ void Player::update(float deltaTime) {
     //screen wrapping
     const float spriteWidth = 48.f;
 
-    if (position.x + spriteWidth < 0.f) {
-        position.x = screenWidth;
+
+    if (position.x < 33.f)
+    {
+        position.x = 33.f;
+        velocity.x = 0.f;
     }
-    else if (position.x > screenWidth) {
-        position.x = -spriteWidth;
+    if (position.x > screenWidth - 5.f) 
+    {
+        position.x = screenWidth - 5.f;
+        velocity.x = 0.f;
     }
 
+    
     //sync hitbox
       /*  if (facing == Direction::LEFT) {
             sprite.setPosition(Vector2f(position.x + spriteWidth, position.y));

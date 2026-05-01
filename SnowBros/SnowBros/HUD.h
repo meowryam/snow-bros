@@ -38,7 +38,50 @@ public:
         return true;
     }
 
-    void draw(sf::RenderWindow& window, const PlayerData& data) 
+    //void draw(sf::RenderWindow& window, const PlayerData& data) 
+    //{
+    //    float W = (float)window.getSize().x;
+
+    //    // top bar background
+    //    topBar.setSize({ W, 48.f });
+    //    topBar.setPosition({ 0.f, 0.f });
+    //    topBar.setFillColor(barColor);
+    //    window.draw(topBar);
+
+    //    // lives
+    //    T(livesText).setString("LIVES: " + to_string(data.getLives()));
+    //    T(livesText).setCharacterSize(16);
+    //    T(livesText).setFillColor(white);
+    //    T(livesText).setPosition({ 20.f, 12.f });
+    //    window.draw(T(livesText));
+
+    //    // gems
+    //    T(gemsText).setString("GEMS: " + to_string(data.getGemCount()));
+    //    T(gemsText).setCharacterSize(16);
+    //    T(gemsText).setFillColor(white);
+    //    T(gemsText).setPosition({ 200.f, 12.f });
+    //    window.draw(T(gemsText));
+
+    //    // level — centred
+    //    T(levelText).setString("LEVEL " + to_string(data.getCurrentLevel()));
+    //    T(levelText).setCharacterSize(16);
+    //    T(levelText).setFillColor(white);
+    //    sf::FloatRect lb = T(levelText).getLocalBounds();
+    //    T(levelText).setOrigin({ lb.size.x / 2.f, 0.f });
+    //    T(levelText).setPosition({ W / 2.f + 50.f, 12.f });
+    //    window.draw(T(levelText));
+
+    //    // score — right side
+    //    T(scoreText).setString("SCORE: " + to_string(data.getHighscore()));
+    //    T(scoreText).setCharacterSize(16);
+    //    T(scoreText).setFillColor(white);
+    //    sf::FloatRect sb = T(scoreText).getLocalBounds();
+    //    T(scoreText).setOrigin({ sb.size.x, 0.f });
+    //    T(scoreText).setPosition({ W - 20.f, 12.f });
+    //    window.draw(T(scoreText));
+    //}
+
+    void draw(sf::RenderWindow& window, const PlayerData& data, const PlayerData* data2 = nullptr)
     {
         float W = (float)window.getSize().x;
 
@@ -48,36 +91,76 @@ public:
         topBar.setFillColor(barColor);
         window.draw(topBar);
 
-        // lives
-        T(livesText).setString("LIVES: " + to_string(data.getLives()));
-        T(livesText).setCharacterSize(16);
-        T(livesText).setFillColor(white);
-        T(livesText).setPosition({ 20.f, 12.f });
-        window.draw(T(livesText));
+        if (data2 == nullptr) {
+            // ?? Single player layout (your existing code) ??
+            T(livesText).setString("LIVES: " + to_string(data.getLives()));
+            T(livesText).setCharacterSize(16);
+            T(livesText).setFillColor(white);
+            T(livesText).setPosition({ 20.f, 12.f });
+            window.draw(T(livesText));
 
-        // gems
-        T(gemsText).setString("GEMS: " + to_string(data.getGemCount()));
-        T(gemsText).setCharacterSize(16);
-        T(gemsText).setFillColor(white);
-        T(gemsText).setPosition({ 200.f, 12.f });
-        window.draw(T(gemsText));
+            T(gemsText).setString("GEMS: " + to_string(data.getGemCount()));
+            T(gemsText).setCharacterSize(16);
+            T(gemsText).setFillColor(white);
+            T(gemsText).setPosition({ 200.f, 12.f });
+            window.draw(T(gemsText));
 
-        // level — centred
-        T(levelText).setString("LEVEL " + to_string(data.getCurrentLevel()));
-        T(levelText).setCharacterSize(16);
-        T(levelText).setFillColor(white);
-        sf::FloatRect lb = T(levelText).getLocalBounds();
-        T(levelText).setOrigin({ lb.size.x / 2.f, 0.f });
-        T(levelText).setPosition({ W / 2.f + 50.f, 12.f });
-        window.draw(T(levelText));
+            T(levelText).setString("LEVEL " + to_string(data.getCurrentLevel()));
+            T(levelText).setCharacterSize(16);
+            T(levelText).setFillColor(white);
+            sf::FloatRect lb = T(levelText).getLocalBounds();
+            T(levelText).setOrigin({ lb.size.x / 2.f, 0.f });
+            T(levelText).setPosition({ W / 2.f + 50.f, 12.f });
+            window.draw(T(levelText));
 
-        // score — right side
-        T(scoreText).setString("SCORE: " + to_string(data.getHighscore()));
-        T(scoreText).setCharacterSize(16);
-        T(scoreText).setFillColor(white);
-        sf::FloatRect sb = T(scoreText).getLocalBounds();
-        T(scoreText).setOrigin({ sb.size.x, 0.f });
-        T(scoreText).setPosition({ W - 20.f, 12.f });
-        window.draw(T(scoreText));
+            T(scoreText).setString("SCORE: " + to_string(data.getHighscore()));
+            T(scoreText).setCharacterSize(16);
+            T(scoreText).setFillColor(white);
+            sf::FloatRect sb = T(scoreText).getLocalBounds();
+            T(scoreText).setOrigin({ sb.size.x, 0.f });
+            T(scoreText).setPosition({ W - 20.f, 12.f });
+            window.draw(T(scoreText));
+        }
+        else {
+            // ?? Multiplayer layout ??
+            // Player 1 on the LEFT side
+            T(livesText).setString("P1 LIVES: " + to_string(data.getLives()));
+            T(livesText).setCharacterSize(11);
+            T(livesText).setFillColor(sf::Color(100, 220, 255, 255)); // blue tint for P1
+            T(livesText).setPosition({ 10.f, 4.f });
+            window.draw(T(livesText));
+
+            T(gemsText).setString("P1 GEMS: " + to_string(data.getGemCount()));
+            T(gemsText).setCharacterSize(11);
+            T(gemsText).setFillColor(sf::Color(100, 220, 255, 255));
+            T(gemsText).setPosition({ 10.f, 24.f });
+            window.draw(T(gemsText));
+
+            // Level in the CENTER
+            T(levelText).setString("LEVEL " + to_string(data.getCurrentLevel()));
+            T(levelText).setCharacterSize(13);
+            T(levelText).setFillColor(white);
+            sf::FloatRect lb = T(levelText).getLocalBounds();
+            T(levelText).setOrigin({ lb.size.x / 2.f, 0.f });
+            T(levelText).setPosition({ W / 2.f, 14.f });
+            window.draw(T(levelText));
+
+            // Player 2 on the RIGHT side
+            T(scoreText).setString("P2 LIVES: " + to_string(data2->getLives()));
+            T(scoreText).setCharacterSize(11);
+            T(scoreText).setFillColor(sf::Color(255, 180, 80, 255)); // orange tint for P2
+            sf::FloatRect sb = T(scoreText).getLocalBounds();
+            T(scoreText).setOrigin({ sb.size.x, 0.f });
+            T(scoreText).setPosition({ W - 10.f, 4.f });
+            window.draw(T(scoreText));
+
+            T(livesText).setString("P2 GEMS: " + to_string(data2->getGemCount()));
+            T(livesText).setCharacterSize(11);
+            T(livesText).setFillColor(sf::Color(255, 180, 80, 255));
+            sf::FloatRect lb2 = T(livesText).getLocalBounds();
+            T(livesText).setOrigin({ lb2.size.x, 0.f });
+            T(livesText).setPosition({ W - 10.f, 24.f });
+            window.draw(T(livesText));
+        }
     }
 };

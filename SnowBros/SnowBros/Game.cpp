@@ -161,8 +161,14 @@ void Game::handleMainMenuEvents(sf::Event& event)
     if (result == MainMenuResult::START_GAME)
     {
         twoPlayerMode = false; // to make sure multiplayer is off
+
+        player1.setKeys(
+            Keyboard::Key::Left,
+            Keyboard::Key::Right,
+            Keyboard::Key::Up,
+            Keyboard::Key::Space
+        );
         player1.loadTexture("assets\\images\\Nick.png");
-       // player2.loadTexture("assets\\images\\Player_Blue.png");
        levelsManager.SpecificLevel(playerData.getCurrentLevel());
      // levelsManager.SpecificLevel(5);
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
@@ -175,6 +181,14 @@ void Game::handleMainMenuEvents(sf::Event& event)
         twoPlayerMode = true;
         player1.loadTexture("assets\\images\\Nick.png");
         player2.loadTexture("assets\\images\\Nick.png"); // or a different texture
+
+        player2.setKeys(
+            Keyboard::Key::A,
+            Keyboard::Key::D,
+            Keyboard::Key::W,
+            Keyboard::Key::S
+        );
+
         levelsManager.SpecificLevel(playerData.getCurrentLevel());
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
         currentState = GameState::PLAYING;
