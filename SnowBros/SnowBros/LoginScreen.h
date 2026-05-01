@@ -15,7 +15,6 @@ enum class LoginResult {
 
 class LoginScreen {
 private:
-    sf::Font font;
     string usernameInput;   // what the player is typing
     bool waitingForInput;   // true = typing username, false = showing menu
 
@@ -45,21 +44,24 @@ private:
 
     sf::Text& T(optional<sf::Text>& t) { return t.value(); }
 
+    sf::Font font;      // PressStart2P for title
+    sf::Font fontUI;    // Orbitron for rest
+
 public:
     LoginScreen() : waitingForInput(true), selectedOption(0),
         saveFound(false) {
     }
 
-    bool loadFont(const string& path) {
-        if (!font.openFromFile(path)) return false;
-
-        titleText.emplace(font);
-        promptText.emplace(font);
-        inputText.emplace(font);
-        option1Text.emplace(font);
-        option2Text.emplace(font);
-        option3Text.emplace(font);
-        errorText.emplace(font);
+    bool loadFont(const string& titlePath, const string& uiPath) {
+        if (!font.openFromFile(titlePath)) return false;
+        if (!fontUI.openFromFile(uiPath)) return false;
+        titleText.emplace(font);       // SNOW BROS title
+        promptText.emplace(fontUI);
+        inputText.emplace(fontUI);
+        option1Text.emplace(fontUI);
+        option2Text.emplace(fontUI);
+        option3Text.emplace(fontUI);
+        errorText.emplace(fontUI);
         return true;
     }
 

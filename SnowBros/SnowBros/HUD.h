@@ -7,7 +7,6 @@ using namespace std;
 class HUD
 {
 private:
-    sf::Font font;
     optional<sf::Text> livesText;
     optional<sf::Text> p1LivesText;
     optional<sf::Text> p2LivesText;
@@ -28,17 +27,17 @@ private:
         return t.value();
     }
 
+    sf::Font font;   // just one font now
+
 public:
-    bool loadFont(const string& path)
-    {
-        if (!font.openFromFile(path))
-            return false;
+    bool loadFont(const string& path) {
+        if (!font.openFromFile(path)) return false;
         livesText.emplace(font);
-        p1LivesText.emplace(font);
-        p2LivesText.emplace(font);
         gemsText.emplace(font);
         levelText.emplace(font);
         scoreText.emplace(font);
+        p1LivesText.emplace(font);
+        p2LivesText.emplace(font);
         return true;
     }
 
