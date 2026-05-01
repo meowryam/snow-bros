@@ -25,7 +25,7 @@ protected:
     static constexpr float hitboxbotom_width = 36.f;
     static constexpr float hitboxbotom_height = 44.f;
     int snowballHits;
-    static constexpr int HITS_TO_ENCASE = 2;
+    static constexpr int HITS_TO_ENCASE = 4;
 
     bool showDebug;
     bool rolling;
