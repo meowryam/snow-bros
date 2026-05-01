@@ -65,6 +65,8 @@ private:
     KeyRemapScreen     keyRemapScreen;
     ShopScreen         shopScreen;
 
+    int shopOpenedByPlayer = 1; // who opened the shop
+
 
 
     // 30 FPS means each frame lasts 1/30th of a second

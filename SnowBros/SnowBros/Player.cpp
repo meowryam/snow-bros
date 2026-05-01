@@ -278,9 +278,11 @@ void Player::landOnPlatform(float topOfPlatform) {
 void Player::leaveGround() {
     isOnGround = false;
 }
-void Player::takeDamage() {
+void Player::takeDamage()
+{
     if (!isAlive) return; 
     int currentLives = playerData.getLives();
+    if (currentLives <= 0) return; // or else, lives were going negative
     playerData.setLives(currentLives - 1);
 
     if (playerData.getLives() <= 0) {
@@ -292,6 +294,7 @@ void Player::takeDamage() {
         isAlive = false;
     }
 }
+
 void Player::collectLife() {
     playerData.setLives(playerData.getLives() + 1);
 }
