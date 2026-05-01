@@ -1,5 +1,5 @@
 username=mimi
-current_level=1
-lives=7
-gem_count=5
-high_score=0
+current_level=5
+lives=2
+gem_count=509
+high_score=1161

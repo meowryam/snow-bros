@@ -101,7 +101,7 @@ private:
     void spawnSnowball(double x, double y, double dir, bool powerful, bool longRange) {
         if (snowballCount >= MAX_SNOWBALLS) return;
         Snowball* sb = new Snowball(x, y, dir, powerful, longRange);
-        sb->loadTexture(assetPath + "images\\Nick.png");
+        sb->loadTexture(assetPath + "images\\items.png");
         snowballs[snowballCount++] = sb;
     }
     void clearCollectables() {
@@ -400,6 +400,7 @@ public:
                 float sx = 50.f + i * 140.f;
                 Botom* b = new Botom(sx, 200);
               b->loadTexture(assetPath + "images\\Botom_Pink.png");
+              b->loadSnowTexture(assetPath + "images\\Nick.png");
                 b->setxspeed(80.0 * speedMult * ((i % 2 == 0) ? 1 : -1));
                 botoms[botomCount++] = b;
             }

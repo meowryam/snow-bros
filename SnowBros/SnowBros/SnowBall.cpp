@@ -59,16 +59,24 @@ void Snowball::draw(sf::RenderWindow& window) {
             int frameIdx = std::min(snowHits, 11);
             cur = rollFrames[frameIdx];
         }
-        else {
-            // Only use the round frames (proj1-proj2) for flying — proj3-5 are squish frames 
-            sf::IntRect flyFrames[2] = { proj1, proj2 }; 
-            cur = flyFrames[animFrame % 2];
-        }
+        else  {
+        // Use flame sprites for flying
+        cur = powerful ? flame_red : flame_blue;
+    }
+        
         sprite->setTextureRect(cur);
-        float scaleX = snowballhitboxsize / static_cast<float>(cur.size.x);
-        float scaleY = snowballhitboxsize / static_cast<float>(cur.size.y);
-        sprite->setScale({ scaleX, scaleY });
-        sprite->setPosition({ static_cast<float>(x), static_cast<float>(y) });
+        float targetSize = powerful ? 32.f : 28.f; // flames are a bit bigger visually
+        float scaleX = targetSize / static_cast<float>(cur.size.x);
+        float scaleY = targetSize / static_cast<float>(cur.size.y);
+        if (direction >0) {
+            // flying left — flip horizontally
+            sprite->setScale({ -scaleX, scaleY });
+            sprite->setPosition({ static_cast<float>(x) + targetSize, static_cast<float>(y) });
+        }
+        else {
+            sprite->setScale({ scaleX, scaleY });
+            sprite->setPosition({ static_cast<float>(x), static_cast<float>(y) });
+        }
         window.draw(*sprite);
     }
     else {

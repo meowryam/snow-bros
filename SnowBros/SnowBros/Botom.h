@@ -30,7 +30,32 @@ protected:
     bool showDebug;
     bool rolling;
     double rollSpeed;
+    // Second texture for snow encasing frames (from Nick.png)
+    sf::Texture              snowTexture;
+    std::optional<sf::Sprite> snowSprite;
+    bool                     snowTextureLoaded = false;
 
+    // Escape timer — how long encased before reviving
+    float escapeTimer = 0.f;
+    static constexpr float ESCAPE_DURATION = 5.f;
+
+    // All 16 snow frames
+    sf::IntRect snow_r1_s1{ {  85, 3388}, {249, 198} };
+    sf::IntRect snow_r1_s2{ { 374, 3309}, {275, 273} };
+    sf::IntRect snow_r1_s3{ { 677, 3295}, {289, 281} };
+    sf::IntRect snow_r1_s4{ { 983, 3255}, {287, 316} };
+    sf::IntRect snow_r2_s1{ {  64, 3571}, {284, 314} };
+    sf::IntRect snow_r2_s2{ { 361, 3584}, {300, 298} };
+    sf::IntRect snow_r2_s3{ { 674, 3575}, {278, 300} };
+    sf::IntRect snow_r2_s4{ { 976, 3574}, {303, 304} };
+    sf::IntRect snow_r3_s1{ {  78, 3881}, {252, 302} };
+    sf::IntRect snow_r3_s2{ { 352, 3872}, {315, 311} };
+    sf::IntRect snow_r3_s3{ { 680, 3872}, {282, 311} };
+    sf::IntRect snow_r3_s4{ { 964, 3870}, {323, 313} };
+    sf::IntRect snow_r4_s1{ {  64, 4183}, {288, 317} };
+    sf::IntRect snow_r4_s2{ { 371, 4184}, {293, 316} };
+    sf::IntRect snow_r4_s3{ { 671, 4178}, {284, 309} };
+    sf::IntRect snow_r4_s4{ { 971, 4184}, {308, 298} };
     // ── Sprite sheet ──────────────────────────────────────
     sf::Texture              texture;
     std::optional<sf::Sprite> sprite;
@@ -63,7 +88,6 @@ protected:
     sf::IntRect dying_frame9{ {759,1088}, { 95,  62} };
     sf::IntRect frozen{ {  4,1167}, { 96,  91} };
    
-
     // ── Animation state ───────────────────────────────────
     float animTimer = 0.f;
     int   animFrame = 0;          // current frame index within active anim
@@ -82,4 +106,5 @@ public:
     void startRolling(double dir);
     bool isRolling() const;
     void loadTexture(const std::string& path);
+    void loadSnowTexture(const std::string& path);
 };

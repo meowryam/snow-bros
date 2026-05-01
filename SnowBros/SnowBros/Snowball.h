@@ -22,6 +22,9 @@ private:
     sf::IntRect proj3{ {178, 834}, {69, 43} };
     sf::IntRect proj4{ {253, 843}, {80, 33} };
     sf::IntRect proj5{ {  338, 854}, {84, 21} };
+    // Add these after proj5:
+    sf::IntRect flame_blue{ {331, 826}, {123, 134} };
+    sf::IntRect flame_red{ {482, 818}, {145, 144} };
 
     sf::IntRect roll1{ { 13, 919}, {57, 49} }; // row1 small — 0 hits
     sf::IntRect roll2 { { 83, 903}, {65, 65} }; // row1 med — 1 hit 

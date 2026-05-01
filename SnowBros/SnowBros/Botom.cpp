@@ -52,7 +52,24 @@ void Botom::update(double deltaTime) {
         return;
     }
 
-    if (trap) return;  
+    if (trap && !rolling) {
+        // Count down escape timer
+        escapeTimer -= static_cast<float>(deltaTime);
+        if (escapeTimer <= 0.f) {
+            // Revive — escape from snowball
+            trap = false;
+            snowballHits = 0;
+            escapeTimer = 0.f;
+            xspeed = (rand() % 2 == 0) ? speed : -speed;
+        }
+        // Still animate even while trapped
+        animTimer += static_cast<float>(deltaTime);
+        if (animTimer >= FRAME_DURATION) {
+            animTimer = 0.f;
+            animFrame++;
+        }
+        return;
+    }
 
 //gravity
     if (!isOnGround) {
@@ -110,9 +127,13 @@ void Botom::update(double deltaTime) {
         sprite->setTextureRect(animFrame % 2 == 0 ? topped_frame1 : topped_frame2);
     }
     else if (trap) {
-        // encased — alternate unsheathing frames (shaking in place)
-        sf::IntRect unsheathFrames[3] = { unsheathing_frame1, unsheathing_frame2, unsheathing_frame3 };
-        sprite->setTextureRect(unsheathFrames[animFrame % 3]);
+        // fully encased — show completed snowball (last frame)
+        sprite->setTextureRect(snow_r2_s4);
+    }
+    else if (snowballHits == 1) {
+        // first hit — just starting to encase
+        sf::IntRect encaseFrames[4] = { snow_r1_s1, snow_r1_s2, snow_r1_s3, snow_r1_s4 };
+        sprite->setTextureRect(encaseFrames[animFrame % 4]);
     }
     else if (std::abs(xspeed) > speed * 1.5) {
         // charging — flip between the two charge frames
@@ -149,23 +170,56 @@ void Botom::update(double deltaTime) {
 void Botom::draw(sf::RenderWindow& window) {
     if (!alive) return;
 
-    if (textureLoaded && sprite) {
-        // Position the sprite; account for horizontal flip offset
-      ;
+    bool showingSnow = (trap && !rolling) || snowballHits > 0;
+
+    if (showingSnow && snowTextureLoaded && snowSprite) {
+        sf::IntRect cur;
+
+        if (trap && !rolling) {
+            sf::IntRect fullFrames[8] = {
+                snow_r3_s1, snow_r3_s2, snow_r3_s3, snow_r3_s4,
+                snow_r4_s1, snow_r4_s2, snow_r4_s3, snow_r4_s4
+            };
+            if (escapeTimer < 1.5f) {
+                sf::IntRect warnFrames[4] = { snow_r4_s1, snow_r4_s2, snow_r4_s3, snow_r4_s4 };
+                cur = warnFrames[animFrame % 4];
+            }
+            else {
+                cur = fullFrames[animFrame % 8];
+            }
+        }
+        else {
+            sf::IntRect partialFrames[8] = {
+                snow_r1_s1, snow_r1_s2, snow_r1_s3, snow_r1_s4,
+                snow_r2_s1, snow_r2_s2, snow_r2_s3, snow_r2_s4
+            };
+            float progress = (float)snowballHits / (float)(HITS_TO_ENCASE - 1);
+            int frameIdx = std::min((int)(progress * 7.f), 7);
+            cur = partialFrames[frameIdx];
+        }
+
+        snowSprite->setTextureRect(cur);
+        float scaleX = hitboxbotom_width / static_cast<float>(cur.size.x);
+        float scaleY = hitboxbotom_height / static_cast<float>(cur.size.y);
+        snowSprite->setScale({ scaleX, scaleY });
+        snowSprite->setPosition({ static_cast<float>(x), static_cast<float>(y) });
+        window.draw(*snowSprite);
+
+    }
+    else if (textureLoaded && sprite) {
         float drawX = static_cast<float>(x);
         if (xspeed < 0)
-            drawX += hitboxbotom_width;   // this stays the same, hitbox width is already in pixels
+            drawX += hitboxbotom_width;
         sprite->setPosition({ drawX, static_cast<float>(y) });
-
         window.draw(*sprite);
+
     }
     else {
-        // Fallback colored rectangle if texture failed to load
         sf::RectangleShape rect(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
         rect.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
-        if (trap)                   rect.setFillColor(sf::Color::White);
+        if (trap)                     rect.setFillColor(sf::Color::White);
         else if (hitFlashTimer > 0.f) rect.setFillColor(sf::Color::Yellow);
-        else                        rect.setFillColor(sf::Color::Red);
+        else                          rect.setFillColor(sf::Color::Red);
         window.draw(rect);
     }
 
@@ -195,6 +249,7 @@ bool Botom::receiveSnowballHit() {
         rolling = false;  
         xspeed = 0.0;
         yspeed = 0.0;
+        escapeTimer = ESCAPE_DURATION;   // ADD THIS
         return true;
     }
     return false;
@@ -244,5 +299,11 @@ void Botom::loadTexture(const std::string& path) {
         float scaleX = hitboxbotom_width / static_cast<float>(idle.size.x);
         float scaleY = hitboxbotom_height / static_cast<float>(idle.size.y);
         sprite->setScale({ scaleX, scaleY });
+    }
+}
+void Botom::loadSnowTexture(const std::string& path) {
+    snowTextureLoaded = snowTexture.loadFromFile(path);
+    if (snowTextureLoaded) {
+        snowSprite.emplace(snowTexture);
     }
 }
