@@ -30,8 +30,7 @@ void Snowball::update(double deltaTime) {
         animFrame++;
     }
 
-    if (x + snowballhitboxsize < 0.f)  x = screenWidth;
-    else if (x > screenWidth)           x = -snowballhitboxsize;
+    if (x + snowballhitboxsize < 0.f || x > screenWidth)  alive = false;
 }
 /*
 void Snowball::draw(RenderWindow& window) {

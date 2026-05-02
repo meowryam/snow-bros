@@ -193,6 +193,7 @@
     <ClInclude Include="Snowball.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="StarLevel.h" />
+    <ClInclude Include="StarLevelScreen.h" />
     <ClInclude Include="Tornado.h" />
     <ClInclude Include="Tornadovariant.h" />
   </ItemGroup>
