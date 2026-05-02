@@ -93,42 +93,64 @@ levelSelectScreen(playerData)
 //    levelSelectScreen.loadAssets(FONT_UI, "assets\\images\\LevelSelect_bg.png");
 //}
 
+
 void Game::loadAllFonts()
 {
-    bool titleOk = sharedFontTitle.openFromFile(FONT_TITLE);
+    sharedFontTitle.openFromFile(FONT_TITLE);
+    sharedFontUI.openFromFile(FONT_UI);
 
-    if (!titleOk) {
-        // Create a fresh font object for the second attempt
-        sf::Font tempFont;
-        if (tempFont.openFromFile("..\\..\\assets\\fonts\\PressStart2P-Regular.ttf")) {
-            sharedFontTitle = std::move(tempFont);
-            titleOk = true;
-        }
-    }
-
-    if (!titleOk) {
-        sf::Font tempFont2;
-        if (tempFont2.openFromFile("..\\assets\\fonts\\PressStart2P-Regular.ttf")) {
-            sharedFontTitle = std::move(tempFont2);
-            titleOk = true;
-        }
-    }
-
-    if (!titleOk) return;
-
-    loginScreen.loadFont(sharedFontTitle, sharedFontTitle);
-    mainMenu.loadFont(sharedFontTitle, sharedFontTitle);
-    hud.loadFont(sharedFontTitle);
-    pauseScreen.loadFont(sharedFontTitle);
-    gameOverScreen.loadFont(sharedFontTitle);
-    leaderboardScreen.loadFont(sharedFontTitle);
-    keyRemapScreen.loadFont(sharedFontTitle);
-    shopScreen.loadFont(sharedFontTitle);
-    levelSelectScreen.loadAssets(sharedFontTitle,
-        "assets\\images\\LevelSelect_bg.png");
-    starLevelScreen.loadAssets(sharedFontTitle,
-        "assets\\images\\StarLevel_bg.png");
+    loginScreen.loadFont(sharedFontTitle, sharedFontUI);
+    mainMenu.loadFont(sharedFontTitle, sharedFontUI);
+    hud.loadFont(sharedFontUI);
+    pauseScreen.loadFont(sharedFontUI);
+    gameOverScreen.loadFont(sharedFontUI);
+    leaderboardScreen.loadFont(sharedFontUI);
+    keyRemapScreen.loadFont(sharedFontUI);
+    shopScreen.loadFont(sharedFontUI);
+    levelSelectScreen.loadAssets(sharedFontUI, "assets\\images\\LevelSelect_bg.png");
+    starLevelScreen.loadAssets(sharedFontUI, "assets\\images\\StarLevel_bg.png");
 }
+
+
+
+//void Game::loadAllFonts()
+//{
+//    bool titleOk = sharedFontTitle.openFromFile(FONT_TITLE);
+//
+//    if (!titleOk) {
+//        // Create a fresh font object for the second attempt
+//        sf::Font tempFont;
+//        if (tempFont.openFromFile("..\\..\\assets\\fonts\\PressStart2P-Regular.ttf")) {
+//            sharedFontTitle = std::move(tempFont);
+//            titleOk = true;
+//        }
+//    }
+//
+//    if (!titleOk) {
+//        sf::Font tempFont2;
+//        if (tempFont2.openFromFile("..\\assets\\fonts\\PressStart2P-Regular.ttf")) {
+//            sharedFontTitle = std::move(tempFont2);
+//            titleOk = true;
+//        }
+//    }
+//
+//    if (!titleOk) return;
+//
+//    loginScreen.loadFont(sharedFontTitle, sharedFontTitle);
+//    mainMenu.loadFont(sharedFontTitle, sharedFontTitle);
+//    hud.loadFont(sharedFontTitle);
+//    pauseScreen.loadFont(sharedFontTitle);
+//    gameOverScreen.loadFont(sharedFontTitle);
+//    leaderboardScreen.loadFont(sharedFontTitle);
+//    keyRemapScreen.loadFont(sharedFontTitle);
+//    shopScreen.loadFont(sharedFontTitle);
+//    levelSelectScreen.loadAssets(sharedFontTitle,
+//        "assets\\images\\LevelSelect_bg.png");
+//    starLevelScreen.loadAssets(sharedFontTitle,
+//        "assets\\images\\StarLevel_bg.png");
+//}
+
+
 void Game::loadAllSounds() {
     // soundManager.loadSound("throw",      "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\throw.wav");
     // soundManager.loadSound("encase",     "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\encase.wav");
@@ -526,4 +548,4 @@ void Game::saveAndSubmitScore()
 }
 
 const string Game::FONT_TITLE = "assets\\fonts\\PressStart2P-Regular.ttf";
-//const string Game::FONT_UI = "assets\\fonts\\PressStart2P-Regular.ttf";
+const string Game::FONT_UI = "assets\\fonts\\Orbitron-Regular.ttf";

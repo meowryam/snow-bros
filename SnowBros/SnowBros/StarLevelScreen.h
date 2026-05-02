@@ -315,7 +315,9 @@ inline void StarLevelScreen::handleEvent(const sf::Event& event) {
     }
 }
 
-inline void StarLevelScreen::draw(sf::RenderWindow& window) {
+inline void StarLevelScreen::draw(sf::RenderWindow& window) 
+{
+    
     if (!layoutReady) setupLayout();
 
     // Background
