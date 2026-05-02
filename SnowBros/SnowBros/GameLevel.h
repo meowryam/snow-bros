@@ -481,7 +481,17 @@ public:
             snowballs[i]->update(deltaTime);
             snowballs[i]->resolvePlatforms(platforms, platformCount);
         }
-
+        int aliveSB = 0;
+        for (int i = 0; i < snowballCount; i++) {
+            if (snowballs[i] && snowballs[i]->getalive()) {
+                snowballs[aliveSB++] = snowballs[i];
+            }
+            else {
+                delete snowballs[i];
+                snowballs[i] = nullptr;
+            }
+        }
+        snowballCount = aliveSB;
         // Update enemies
         for (int i = 0; i < botomCount; i++) {
             if (!botoms[i]->getalive()) continue;
