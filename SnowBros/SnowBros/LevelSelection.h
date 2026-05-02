@@ -37,16 +37,17 @@ private:
     static constexpr int   ROWS = 2;
 
     // Medallion geometry — tuned to the generated background image
-   
+    static constexpr float TITLE_Y = 30.f;   // was 52.f
+    static constexpr float SUBTITLE_Y = 58.f;   // was 82.f
+    static constexpr float MED_R = 33.f;          // was 38.f — slightly smaller
+    static constexpr float MED_GAP_X = 28.f;          // was 22.f — more spacing
+  
 
-    static constexpr float TITLE_Y = 52.f;
-    static constexpr float SUBTITLE_Y = 82.f;
-    static constexpr float MED_R = 62.f;
-    static constexpr float MED_GAP_X = 4.f;
-    static constexpr float GRID_LEFT = 82.f + MED_R;
+    static constexpr float GRID_LEFT = 158.f + MED_R;  // was 148.f — nudge right
 
-    static constexpr float ROW1_Y = 358.f;
-    static constexpr float ROW2_Y = 468.f;
+    static constexpr float ROW1_Y = 325.f;            // was 310.f — down a bit
+    static constexpr float ROW2_Y = 408.f;            // was 400.f — tiny nudge down
+ 
     // ── state ──────────────────────────────────────────────────
     PlayerData& playerData;
     sf::Font    font;
