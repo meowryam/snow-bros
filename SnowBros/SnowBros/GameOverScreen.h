@@ -13,7 +13,11 @@ enum class GameOverResult
 
 class GameOverScreen {
 private:
-    sf::Font font;
+
+    //sf::Font font;
+    sf::Font* font = nullptr;
+
+
     optional<sf::Text> titleText; //these texts may or may not exist yet
     optional<sf::Text> statsText;
     optional<sf::Text> optionTexts[2];
@@ -38,7 +42,7 @@ private:
 public:
     GameOverScreen() : selectedOption(0) {}
 
-    bool loadFont(const string& path) {
+    /*bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
         titleText.emplace(font);
         statsText.emplace(font);
@@ -46,7 +50,19 @@ public:
         for (int i = 0; i < 2; i++)
             optionTexts[i].emplace(font);
         return true;
+    }*/
+
+    bool loadFont(sf::Font& sharedFont) {
+        font = &sharedFont;
+        titleText.emplace(*font);
+        statsText.emplace(*font);
+        hintText.emplace(*font);
+        for (int i = 0; i < 2; i++)
+            optionTexts[i].emplace(*font);
+        return true;
     }
+
+
 
     void reset() //Resets the cursor back to the first option (Retry) whenever the screen is opened.
     { 

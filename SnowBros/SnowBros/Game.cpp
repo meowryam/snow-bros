@@ -49,17 +49,36 @@ Game::Game()
 //}
 
 
+//void Game::loadAllFonts()
+//{
+//    loginScreen.loadFont(FONT_TITLE, FONT_UI);
+//    mainMenu.loadFont(FONT_TITLE, FONT_UI);
+//    hud.loadFont(FONT_UI);
+//    pauseScreen.loadFont(FONT_UI);
+//    gameOverScreen.loadFont(FONT_UI);
+//    leaderboardScreen.loadFont(FONT_UI);
+//    keyRemapScreen.loadFont(FONT_UI);
+//    shopScreen.loadFont(FONT_UI);
+//    levelSelectScreen.loadAssets(FONT_UI, "assets\\images\\LevelSelect_bg.png");
+//}
+
 void Game::loadAllFonts()
 {
-    loginScreen.loadFont(FONT_TITLE, FONT_UI);
-    mainMenu.loadFont(FONT_TITLE, FONT_UI);
-    hud.loadFont(FONT_UI);
-    pauseScreen.loadFont(FONT_UI);
-    gameOverScreen.loadFont(FONT_UI);
-    leaderboardScreen.loadFont(FONT_UI);
-    keyRemapScreen.loadFont(FONT_UI);
-    shopScreen.loadFont(FONT_UI);
-    levelSelectScreen.loadAssets(FONT_UI, "assets\\images\\LevelSelect_bg.png");
+    // Load fonts ONCE into shared objects
+    sharedFontTitle.openFromFile(FONT_TITLE);
+    sharedFontUI.openFromFile(FONT_UI);
+
+    // Pass shared fonts to every screen
+    loginScreen.loadFont(sharedFontTitle, sharedFontUI);
+    mainMenu.loadFont(sharedFontTitle, sharedFontUI);
+    hud.loadFont(sharedFontUI);
+    pauseScreen.loadFont(sharedFontUI);
+    gameOverScreen.loadFont(sharedFontUI);
+    leaderboardScreen.loadFont(sharedFontUI);
+    keyRemapScreen.loadFont(sharedFontUI);
+    shopScreen.loadFont(sharedFontUI);
+    levelSelectScreen.loadAssets(sharedFontUI,
+        "assets\\images\\LevelSelect_bg.png");
 }
 
 void Game::loadAllSounds() {

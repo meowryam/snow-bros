@@ -44,26 +44,43 @@ private:
 
     sf::Text& T(optional<sf::Text>& t) { return t.value(); }
 
-    sf::Font font;      // PressStart2P for title
-    sf::Font fontUI;    // Orbitron for rest
+   // sf::Font font;      // PressStart2P for title
+   // sf::Font fontUI;    // Orbitron for rest
+
+    sf::Font* font = nullptr;
+    sf::Font* fontUI = nullptr;
 
 public:
     LoginScreen() : waitingForInput(true), selectedOption(0),
         saveFound(false) {
     }
 
-    bool loadFont(const string& titlePath, const string& uiPath) {
-        if (!font.openFromFile(titlePath)) return false;
-        if (!fontUI.openFromFile(uiPath)) return false;
-        titleText.emplace(font);       // SNOW BROS title
-        promptText.emplace(fontUI);
-        inputText.emplace(fontUI);
-        option1Text.emplace(fontUI);
-        option2Text.emplace(fontUI);
-        option3Text.emplace(fontUI);
-        errorText.emplace(fontUI);
+    //bool loadFont(const string& titlePath, const string& uiPath) {
+    //    if (!font.openFromFile(titlePath)) return false;
+    //    if (!fontUI.openFromFile(uiPath)) return false;
+    //    titleText.emplace(font);       // SNOW BROS title
+    //    promptText.emplace(fontUI);
+    //    inputText.emplace(fontUI);
+    //    option1Text.emplace(fontUI);
+    //    option2Text.emplace(fontUI);
+    //    option3Text.emplace(fontUI);
+    //    errorText.emplace(fontUI);
+    //    return true;
+    //}
+
+    bool loadFont(sf::Font& titleFont, sf::Font& uiFont) {
+        font = &titleFont;
+        fontUI = &uiFont;
+        titleText.emplace(*font);       // SNOW BROS title
+        promptText.emplace(*fontUI);
+        inputText.emplace(*fontUI);
+        option1Text.emplace(*fontUI);
+        option2Text.emplace(*fontUI);
+        option3Text.emplace(*fontUI);
+        errorText.emplace(*fontUI);
         return true;
     }
+
 
     // Call this every frame to handle typing + menu navigation
     // Returns what should happen next

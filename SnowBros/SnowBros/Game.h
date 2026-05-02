@@ -87,6 +87,9 @@ private:
 
     void saveAndSubmitScore();
 
+    sf::Font sharedFontUI;    // ADD — one font loaded once
+    sf::Font sharedFontTitle; // ADD — one title font loaded once
+
     const string FONT_TITLE = "assets\\fonts\\PressStart2P-Regular.ttf";
     const string FONT_UI = "assets\\fonts\\Orbitron-Regular.ttf";
  

@@ -12,7 +12,10 @@ enum class PauseResult {
 
 class PauseScreen {
 private:
-    sf::Font font;
+
+    //sf::Font font;
+    sf::Font* font = nullptr;
+
     optional<sf::Text> titleText;
     optional<sf::Text> optionTexts[4];
     optional<sf::Text> hintText;
@@ -35,14 +38,25 @@ private:
 public:
     PauseScreen() : selectedOption(0) {}
 
-    bool loadFont(const string& path) {
-        if (!font.openFromFile(path)) return false;
-        titleText.emplace(font);    // "PAUSED" in Orbitron
-        hintText.emplace(font);
+    //bool loadFont(const string& path) {
+    //    if (!font.openFromFile(path)) return false;
+    //    titleText.emplace(font);    // "PAUSED" in Orbitron
+    //    hintText.emplace(font);
+    //    for (int i = 0; i < 4; i++)
+    //        optionTexts[i].emplace(font);
+    //    return true;
+    //}
+
+    bool loadFont(sf::Font& sharedFont) {
+        font = &sharedFont;
+        titleText.emplace(*font);    // "PAUSED" in Orbitron
+        hintText.emplace(*font);
         for (int i = 0; i < 4; i++)
-            optionTexts[i].emplace(font);
+            optionTexts[i].emplace(*font);
         return true;
     }
+
+    
 
     void reset() { selectedOption = 0; }
 

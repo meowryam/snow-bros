@@ -37,22 +37,37 @@ private:
 
     sf::Text& T(optional<sf::Text>& t) { return t.value(); }
 
-    sf::Font font;        // title font (PressStart2P)
-    sf::Font fontUI;      // ui font (Orbitron)
+   // sf::Font font;        // title font (PressStart2P)
+   // sf::Font fontUI;      // ui font (Orbitron)
+    sf::Font* font = nullptr;
+    sf::Font* fontUI = nullptr;
 
 public:
     MainMenu() : selectedOption(0) {}
 
-    bool loadFont(const string& titlePath, const string& uiPath) {
-        if (!font.openFromFile(titlePath)) return false;
-        if (!fontUI.openFromFile(uiPath)) return false;
-        titleText.emplace(font);       // title uses PressStart2P
-        subtitleText.emplace(fontUI);  // rest use Orbitron
-        hintText.emplace(fontUI);
-        for (int i = 0; i < 6; i++)
-            optionTexts[i].emplace(fontUI);
-        return true;
-    }
+    //bool loadFont(const string& titlePath, const string& uiPath) {
+    //    if (!font.openFromFile(titlePath)) return false;
+    //    if (!fontUI.openFromFile(uiPath)) return false;
+    //    titleText.emplace(font);       // title uses PressStart2P
+    //    subtitleText.emplace(fontUI);  // rest use Orbitron
+    //    hintText.emplace(fontUI);
+    //    for (int i = 0; i < 6; i++)
+    //        optionTexts[i].emplace(fontUI);
+    //    return true;
+    //}
+
+    bool loadFont(sf::Font& titleFont, sf::Font& uiFont)
+    {
+        font = &titleFont;
+        fontUI = &uiFont;
+            titleText.emplace(*font);       // title uses PressStart2P
+            subtitleText.emplace(*fontUI);  // rest use Orbitron
+            hintText.emplace(*fontUI);
+            for (int i = 0; i < 6; i++)
+                optionTexts[i].emplace(*fontUI);
+            return true;
+        }
+
 
     void setUsername(const string& name) { username = name; }
     void reset() { selectedOption = 0; }
