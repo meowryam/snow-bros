@@ -49,15 +49,6 @@ private:
     // Start X = (800 - 3*CARD_W - 2*CARD_GAP) / 2
     static constexpr float CARDS_START_X = (800.f - NUM_CARDS * CARD_W - (NUM_CARDS - 1) * CARD_GAP) / 2.f;
 
-    // ── Per-card icon accent colours ──────────────────────────
-    // Speed Boost, Snowball Power, Distance Increase, Balloon Mode
-    const sf::Color ICON_COLORS[4] = {
-        sf::Color(255, 200,  60, 220),   // Speed  — warm gold
-        sf::Color(100, 220, 255, 220),   // Snowball — ice blue
-        sf::Color(80, 255, 160, 220),   // Distance — mint green
-        sf::Color(230, 130, 255, 220),   // Balloon  — soft purple
-    };
-
     // Card palette (idle / hovered)
     const sf::Color C_CARD_IDLE{ 10,  30,  70, 200 };
     const sf::Color C_CARD_HOVER{ 20,  60, 130, 230 };
@@ -73,7 +64,8 @@ private:
     bool layoutReady = false;
 
     // ── Assets ────────────────────────────────────────────────
-    sf::Font    font;
+    sf::Font    font;       // PressStart2P — title/card name
+    sf::Font    fontUI;     // Orbitron — desc + hotkey
     sf::Texture bgTex;
     bool        bgLoaded = false;
     optional<sf::Sprite> bgSprite;
@@ -84,19 +76,30 @@ private:
 
     // Per card
     sf::RectangleShape cardShape[NUM_CARDS];
-    sf::RectangleShape iconCircle[NUM_CARDS];   // decorative coloured gem shape
     optional<sf::Text> txtCardName[NUM_CARDS];
     optional<sf::Text> txtCardDesc[NUM_CARDS];
     optional<sf::Text> txtHotkey[NUM_CARDS];    // "Press 1 / 2 / 3"
+
+    // Potion sprites from Items.png
+    sf::Texture itemsTex;
+    bool        itemsLoaded = false;
+    optional<sf::Sprite> potionSprite[NUM_CARDS];
+
+    // Rects for each power-up in Items.png
+    // Speed=red, Snowball=blue, Distance=yellow, Balloon=green
+    sf::IntRect rectFor(const string& name) const {
+        if (name == "Speed Boost")        return { {325,  17}, {140, 161} };
+        if (name == "Snowball Power")     return { {325, 166}, {137, 166} };
+        if (name == "Distance Increase")  return { {333, 326}, {126, 163} };
+        if (name == "Balloon Mode")       return { {349, 485}, {118, 163} };
+        return { {325, 17}, {140, 161} };
+    }
 
     // ── Helpers ───────────────────────────────────────────────
     sf::Text& TX(optional<sf::Text>& t) { return t.value(); }
 
     // Returns description string for a power-up name
     string descriptionFor(const string& name) const;
-
-    // Returns index into ICON_COLORS for a power-up name
-    int colorIndexFor(const string& name) const;
 
     void setupLayout();
     void refreshCard(int i);
@@ -122,16 +125,10 @@ inline string StarLevelScreen::descriptionFor(const string& name) const {
     return "Mystery power!";
 }
 
-inline int StarLevelScreen::colorIndexFor(const string& name) const {
-    if (name == "Speed Boost")        return 0;
-    if (name == "Snowball Power")     return 1;
-    if (name == "Distance Increase")  return 2;
-    if (name == "Balloon Mode")       return 3;
-    return 0;
-}
-
 inline bool StarLevelScreen::loadAssets(const string& fontPath, const string& bgPath) {
     if (!font.openFromFile(fontPath)) return false;
+    // Orbitron for description and hotkey text — scales better at small sizes
+    fontUI.openFromFile("assets\\fonts\\Orbitron Light.ttf");
 
     bgLoaded = bgTex.loadFromFile(bgPath);
     if (bgLoaded) {
@@ -143,15 +140,17 @@ inline bool StarLevelScreen::loadAssets(const string& fontPath, const string& bg
             });
     }
 
+    itemsLoaded = itemsTex.loadFromFile("assets\\images\\Items.png");
+
     // Title
-    txtTitle.emplace(font, "STAR  LEVEL!", 20u);
-    txtSubtitle.emplace(font, "Choose your power-up", 9u);
+    txtTitle.emplace(font, "STAR  LEVEL!", 22u);
+    txtSubtitle.emplace(fontUI, "Choose your power-up", 13u);
 
     // Per-card texts
     for (int i = 0; i < NUM_CARDS; i++) {
-        txtCardName[i].emplace(font, "", 10u);
-        txtCardDesc[i].emplace(font, "", 7u);
-        txtHotkey[i].emplace(font, "Press " + to_string(i + 1), 7u);
+        txtCardName[i].emplace(font, "", 11u);
+        txtCardDesc[i].emplace(fontUI, "", 11u);
+        txtHotkey[i].emplace(fontUI, "Press " + to_string(i + 1), 10u);
     }
 
     return true;
@@ -191,15 +190,22 @@ inline void StarLevelScreen::setupLayout() {
         cardShape[i].setPosition({ cx, cy });
         cardShape[i].setOutlineThickness(2.5f);
 
-        // Decorative icon — diamond shape using rotated square
-        float iSize = 44.f;
-        iconCircle[i].setSize({ iSize, iSize });
-        iconCircle[i].setOrigin({ iSize * 0.5f, iSize * 0.5f });
-        iconCircle[i].setRotation(sf::degrees(45.f));
-        iconCircle[i].setPosition({ cx + CARD_W * 0.5f, cy + 58.f });
-
-        // Card name — centred
+        // Potion sprite — centred at top of card
         string nm = starEvent.getChoice(i);
+        if (itemsLoaded) {
+            potionSprite[i].emplace(itemsTex);
+            sf::IntRect r = rectFor(nm);
+            potionSprite[i]->setTextureRect(r);
+            // Scale to 64x72 display size
+            float sw = 64.f / static_cast<float>(r.size.x);
+            float sh = 72.f / static_cast<float>(r.size.y);
+            potionSprite[i]->setScale({ sw, sh });
+            // Centre horizontally, position near top of card
+            potionSprite[i]->setPosition({
+                cx + (CARD_W - 64.f) * 0.5f,
+                cy + 18.f
+                });
+        }
         TX(txtCardName[i]).setString(nm);
         TX(txtCardName[i]).setStyle(sf::Text::Bold);
         TX(txtCardName[i]).setFillColor(C_TITLE_CLR);
@@ -241,18 +247,9 @@ inline void StarLevelScreen::setupLayout() {
 
 inline void StarLevelScreen::refreshCard(int i) {
     bool hovered = (i == hoveredCard);
-    string nm = starEvent.getChoice(i);
-    int ci = colorIndexFor(nm);
-    sf::Color accent = ICON_COLORS[ci];
 
     cardShape[i].setFillColor(hovered ? C_CARD_HOVER : C_CARD_IDLE);
     cardShape[i].setOutlineColor(hovered ? C_OUT_HOVER : C_OUT_IDLE);
-
-    sf::Color iconFill = accent;
-    iconFill.a = hovered ? 230 : 160;
-    iconCircle[i].setFillColor(iconFill);
-    iconCircle[i].setOutlineColor(hovered ? sf::Color(255, 255, 255, 180) : sf::Color(255, 255, 255, 80));
-    iconCircle[i].setOutlineThickness(1.5f);
 
     TX(txtCardName[i]).setFillColor(hovered ? sf::Color(255, 255, 255, 255) : C_TITLE_CLR);
 }
@@ -338,7 +335,8 @@ inline void StarLevelScreen::draw(sf::RenderWindow& window) {
 
     for (int i = 0; i < NUM_CARDS; i++) {
         window.draw(cardShape[i]);
-        window.draw(iconCircle[i]);
+        if (itemsLoaded && potionSprite[i].has_value())
+            window.draw(*potionSprite[i]);
         window.draw(TX(txtCardName[i]));
         window.draw(TX(txtCardDesc[i]));
         window.draw(TX(txtHotkey[i]));

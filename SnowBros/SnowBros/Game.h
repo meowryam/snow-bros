@@ -27,6 +27,7 @@
 #include "GameLevel.h"
 #include "Player.h"
 #include "LevelSelection.h"
+#include "StarLevelScreen.h"
 // This is the main Game class
 // It owns everything — the window, the loop, all the managers
 class Game {
@@ -34,7 +35,7 @@ private:
     sf::RenderWindow window;        // the actual game window
     GameState currentState;  // tracks current state
     InputManager inputManager;      // handles keyboard
-
+    StarLevelScreen starLevelScreen;
     // data
     PlayerData   playerData;
     PlayerData   player2Data;

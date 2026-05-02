@@ -67,7 +67,7 @@ void Game::loadAllFonts()
     // Load fonts ONCE into shared objects
     sharedFontTitle.openFromFile(FONT_TITLE);
     sharedFontUI.openFromFile(FONT_UI);
-
+    starLevelScreen.loadAssets(FONT_TITLE, "assets\\images\\StarLevel_bg.png");
     // Pass shared fonts to every screen
     loginScreen.loadFont(sharedFontTitle, sharedFontUI);
     mainMenu.loadFont(sharedFontTitle, sharedFontUI);
@@ -79,6 +79,7 @@ void Game::loadAllFonts()
     shopScreen.loadFont(sharedFontUI);
     levelSelectScreen.loadAssets(sharedFontUI,
         "assets\\images\\LevelSelect_bg.png");
+    starLevelScreen.loadAssets(FONT_UI, "assets\\images\\StarLevel_bg.png");
 }
 
 void Game::loadAllSounds() {
@@ -152,9 +153,22 @@ void Game::run() //The main game loop setup
                     currentState = prevState;   // go back to wherever it was opened from
                     keyRemapScreen.done = false;
                 }
-
-           
                 break;
+            case GameState::STAR_LEVEL:
+                starLevelScreen.handleEvent(*event);
+                if (starLevelScreen.done) {
+                    string chosen = starLevelScreen.getChosenPowerUp();
+                    if (chosen == "Speed Boost") { player1.activateSpeedBoost(15.f); if (twoPlayerMode) player2.activateSpeedBoost(15.f); }
+                    else if (chosen == "Snowball Power") { player1.activateSnowballPower();  if (twoPlayerMode) player2.activateSnowballPower(); }
+                    else if (chosen == "Distance Increase") { player1.activateDistanceIncrease(); if (twoPlayerMode) player2.activateDistanceIncrease(); }
+                    else if (chosen == "Balloon Mode") { player1.activateBalloonMode(10.f); if (twoPlayerMode) player2.activateBalloonMode(10.f); }
+                    gameLevel.loadLevel(levelsManager.getCurrentLevel());
+                    currentState = GameState::PLAYING;
+                    starLevelScreen.done = false;
+                }
+                break;
+           
+                
 
                
                 // Game.cpp — inside run(), in the switch(currentState) block
@@ -389,7 +403,13 @@ void Game::update(float deltaTime)
             }
             else //If there are no more levels, the game ends. 
             {
-                gameLevel.loadLevel(levelsManager.getCurrentLevel());
+                if (levelsManager.getCurrentLevel().isStarlevel()) {
+                    starLevelScreen.reset();
+                    currentState = GameState::STAR_LEVEL;
+                }
+                else {
+                    gameLevel.loadLevel(levelsManager.getCurrentLevel());
+                }
             }
         }
     }
@@ -427,6 +447,9 @@ void Game::draw() {
         break;
     case GameState::LEVEL_SELECT:
         levelSelectScreen.draw(window);
+        break;
+    case GameState::STAR_LEVEL:
+        starLevelScreen.draw(window);
         break;
     default: break;
     }

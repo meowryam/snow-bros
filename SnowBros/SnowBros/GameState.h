@@ -10,5 +10,6 @@ enum class GameState {
     GAME_OVER,
     KEY_REMAP,
     SHOP,
-    LEVEL_SELECT
+    LEVEL_SELECT,
+    STAR_LEVEL
 };
