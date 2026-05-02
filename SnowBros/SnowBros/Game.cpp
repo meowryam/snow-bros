@@ -10,8 +10,23 @@ Game::Game()
     playerData(),
     player2Data(),         
 
-
+    keyBindings(),
+    leaderboard(),
+    scoreSystem(playerData),
+    gemSystem(playerData),
+    eventBus(),
+    soundManager(),
+    levelsManager(),
+    shopSystem(playerData),
+    player1(playerData, 1, 800.f, 600.f),    // now uses playerData properly
     player2(player2Data, 2, 800.f, 600.f),
+    gameLevel(playerData, scoreSystem, gemSystem, eventBus, keyBindings, "assets\\"),
+    twoPlayerMode(false),
+    leaderboardScreen(leaderboard),
+    keyRemapScreen(keyBindings),
+    shopScreen(shopSystem),
+
+    /*player2(player2Data, 2, 800.f, 600.f),
     scoreSystem(playerData),
     gemSystem(playerData),
     shopSystem(playerData),
@@ -20,21 +35,34 @@ Game::Game()
     shopScreen(shopSystem),
     gameLevel(playerData, scoreSystem, gemSystem, eventBus, keyBindings,
         "assets\\"),
-    twoPlayerMode(false)
-    , levelSelectScreen(playerData)
+    twoPlayerMode(false)*/
+//    , levelSelectScreen(playerData)
+//{
+//    // Initialize player 2 data with same lives
+//    player2Data = PlayerData();
+//    player2Data.setUsername("Player2");
+//    player2Data.setLives(2);
+//    player2Data.setGemCount(0);
+//
+//    //player1.setShowDebug(true);
+//   // player2.setShowDebug(true);
+//
+//    window.setFramerateLimit(30); // lock to 30 FPS
+//    leaderboard.load(); // loads the leaderboard from disk
+//    loadAllFonts(); // loads all fonts and sounds.
+//    loadAllSounds();
+//}
+
+levelSelectScreen(playerData)
 {
-    // Initialize player 2 data with same lives
-    player2Data = PlayerData();
+    //player2Data = PlayerData();
     player2Data.setUsername("Player2");
     player2Data.setLives(2);
     player2Data.setGemCount(0);
 
-    //player1.setShowDebug(true);
-   // player2.setShowDebug(true);
-
-    window.setFramerateLimit(30); // lock to 30 FPS
-    leaderboard.load(); // loads the leaderboard from disk
-    loadAllFonts(); // loads all fonts and sounds.
+    window.setFramerateLimit(30);
+    leaderboard.load();
+    loadAllFonts();
     loadAllSounds();
 }
 
@@ -66,23 +94,23 @@ Game::Game()
 //}
 
 void Game::loadAllFonts()
-{
+{    
     // Load fonts ONCE into shared objects
     sharedFontTitle.openFromFile(FONT_TITLE);
-    sharedFontUI.openFromFile(FONT_UI);
-    starLevelScreen.loadAssets(FONT_TITLE, "assets\\images\\StarLevel_bg.png");
+    //sharedFontUI.openFromFile(FONT_UI);
+   // starLevelScreen.loadAssets(FONT_TITLE, "assets\\images\\StarLevel_bg.png");
     // Pass shared fonts to every screen
-    loginScreen.loadFont(sharedFontTitle, sharedFontUI);
-    mainMenu.loadFont(sharedFontTitle, sharedFontUI);
-    hud.loadFont(sharedFontUI);
-    pauseScreen.loadFont(sharedFontUI);
-    gameOverScreen.loadFont(sharedFontUI);
-    leaderboardScreen.loadFont(sharedFontUI);
-    keyRemapScreen.loadFont(sharedFontUI);
-    shopScreen.loadFont(sharedFontUI);
-    levelSelectScreen.loadAssets(sharedFontUI,
+    loginScreen.loadFont(sharedFontTitle, sharedFontTitle);
+    mainMenu.loadFont(sharedFontTitle, sharedFontTitle);
+    hud.loadFont(sharedFontTitle);
+    pauseScreen.loadFont(sharedFontTitle);
+    gameOverScreen.loadFont(sharedFontTitle);
+    leaderboardScreen.loadFont(sharedFontTitle);
+    keyRemapScreen.loadFont(sharedFontTitle);
+    shopScreen.loadFont(sharedFontTitle);
+    levelSelectScreen.loadAssets(sharedFontTitle,
         "assets\\images\\LevelSelect_bg.png");
-    starLevelScreen.loadAssets(FONT_UI, "assets\\images\\StarLevel_bg.png");
+    starLevelScreen.loadAssets(FONT_TITLE, "assets\\images\\StarLevel_bg.png");
 }
 
 void Game::loadAllSounds() {
@@ -481,4 +509,4 @@ void Game::saveAndSubmitScore()
 }
 
 const string Game::FONT_TITLE = "assets\\fonts\\PressStart2P-Regular.ttf";
-const string Game::FONT_UI = "assets\\fonts\\Orbitron-Regular.ttf";
+//const string Game::FONT_UI = "assets\\fonts\\PressStart2P-Regular.ttf";

@@ -36,7 +36,7 @@ private:
     GameState currentState;  // tracks current state
     InputManager inputManager;      // handles keyboard
 
-    sf::Font sharedFontUI;    // ADD — one font loaded once
+    //sf::Font sharedFontUI;    // ADD — one font loaded once
     sf::Font sharedFontTitle; // ADD — one title font loaded once
 
     // data
@@ -81,7 +81,7 @@ private:
     const float TIME_PER_FRAME = 1.f / 30.f;
 
     static const string FONT_TITLE;
-    static const string FONT_UI;
+    //static const string FONT_UI;
 
     // internal helpers
     void loadAllFonts();

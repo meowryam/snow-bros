@@ -15,6 +15,7 @@ using namespace std;
 // ============================================================
 class StarLevelScreen {
 public:
+    bool assetsLoaded = false;
     StarLevelScreen() = default;
     StarLevelScreen(const StarLevelScreen&) = delete;
     StarLevelScreen& operator=(const StarLevelScreen&) = delete;
@@ -65,7 +66,7 @@ private:
 
     // ── Assets ────────────────────────────────────────────────
     sf::Font    font;       // PressStart2P — title/card name
-    sf::Font    fontUI;     // Orbitron — desc + hotkey
+    //sf::Font    fontUI;     // Orbitron — desc + hotkey
     sf::Texture bgTex;
     bool        bgLoaded = false;
     optional<sf::Sprite> bgSprite;
@@ -125,10 +126,14 @@ inline string StarLevelScreen::descriptionFor(const string& name) const {
     return "Mystery power!";
 }
 
-inline bool StarLevelScreen::loadAssets(const string& fontPath, const string& bgPath) {
-    if (!font.openFromFile(fontPath)) return false;
-    // Orbitron for description and hotkey text — scales better at small sizes
-    fontUI.openFromFile("assets\\fonts\\Orbitron Light.ttf");
+inline bool StarLevelScreen::loadAssets(const string& fontPath, const string& bgPath)
+{
+    if (assetsLoaded) 
+        return true;  // add this guard at the top
+    assetsLoaded = true;
+    if (!font.openFromFile(fontPath))
+        return false;
+    //fontUI.openFromFile("assets\\fonts\\Orbitron-Regular.ttf");
 
     bgLoaded = bgTex.loadFromFile(bgPath);
     if (bgLoaded) {
@@ -144,13 +149,13 @@ inline bool StarLevelScreen::loadAssets(const string& fontPath, const string& bg
 
     // Title
     txtTitle.emplace(font, "STAR  LEVEL!", 22u);
-    txtSubtitle.emplace(fontUI, "Choose your power-up", 13u);
+    txtSubtitle.emplace(font, "Choose your power-up", 13u);
 
     // Per-card texts
     for (int i = 0; i < NUM_CARDS; i++) {
         txtCardName[i].emplace(font, "", 11u);
-        txtCardDesc[i].emplace(fontUI, "", 11u);
-        txtHotkey[i].emplace(fontUI, "Press " + to_string(i + 1), 10u);
+        txtCardDesc[i].emplace(font, "", 11u);
+        txtHotkey[i].emplace(font, "Press " + to_string(i + 1), 10u);
     }
 
     return true;
