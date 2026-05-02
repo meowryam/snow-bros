@@ -26,18 +26,22 @@ private:
     static constexpr int   COLS = 5;
 
     // ── Scattered positions — hand-placed on the open floor ───
-    // Organic layout: upper arc, then lower arc
     static constexpr float POSITIONS[10][2] = {
-     { 240.f, 330.f },  // 1 - left side, lower
-     { 300.f, 295.f },  // 2 - close to 1, slightly up
-     { 395.f, 255.f },  // 3 - further right, higher up
-     { 490.f, 245.f },  // 4 - upper mid-right
-     { 575.f, 275.f },  // 5 - right arc
-     { 210.f, 430.f },  // 6 - far left, lower row
-     { 315.f, 460.f },  // 7 - lower row
-     { 420.f, 470.f },  // 8 - lower center
-     { 520.f, 450.f },  // 9 - lower right
-     { 610.f, 390.f },  // 10 - right, between rows
+        // Row 1 (top) — 3 hexagons
+        { 280.f, 220.f },  // 1
+        { 420.f, 220.f },  // 2
+        { 560.f, 220.f },  // 3
+
+        // Row 2 (middle) — 4 hexagons
+        { 210.f, 315.f },  // 4
+        { 350.f, 315.f },  // 5
+        { 490.f, 315.f },  // 6
+        { 630.f, 315.f },  // 7
+
+        // Row 3 (bottom) — 3 hexagons
+        { 280.f, 400.f },  // 8
+        { 420.f, 400.f },  // 9
+        { 560.f, 400.f },  // 10
     };
     static constexpr float HEX_R = 36.f;   // hexagon "radius"
     static constexpr float TITLE_Y = 28.f;
