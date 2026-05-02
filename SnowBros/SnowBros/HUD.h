@@ -27,11 +27,10 @@ private:
         return t.value();
     }
 
-    //sf::Font font;   // just one font now
-    sf::Font* font = nullptr;
+    sf::Font font;   // just one font now
 
 public:
-    /*bool loadFont(const string& path) {
+    bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
         livesText.emplace(font);
         gemsText.emplace(font);
@@ -39,18 +38,6 @@ public:
         scoreText.emplace(font);
         p1LivesText.emplace(font);
         p2LivesText.emplace(font);
-        return true;
-    }*/
-
-    
-    bool loadFont(sf::Font& sharedFont) {
-        font = &sharedFont;
-        livesText.emplace(*font);
-        gemsText.emplace(*font);
-        levelText.emplace(*font);
-        scoreText.emplace(*font);
-        p1LivesText.emplace(*font);
-        p2LivesText.emplace(*font);
         return true;
     }
 

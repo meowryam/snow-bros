@@ -11,8 +11,8 @@ public:
     LevelSelectScreen(const LevelSelectScreen&) = delete;
     LevelSelectScreen& operator=(const LevelSelectScreen&) = delete;
 
-    //bool loadAssets(const string& fontPath, const string& bgPath = "assets\\images\\LevelSelect_bg.png");
-    bool loadAssets(sf::Font& sharedFont, const string& bgPath = "assets\\images\\LevelSelect_bg.png");
+    bool loadAssets(const string& fontPath,
+        const string& bgPath = "assets\\images\\LevelSelect_bg.png");
 
     void reset();
     void handleEvent(const sf::Event& event);
@@ -47,10 +47,7 @@ private:
     static constexpr float TITLE_Y = 28.f;
 
     PlayerData& playerData;
-
-    //sf::Font    font;
-    sf::Font* font = nullptr;  // just a pointer, doesn't own the font
-
+    sf::Font    font;
     bool        layoutReady = false;
     int         hoveredIndex = 0;
 
@@ -110,35 +107,10 @@ inline bool LevelSelectScreen::isUnlocked(int i) const {
     return (i + 1) <= playerData.getCurrentLevel();
 }
 
-//inline bool LevelSelectScreen::loadAssets(const string& fontPath,
-//    const string& bgPath)
-//{
-//    if (!font.openFromFile(fontPath)) return false;
-//
-//    bgLoaded = bgTex.loadFromFile(bgPath);
-//    if (bgLoaded) {
-//        bgSprite.emplace(bgTex);
-//        sf::Vector2u ts = bgTex.getSize();
-//        bgSprite->setScale({
-//            800.f / static_cast<float>(ts.x),
-//            600.f / static_cast<float>(ts.y)
-//            });
-//    }
-//
-//    txtTitle.emplace(font, "SELECT  LEVEL", 18u);
-//    txtBack.emplace(font, "BACK  [ESC]", 9u);
-//    txtMessage.emplace(font, "", 9u);
-//
-//    for (int i = 0; i < TOTAL_LEVELS; i++) {
-//        txtNumber[i].emplace(font, to_string(i + 1), 20u);
-//        txtLabel[i].emplace(font, isUnlocked(i) ? "" : "LOCKED", 6u);
-//    }
-//    return true;
-//}
-
-inline bool LevelSelectScreen::loadAssets(sf::Font& sharedFont, const string& bgPath)
+inline bool LevelSelectScreen::loadAssets(const string& fontPath,
+    const string& bgPath)
 {
-    font = &sharedFont;
+    if (!font.openFromFile(fontPath)) return false;
 
     bgLoaded = bgTex.loadFromFile(bgPath);
     if (bgLoaded) {
@@ -150,18 +122,16 @@ inline bool LevelSelectScreen::loadAssets(sf::Font& sharedFont, const string& bg
             });
     }
 
-    txtTitle.emplace(*font, "SELECT  LEVEL", 16u);
-    txtBack.emplace(*font, "BACK  [ESC]", 8u);
-    txtMessage.emplace(*font, "", 8u);
+    txtTitle.emplace(font, "SELECT  LEVEL", 18u);
+    txtBack.emplace(font, "BACK  [ESC]", 9u);
+    txtMessage.emplace(font, "", 9u);
 
     for (int i = 0; i < TOTAL_LEVELS; i++) {
-        txtNumber[i].emplace(*font, to_string(i + 1), 18u);
-        txtLabel[i].emplace(*font, "", 6u);   // ← ADD THIS LINE
+        txtNumber[i].emplace(font, to_string(i + 1), 20u);
+        txtLabel[i].emplace(font, isUnlocked(i) ? "" : "LOCKED", 6u);
     }
-
     return true;
 }
-
 
 inline void LevelSelectScreen::reset() {
     hoveredIndex = 0;

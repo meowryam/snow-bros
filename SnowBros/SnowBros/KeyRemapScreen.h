@@ -7,9 +7,7 @@ using namespace std;
 // Press Enter on a binding, then press the new key
 class KeyRemapScreen {
 private:
-    //sf::Font font;
-    sf::Font* font = nullptr;
-
+    sf::Font font;
     KeyBindings& bindings;
 
     optional<sf::Text> titleText;
@@ -66,24 +64,13 @@ public:
         waitingForKey(false), done(false) {
     }
 
-    /*bool loadFont(const string& path) {
+    bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
         titleText.emplace(font);
         hintText.emplace(font);
         for (int i = 0; i < 5; i++) {
             actionTexts[i].emplace(font);
             keyTexts[i].emplace(font);
-        }
-        return true;
-    }*/
-
-    bool loadFont(sf::Font& sharedFont) {
-        font = &sharedFont;
-        titleText.emplace(*font);
-        hintText.emplace(*font);
-        for (int i = 0; i < 5; i++) {
-            actionTexts[i].emplace(*font);
-            keyTexts[i].emplace(*font);
         }
         return true;
     }

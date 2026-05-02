@@ -5,10 +5,7 @@ using namespace std;
 
 class LeaderboardScreen {
 private:
-
-    //sf::Font font;
-    sf::Font* font = nullptr;
-
+    sf::Font font;
     optional<sf::Text> titleText;
     optional<sf::Text> rowTexts[10];
     optional<sf::Text> headerText;
@@ -37,7 +34,7 @@ public:
 
     LeaderboardScreen(Leaderboard& lb) : leaderboard(lb), done(false) {}
 
-    /*bool loadFont(const string& path) {
+    bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
         titleText.emplace(font);
         headerText.emplace(font);
@@ -45,17 +42,6 @@ public:
         emptyText.emplace(font);
         for (int i = 0; i < 10; i++)
             rowTexts[i].emplace(font);
-        return true;
-    }*/
-
-    bool loadFont(sf::Font& sharedFont) {
-        font = &sharedFont;
-        titleText.emplace(*font);
-        headerText.emplace(*font);
-        hintText.emplace(*font);
-        emptyText.emplace(*font);
-        for (int i = 0; i < 10; i++)
-            rowTexts[i].emplace(*font);
         return true;
     }
 
