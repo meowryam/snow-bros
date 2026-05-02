@@ -1,5 +1,5 @@
 username=wareesha
-current_level=5
+current_level=4
 lives=2
-gem_count=514
-high_score=1416
+gem_count=508
+high_score=866
