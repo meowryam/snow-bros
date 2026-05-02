@@ -136,10 +136,9 @@ inline bool LevelSelectScreen::isUnlocked(int i) const {
 //    return true;
 //}
 
-inline bool LevelSelectScreen::loadAssets(sf::Font& sharedFont,
-    const string& bgPath)
+inline bool LevelSelectScreen::loadAssets(sf::Font& sharedFont, const string& bgPath)
 {
-    font = &sharedFont;  // just point to the existing font, don't load again
+    font = &sharedFont;
 
     bgLoaded = bgTex.loadFromFile(bgPath);
     if (bgLoaded) {
@@ -151,20 +150,17 @@ inline bool LevelSelectScreen::loadAssets(sf::Font& sharedFont,
             });
     }
 
-    // Use *font everywhere instead of font
     txtTitle.emplace(*font, "SELECT  LEVEL", 16u);
-    //txtSubtitle.emplace(*font, "Choose your destination", 7u);
     txtBack.emplace(*font, "BACK  [ESC]", 8u);
     txtMessage.emplace(*font, "", 8u);
 
     for (int i = 0; i < TOTAL_LEVELS; i++) {
         txtNumber[i].emplace(*font, to_string(i + 1), 18u);
-        //txtLock[i].emplace(*font, "LOCKED", 5u);
+        txtLabel[i].emplace(*font, "", 6u);   // ← ADD THIS LINE
     }
 
     return true;
 }
-
 
 
 inline void LevelSelectScreen::reset() {
