@@ -63,12 +63,11 @@ public:
         platforms[count++] = Platform(0, H - 40, W, 40, sf::Color(60, 100, 160));
 
         if (levelNo == 10) {
-            // Gamakichi boss arena — floor only + 3 platforms for player to dodge on
             float p1y = H - 160.f;
             float p2y = H - 300.f;
-            platforms[count++] = Platform(50, p1y, 200, ph, sf::Color(60, 100, 160));
-            platforms[count++] = Platform(550, p1y, 200, ph, sf::Color(60, 100, 160));
-            platforms[count++] = Platform(280, p2y, 240, ph, sf::Color(60, 100, 160));
+            platforms[count++] = Platform(30, p1y, 220, ph, sf::Color(60, 100, 160));
+            platforms[count++] = Platform(550, p1y, 220, ph, sf::Color(60, 100, 160));
+            platforms[count++] = Platform(260, p2y, 280, ph, sf::Color(60, 100, 160));
             return count;
         }
 

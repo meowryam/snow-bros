@@ -1,57 +1,224 @@
 #pragma once
 #include "Enemy.h"
+#include "Platform.h"
 #include <SFML/Graphics.hpp>
 #include <optional>
 #include <string>
+#include <cmath>
 using namespace std;
 
+// ?? Orb Bomb ?????????????????????????????????????????????????
+struct OrbBomb {
+    double x, y, vx, vy;
+    bool   alive;
+    bool   exploding;
+    float  explodeTimer;
+    float  fuseTimer;
+    float  animTimer;
+    int    animFrame;
+    bool   onGround;
+    float  flashTimer;
+
+    static constexpr float FUSE_TIME = 4.f;
+    static constexpr float EXPLODE_DURATION = 0.4f;
+    static constexpr float EXPLODE_RADIUS = 80.f;
+    static constexpr float WALK_SPEED = 55.f;
+    static constexpr float GRAVITY = 1200.f;
+    static constexpr float MAX_FALL = 800.f;
+    static constexpr float W = 40.f;
+    static constexpr float H = 44.f;
+    static constexpr float FRAME_T = 0.08f;
+    static constexpr float FLASH_START = 1.5f; // start flashing this many secs before explode
+
+    OrbBomb() : x(0), y(0), vx(0), vy(0),
+        alive(false), exploding(false),
+        explodeTimer(0.f), fuseTimer(0.f),
+        animTimer(0.f), animFrame(0),
+        onGround(false), flashTimer(0.f) {
+    }
+
+    void spawn(double sx, double sy, double dir) {
+        x = sx; y = sy;
+        vx = dir * WALK_SPEED;
+        vy = 0.0;
+        alive = true;
+        exploding = false;
+        explodeTimer = 0.f;
+        fuseTimer = 0.f;
+        animTimer = 0.f;
+        animFrame = 0;
+        onGround = false;
+        flashTimer = 0.f;
+    }
+
+    void startExplode() {
+        exploding = true;
+        explodeTimer = 0.f;
+        vx = 0.0;
+        vy = 0.0;
+    }
+
+    sf::FloatRect getHitbox() const {
+        return sf::FloatRect(sf::Vector2f((float)x, (float)y),
+            sf::Vector2f(W, H));
+    }
+
+    sf::FloatRect getBlastBox() const {
+        return sf::FloatRect(
+            sf::Vector2f((float)x - EXPLODE_RADIUS, (float)y - EXPLODE_RADIUS),
+            sf::Vector2f(W + EXPLODE_RADIUS * 2.f, H + EXPLODE_RADIUS * 2.f));
+    }
+
+    void update(double dt, Platform platforms[], int platformCount,
+        float screenWidth) {
+        if (!alive) return;
+
+        if (exploding) {
+            explodeTimer += (float)dt;
+            animTimer += (float)dt;
+            if (animTimer >= FRAME_T) { animTimer = 0.f; animFrame++; }
+            if (explodeTimer >= EXPLODE_DURATION) alive = false;
+            return;
+        }
+
+        fuseTimer += (float)dt;
+
+        // flash when close to exploding
+        if (fuseTimer >= FUSE_TIME - FLASH_START) {
+            flashTimer += (float)dt;
+        }
+
+        if (fuseTimer >= FUSE_TIME) {
+            startExplode();
+            return;
+        }
+
+        // gravity
+        if (!onGround) {
+            vy += GRAVITY * dt;
+            if (vy > MAX_FALL) vy = MAX_FALL;
+        }
+
+        x += vx * dt;
+        y += vy * dt;
+
+        // screen wrap horizontal
+        if (x + W < 0)           x = screenWidth;
+        else if (x > screenWidth) x = -W;
+
+        // platform resolution
+        onGround = false;
+        for (int i = 0; i < platformCount; i++) {
+            sf::FloatRect pr = platforms[i].rect;
+            sf::FloatRect hb = getHitbox();
+            if (!hb.findIntersection(pr)) continue;
+            float feet = (float)y + H;
+            float platTop = pr.position.y;
+            if (vy >= 0.0 && feet - vy * 0.05 <= platTop + 6.f) {
+                y = platTop - H;
+                vy = 0.0;
+                onGround = true;
+                break;
+            }
+        }
+
+        // floor clamp
+        float floorY = 600.f - 24.f - H;
+        if (y >= floorY) {
+            y = floorY;
+            vy = 0.0;
+            onGround = true;
+        }
+
+        // reverse direction at screen edges
+        if (x <= 0) { x = 0;           vx = WALK_SPEED; }
+        if (x + W >= screenWidth) { x = screenWidth - W; vx = -WALK_SPEED; }
+
+        // animation
+        animTimer += (float)dt;
+        if (animTimer >= FRAME_T) { animTimer = 0.f; animFrame++; }
+    }
+};
+
+// ?? Gamakichi ????????????????????????????????????????????????
 class Gamakichi : public Enemy {
 public:
-    static const int MAX_ROCKETS = 8;  // keeping for GameLevel.h compatibility
+    static const int MAX_ROCKETS = 1; // stub for GameLevel.h compat
+    static const int MAX_CHILDREN = 1; // stub for GameLevel.h compat
+    static const int MAX_BOMBS = 10;
 
-    // ?? Hitbox for collision with player ?????????????????????
+    struct RocketStub {
+        bool alive = false;
+        sf::FloatRect getHitbox() const { return {}; }
+    };
+    struct ChildStub {
+        bool alive = false;
+        sf::FloatRect getHitbox() const { return {}; }
+    };
+
+    RocketStub rockets[MAX_ROCKETS];
+    ChildStub  children[MAX_CHILDREN];
+    OrbBomb    bombs[MAX_BOMBS];
+
     sf::FloatRect getHitbox() const {
         return sf::FloatRect(
-            sf::Vector2f((float)x, (float)y),
-            sf::Vector2f(DISPLAY_W, DISPLAY_H)
-        );
+            sf::Vector2f(HEAD_X, HEAD_Y),
+            sf::Vector2f(DISPLAY_W, DISPLAY_H));
     }
 
     void setPlayerPos(double px, double py) { playerX = px; playerY = py; }
+    bool isDying() const { return dying; }
+
+    void startDying() {
+        if (dying || !alive) return;
+        dying = true;
+        dyingTimer = 0.f;
+        flashTimer = 0.f;
+        flashVis = true;
+        attackState = AttackState::DYING;
+        for (int i = 0; i < MAX_BOMBS; i++) bombs[i].alive = false;
+    }
 
 private:
-    // ?? Display sizes ?????????????????????????????????????????
-    static constexpr float DISPLAY_W = 420.f;   // head width on screen
-    static constexpr float DISPLAY_H = 230.f;   // head height on screen
+    // ?? Layout ???????????????????????????????????????????????
     static constexpr float SCREEN_W = 800.f;
     static constexpr float SCREEN_H = 600.f;
-    static constexpr float HEAD_X = (SCREEN_W - DISPLAY_W) / 2.f;  // centered
-    static constexpr float HEAD_Y = -40.f;   // slightly off top edge, looming
+    static constexpr float DISPLAY_W = 380.f;
+    static constexpr float DISPLAY_H = 210.f;
+    static constexpr float HEAD_X = (SCREEN_W - DISPLAY_W) / 2.f; // 210
+    static constexpr float HEAD_Y = 110.f; // sits in upper-center, chin ~y=320
 
-    // ?? Health / phase ????????????????????????????????????????
-    static constexpr int   MAX_HEALTH = 50;
-    static constexpr int   PHASE2_HP = 25;
+    // ?? Health ???????????????????????????????????????????????
+    static constexpr int MAX_HEALTH = 30;
+    static constexpr int PHASE2_HP = 15;
 
-    // ?? Timing constants ?????????????????????????????????????
-    static constexpr float HEAD_FRAME_TIME = 0.6f;   // idle breathe speed
-    static constexpr float EYE_FRAME_TIME = 0.08f;  // eye charge speed
-    static constexpr float EYE_FRAME_TIME_P2 = 0.04f;  // faster in phase 2
-    static constexpr float ORB_SPEED = 180.f;
-    static constexpr float ORB_SPEED_P2 = 280.f;
-    static constexpr float FOAM_SPEED = 140.f;
-    static constexpr float FOAM_FRAME_TIME = 0.1f;
+    // ?? Timing ???????????????????????????????????????????????
+    static constexpr float HEAD_FRAME_TIME = 0.7f;
+    static constexpr float HEAD_FRAME_TIME_P2 = 0.3f;
+    static constexpr float EYE_FRAME_TIME = 0.09f;
+    static constexpr float EYE_FRAME_TIME_P2 = 0.045f;
+    static constexpr float IDLE_DURATION = 2.0f;
+    static constexpr float IDLE_DURATION_P2 = 1.0f;
+    static constexpr float FIRE_PAUSE = 0.3f;
+    static constexpr float FOAM_DURATION = 2.8f;
+    static constexpr float FOAM_DURATION_P2 = 1.8f;
+    static constexpr float FOAM_SPEED = 150.f;
+    static constexpr float FOAM_FRAME_TIME = 0.09f;
+    static constexpr float BOMB_SPAWN_INTERVAL = 2.2f;
+    static constexpr float BOMB_SPAWN_INTERVAL_P2 = 1.2f;
+    static constexpr float FIRE_INTERVAL = 0.0f; // unused now
+    static constexpr int   BOMBS_PER_ROUND = 2;
+    static constexpr int   BOMBS_PER_ROUND_P2 = 3;
 
-    // attack cycle timings (seconds)
-    static constexpr float IDLE_DURATION = 1.8f;
-    static constexpr float EYE_DURATION = 6 * 0.08f; // 6 frames * frame time
-    static constexpr float FIRE_PAUSE = 0.4f;
-    static constexpr float FOAM_DURATION = 2.5f;
+    // ?? Death ????????????????????????????????????????????????
+    static constexpr float DYING_DURATION = 3.5f;
+    static constexpr float FLASH_INTERVAL_DEATH = 0.1f;
+    static constexpr float DEATH_EXPLOSION_INTERVAL = 0.22f;
 
-    // ?? Sprite rects ?? Head ?????????????????????????????????
+    // ?? Sprite rects ?????????????????????????????????????????
     sf::IntRect head_closed{ {  16,    0}, {1240, 659} };
     sf::IntRect head_open{ {1340,    0}, {1210, 668} };
 
-    // ?? Sprite rects ?? Eye charge (6 frames) ????????????????
     sf::IntRect eye_frame1{ { 883,  703}, { 217, 373} };
     sf::IntRect eye_frame2{ {1195,  715}, { 235, 364} };
     sf::IntRect eye_frame3{ {1534,  700}, { 223, 382} };
@@ -59,17 +226,15 @@ private:
     sf::IntRect eye_frame5{ {2194,  703}, { 217, 391} };
     sf::IntRect eye_frame6{ {2518,  709}, { 232, 373} };
 
-    // ?? Sprite rects ?? Explosions ????????????????????????????
     sf::IntRect explosion_1{ {  34,  643}, { 274, 322} };
     sf::IntRect explosion_2{ { 337,  655}, { 343, 334} };
 
-    // ?? Sprite rects ?? Foam (4 frames) ??????????????????????
     sf::IntRect foam_1{ {2737,  688}, { 340, 229} };
     sf::IntRect foam_2{ {3073,  667}, { 334, 250} };
     sf::IntRect foam_3{ {3409,  616}, { 325, 319} };
     sf::IntRect foam_4{ {3733,  571}, { 327, 334} };
 
-    // ?? Sprite rects ?? Orbs row 3 (12 frames, phase 1) ??????
+    // orb walking frames — row 3 (12 frames)
     sf::IntRect orb_1{ {  43, 1135}, {262, 358} };
     sf::IntRect orb_2{ { 322, 1162}, {247, 328} };
     sf::IntRect orb_3{ { 613, 1123}, {295, 355} };
@@ -83,7 +248,7 @@ private:
     sf::IntRect orb_11{ {2671, 1222}, {196, 280} };
     sf::IntRect orb_12{ {2866, 1162}, {340, 319} };
 
-    // ?? Sprite rects ?? Orbs row 4 (7 frames, phase 2) ???????
+    // orb explosion frames — row 4 (7 frames)
     sf::IntRect orb_b1{ {  31, 1483}, {277, 234} };
     sf::IntRect orb_b2{ { 319, 1507}, {238, 210} };
     sf::IntRect orb_b3{ { 628, 1522}, {178, 195} };
@@ -92,29 +257,17 @@ private:
     sf::IntRect orb_b6{ {1387, 1498}, {247, 219} };
     sf::IntRect orb_b7{ {1663, 1495}, {274, 222} };
 
-    // ?? Orb projectile ????????????????????????????????????????
-    struct GamakichiOrb {
-        double x, y, vx, vy;
-        bool   alive;
-        bool   isPhase2Type;  // false = row3 frames, true = row4 frames
-        float  animTimer;
-        int    animFrame;
+    // ?? Textures & sprites ????????????????????????????????????
+    sf::Texture          texture;
+    bool                 textureLoaded = false;
+    optional<sf::Sprite> headSprite;
+    optional<sf::Sprite> eyeSprite;
+    optional<sf::Sprite> orbSprite;
+    optional<sf::Sprite> foamSprite;
+    optional<sf::Sprite> explosionSprite;
 
-        GamakichiOrb() : x(0), y(0), vx(0), vy(0),
-            alive(false), isPhase2Type(false),
-            animTimer(0.f), animFrame(0) {
-        }
-
-        static constexpr float ORB_DISPLAY = 48.f;
-        static constexpr float FRAME_T = 0.06f;
-
-        sf::FloatRect getHitbox() const {
-            return sf::FloatRect(
-                sf::Vector2f((float)x, (float)y),
-                sf::Vector2f(ORB_DISPLAY, ORB_DISPLAY)
-            );
-        }
-    };
+    sf::RectangleShape healthBarBg;
+    sf::RectangleShape healthBar;
 
     // ?? Foam wave ?????????????????????????????????????????????
     struct FoamWave {
@@ -122,118 +275,72 @@ private:
         bool   alive;
         float  animTimer;
         int    animFrame;
-        static constexpr float FOAM_DISPLAY_W = 80.f;
-        static constexpr float FOAM_DISPLAY_H = 50.f;
-
+        static constexpr float W = 80.f;
+        static constexpr float H = 50.f;
         FoamWave() : x(0), y(0), vx(0), alive(false),
             animTimer(0.f), animFrame(0) {
         }
-
         sf::FloatRect getHitbox() const {
-            return sf::FloatRect(
-                sf::Vector2f((float)x, (float)y),
-                sf::Vector2f(FOAM_DISPLAY_W, FOAM_DISPLAY_H)
-            );
+            return sf::FloatRect(sf::Vector2f((float)x, (float)y),
+                sf::Vector2f(W, H));
         }
     };
 
     // ?? Explosion marker ??????????????????????????????????????
     struct Explosion {
-        float x, y;
-        float timer;
+        float x, y, timer;
         bool  alive;
         int   frame;
-        Explosion() : x(0), y(0), timer(0.f), alive(false), frame(0) {}
+        bool  isBombBlast; // large radius blast circle
+        Explosion() : x(0), y(0), timer(0.f),
+            alive(false), frame(0), isBombBlast(false) {
+        }
     };
 
-    // ?? Fixed arrays (no STL) ?????????????????????????????????
-    static const int MAX_ORBS = 12;
     static const int MAX_FOAM = 4;
-    static const int MAX_EXPLOSIONS = 8;
+    static const int MAX_EXPLOSIONS = 16;
 
-    GamakichiOrb orbs[MAX_ORBS];
-    FoamWave     foamWaves[MAX_FOAM];
-    Explosion    explosions[MAX_EXPLOSIONS];
-
-    // ?? Texture & sprites ?????????????????????????????????????
-    sf::Texture           texture;
-    bool                  textureLoaded = false;
-    optional<sf::Sprite>  headSprite;
-    optional<sf::Sprite>  eyeSprite;
-    optional<sf::Sprite>  orbSprite;
-    optional<sf::Sprite>  foamSprite;
-    optional<sf::Sprite>  explosionSprite;
-
-    // ?? Health bar ????????????????????????????????????????????
-    sf::RectangleShape healthBarBg;
-    sf::RectangleShape healthBar;
+    FoamWave  foamWaves[MAX_FOAM];
+    Explosion explosions[MAX_EXPLOSIONS];
 
     // ?? State machine ?????????????????????????????????????????
     enum class AttackState {
-        IDLE,
-        EYE_CHARGE,
-        FIRE_PAUSE,
-        FIRING,
-        FOAM_ATTACK,
-        DYING
+        IDLE, EYE_CHARGE, FIRE_PAUSE, SPAWNING_BOMBS, FOAM_ATTACK, DYING
     };
 
     AttackState attackState = AttackState::IDLE;
     float       stateTimer = 0.f;
     int         phase = 1;
 
-    // ?? Head animation ????????????????????????????????????????
     float headAnimTimer = 0.f;
     bool  mouthOpen = false;
 
-    // ?? Eye charge animation ??????????????????????????????????
     float eyeAnimTimer = 0.f;
     int   eyeFrame = 0;
     bool  eyeVisible = false;
 
-    // ?? Firing state ??????????????????????????????????????????
-    int   orbsFiredThisRound = 0;
-    float fireCooldown = 0.f;
-    static constexpr float FIRE_INTERVAL = 0.22f;
-    static constexpr int   ORBS_PER_ROUND = 5;
-    static constexpr int   ORBS_PER_ROUND_P2 = 8;
+    int   bombsSpawnedThisRound = 0;
+    float bombSpawnCooldown = 0.f;
 
-    // ?? Death ?????????????????????????????????????????????????
     bool  dying = false;
     float dyingTimer = 0.f;
     float flashTimer = 0.f;
     bool  flashVis = true;
-    static constexpr float DYING_DURATION = 3.5f;
-    static constexpr float FLASH_INTERVAL = 0.1f;
     float deathExplosionTimer = 0.f;
-    static constexpr float DEATH_EXPLOSION_INTERVAL = 0.25f;
 
-    // ?? Player target ?????????????????????????????????????????
     double playerX = 400.0;
-    double playerY = 300.0;
+    double playerY = 400.0;
+
+    // ?? Platform ref for bombs ????????????????????????????????
+    Platform* platformsRef = nullptr;
+    int       platformCount = 0;
 
     // ?? Helpers ???????????????????????????????????????????????
-    void spawnOrb(double vx, double vy, bool p2type) {
-        for (int i = 0; i < MAX_ORBS; i++) {
-            if (!orbs[i].alive) {
-                orbs[i].x = HEAD_X + DISPLAY_W * 0.5 - GamakichiOrb::ORB_DISPLAY * 0.5;
-                orbs[i].y = HEAD_Y + DISPLAY_H - 10.0;
-                orbs[i].vx = vx;
-                orbs[i].vy = vy;
-                orbs[i].alive = true;
-                orbs[i].isPhase2Type = p2type;
-                orbs[i].animTimer = 0.f;
-                orbs[i].animFrame = 0;
-                return;
-            }
-        }
-    }
-
     void spawnFoam(double startX, double velX) {
         for (int i = 0; i < MAX_FOAM; i++) {
             if (!foamWaves[i].alive) {
                 foamWaves[i].x = startX;
-                foamWaves[i].y = SCREEN_H - 40.f - FoamWave::FOAM_DISPLAY_H;
+                foamWaves[i].y = HEAD_Y + DISPLAY_H - FoamWave::H;
                 foamWaves[i].vx = velX;
                 foamWaves[i].alive = true;
                 foamWaves[i].animTimer = 0.f;
@@ -243,7 +350,7 @@ private:
         }
     }
 
-    void spawnExplosion(float ex, float ey) {
+    void spawnExplosion(float ex, float ey, bool bombBlast = false) {
         for (int i = 0; i < MAX_EXPLOSIONS; i++) {
             if (!explosions[i].alive) {
                 explosions[i].x = ex;
@@ -251,25 +358,25 @@ private:
                 explosions[i].timer = 0.f;
                 explosions[i].frame = 0;
                 explosions[i].alive = true;
+                explosions[i].isBombBlast = bombBlast;
                 return;
             }
         }
     }
 
-    sf::IntRect orbFrameFor(int idx, bool p2) const {
-        if (!p2) {
-            sf::IntRect frames[12] = {
-                orb_1, orb_2, orb_3, orb_4, orb_5, orb_6,
-                orb_7, orb_8, orb_9, orb_10, orb_11, orb_12
-            };
-            return frames[idx % 12];
-        }
-        else {
-            sf::IntRect frames[7] = {
-                orb_b1, orb_b2, orb_b3, orb_b4, orb_b5, orb_b6, orb_b7
-            };
-            return frames[idx % 7];
-        }
+    sf::IntRect orbWalkFrame(int idx) const {
+        sf::IntRect frames[12] = {
+            orb_1,orb_2,orb_3,orb_4,orb_5,orb_6,
+            orb_7,orb_8,orb_9,orb_10,orb_11,orb_12
+        };
+        return frames[idx % 12];
+    }
+
+    sf::IntRect orbExplodeFrame(int idx) const {
+        sf::IntRect frames[7] = {
+            orb_b1,orb_b2,orb_b3,orb_b4,orb_b5,orb_b6,orb_b7
+        };
+        return frames[idx % 7];
     }
 
     sf::IntRect foamFrameFor(int idx) const {
@@ -279,22 +386,13 @@ private:
 
     sf::IntRect eyeFrameFor(int idx) const {
         sf::IntRect frames[6] = {
-            eye_frame1, eye_frame2, eye_frame3,
-            eye_frame4, eye_frame5, eye_frame6
+            eye_frame1,eye_frame2,eye_frame3,
+            eye_frame4,eye_frame5,eye_frame6
         };
         return frames[idx % 6];
     }
 
 public:
-    // keep MAX_ROCKETS stub so GameLevel.h compiles without changes
-    struct RocketStub { bool alive = false; sf::FloatRect getHitbox() const { return {}; } };
-    RocketStub rockets[MAX_ROCKETS];
-
-    // children array kept for GameLevel.h collision loop compatibility
-    static const int MAX_CHILDREN = 1;
-    struct ChildStub { bool alive = false; sf::FloatRect getHitbox() const { return {}; } };
-    ChildStub children[MAX_CHILDREN];
-
     Gamakichi(double startX, double startY)
         : Enemy(startX, startY, MAX_HEALTH, 0.0)
     {
@@ -305,7 +403,6 @@ public:
         healthBarBg.setFillColor(sf::Color(60, 0, 0));
         healthBarBg.setOutlineThickness(2.f);
         healthBarBg.setOutlineColor(sf::Color::Red);
-
         healthBar.setSize({ 400.f, 22.f });
         healthBar.setFillColor(sf::Color(220, 30, 30));
     }
@@ -321,40 +418,45 @@ public:
         return true;
     }
 
-    bool isDying() const { return dying; }
+    // call every frame from GameLevel so bombs know platforms
+    void setPlatforms(Platform* plats, int count) {
+        platformsRef = plats;
+        platformCount = count;
+    }
 
-    void startDying() {
-        if (dying || !alive) return;
-        dying = true;
-        dyingTimer = 0.f;
-        flashTimer = 0.f;
-        flashVis = true;
-        attackState = AttackState::DYING;
-        // kill all projectiles
-        for (int i = 0; i < MAX_ORBS; i++) orbs[i].alive = false;
-        for (int i = 0; i < MAX_FOAM; i++) foamWaves[i].alive = false;
+    // returns true if bomb i just exploded this frame (for damage check)
+    bool isBombExploding(int i) const {
+        return i >= 0 && i < MAX_BOMBS &&
+            bombs[i].alive && bombs[i].exploding &&
+            bombs[i].explodeTimer < 0.05f; // first tick only
+    }
+
+    // check if a rect is inside bomb i blast radius
+    bool bombBlastHits(int i, sf::FloatRect target) const {
+        if (i < 0 || i >= MAX_BOMBS) return false;
+        if (!bombs[i].alive || !bombs[i].exploding) return false;
+        return bombs[i].getBlastBox().findIntersection(target).has_value();
     }
 
     void update(double deltaTime) override {
         float dt = static_cast<float>(deltaTime);
 
-        // ?? Death animation ???????????????????????????????????
+        // ?? Death ?????????????????????????????????????????????
         if (dying) {
             dyingTimer += dt;
             flashTimer += dt;
             deathExplosionTimer += dt;
 
-            if (flashTimer >= FLASH_INTERVAL) {
+            if (flashTimer >= FLASH_INTERVAL_DEATH) {
                 flashTimer = 0.f;
                 flashVis = !flashVis;
             }
             if (deathExplosionTimer >= DEATH_EXPLOSION_INTERVAL) {
                 deathExplosionTimer = 0.f;
-                float ex = HEAD_X + (rand() % (int)DISPLAY_W);
-                float ey = HEAD_Y + (rand() % (int)DISPLAY_H);
-                spawnExplosion(ex, ey);
+                float ex = HEAD_X + (float)(rand() % (int)DISPLAY_W);
+                float ey = HEAD_Y + (float)(rand() % (int)DISPLAY_H);
+                spawnExplosion(ex, ey, false);
             }
-            // update explosions
             for (int i = 0; i < MAX_EXPLOSIONS; i++) {
                 if (!explosions[i].alive) continue;
                 explosions[i].timer += dt;
@@ -373,34 +475,36 @@ public:
 
         if (!alive) return;
 
-        // ?? Phase check ???????????????????????????????????????
+        // ?? Phase ?????????????????????????????????????????????
         if (health <= PHASE2_HP) phase = 2;
 
-        // ?? Head idle animation ???????????????????????????????
+        // ?? Head idle anim ????????????????????????????????????
         headAnimTimer += dt;
-        float headFrameTime = (phase == 2) ? HEAD_FRAME_TIME * 0.5f : HEAD_FRAME_TIME;
-        if (headAnimTimer >= headFrameTime) {
+        float hft = (phase == 2) ? HEAD_FRAME_TIME_P2 : HEAD_FRAME_TIME;
+        if (headAnimTimer >= hft) {
             headAnimTimer = 0.f;
             mouthOpen = !mouthOpen;
         }
 
-        // ?? Update orbs ???????????????????????????????????????
-        for (int i = 0; i < MAX_ORBS; i++) {
-            if (!orbs[i].alive) continue;
-            orbs[i].x += orbs[i].vx * deltaTime;
-            orbs[i].y += orbs[i].vy * deltaTime;
+        // ?? Update bombs ??????????????????????????????????????
+        for (int i = 0; i < MAX_BOMBS; i++) {
+            if (!bombs[i].alive) continue;
+            bombs[i].update(deltaTime,
+                platformsRef ? platformsRef : nullptr,
+                platformCount,
+                SCREEN_W);
 
-            orbs[i].animTimer += dt;
-            if (orbs[i].animTimer >= GamakichiOrb::FRAME_T) {
-                orbs[i].animTimer = 0.f;
-                orbs[i].animFrame++;
+            // chain reaction: if this bomb just started exploding,
+            // trigger nearby bombs too
+            if (bombs[i].exploding && bombs[i].explodeTimer < dt * 2.f) {
+                for (int j = 0; j < MAX_BOMBS; j++) {
+                    if (j == i || !bombs[j].alive || bombs[j].exploding) continue;
+                    sf::FloatRect blastBox = bombs[i].getBlastBox();
+                    if (blastBox.findIntersection(bombs[j].getHitbox()).has_value())
+                        bombs[j].startExplode();
+                }
+                spawnExplosion((float)bombs[i].x, (float)bombs[i].y, true);
             }
-            // kill if off screen or hits floor
-            if (orbs[i].y > SCREEN_H - 40.f) {
-                spawnExplosion((float)orbs[i].x, (float)orbs[i].y);
-                orbs[i].alive = false;
-            }
-            if (orbs[i].x < -60 || orbs[i].x > SCREEN_W + 60) orbs[i].alive = false;
         }
 
         // ?? Update foam ???????????????????????????????????????
@@ -412,7 +516,7 @@ public:
                 foamWaves[i].animTimer = 0.f;
                 foamWaves[i].animFrame = (foamWaves[i].animFrame + 1) % 4;
             }
-            if (foamWaves[i].x < -100 || foamWaves[i].x > SCREEN_W + 100)
+            if (foamWaves[i].x < -120 || foamWaves[i].x > SCREEN_W + 120)
                 foamWaves[i].alive = false;
         }
 
@@ -427,26 +531,29 @@ public:
             }
         }
 
-        // ?? Attack state machine ??????????????????????????????
+        // ?? State machine ?????????????????????????????????????
         stateTimer += dt;
 
         switch (attackState) {
 
         case AttackState::IDLE:
             eyeVisible = false;
-            if (stateTimer >= IDLE_DURATION) {
-                stateTimer = 0.f;
-                eyeFrame = 0;
-                eyeAnimTimer = 0.f;
-                eyeVisible = true;
-                attackState = AttackState::EYE_CHARGE;
+            {
+                float idleDur = (phase == 2) ? IDLE_DURATION_P2 : IDLE_DURATION;
+                if (stateTimer >= idleDur) {
+                    stateTimer = 0.f;
+                    eyeFrame = 0;
+                    eyeAnimTimer = 0.f;
+                    eyeVisible = true;
+                    attackState = AttackState::EYE_CHARGE;
+                }
             }
             break;
 
         case AttackState::EYE_CHARGE: {
-            float frameTime = (phase == 2) ? EYE_FRAME_TIME_P2 : EYE_FRAME_TIME;
+            float fet = (phase == 2) ? EYE_FRAME_TIME_P2 : EYE_FRAME_TIME;
             eyeAnimTimer += dt;
-            if (eyeAnimTimer >= frameTime) {
+            if (eyeAnimTimer >= fet) {
                 eyeAnimTimer = 0.f;
                 eyeFrame++;
                 if (eyeFrame >= 6) {
@@ -461,60 +568,56 @@ public:
         case AttackState::FIRE_PAUSE:
             if (stateTimer >= FIRE_PAUSE) {
                 stateTimer = 0.f;
-                orbsFiredThisRound = 0;
-                fireCooldown = 0.f;
-                attackState = AttackState::FIRING;
+                bombsSpawnedThisRound = 0;
+                bombSpawnCooldown = 0.f;
+                attackState = AttackState::SPAWNING_BOMBS;
             }
             break;
 
-        case AttackState::FIRING: {
-            fireCooldown -= dt;
-            int orbsThisRound = (phase == 2) ? ORBS_PER_ROUND_P2 : ORBS_PER_ROUND;
-            float speed = (phase == 2) ? ORB_SPEED_P2 : ORB_SPEED;
+        case AttackState::SPAWNING_BOMBS: {
+            int bombsThisRound = (phase == 2) ? BOMBS_PER_ROUND_P2 : BOMBS_PER_ROUND;
+            float spawnInterval = (phase == 2) ?
+                BOMB_SPAWN_INTERVAL_P2 : BOMB_SPAWN_INTERVAL;
 
-            if (fireCooldown <= 0.f && orbsFiredThisRound < orbsThisRound) {
-                fireCooldown = FIRE_INTERVAL;
+            bombSpawnCooldown -= dt;
+            if (bombSpawnCooldown <= 0.f &&
+                bombsSpawnedThisRound < bombsThisRound) {
+                bombSpawnCooldown = 0.3f; // small gap between each spawn
 
-                // spread shot — divide 160 degree arc evenly
-                double cx = HEAD_X + DISPLAY_W * 0.5;
-                double cy = HEAD_Y + DISPLAY_H;
-                double dx = playerX - cx;
-                double dy = playerY - cy;
-                double len = sqrt(dx * dx + dy * dy);
-                if (len < 1.0) len = 1.0;
-                dx /= len; dy /= len;
-
-                // fire one orb slightly offset from center aim each shot
-                // alternate left/right spread
-                double spreadAngle = (orbsFiredThisRound % 2 == 0)
-                    ? (orbsFiredThisRound / 2) * 18.0
-                    : -(orbsFiredThisRound / 2) * 18.0;
-                double rad = spreadAngle * 3.14159265 / 180.0;
-                double nx = dx * cos(rad) - dy * sin(rad);
-                double ny = dx * sin(rad) + dy * cos(rad);
-
-                spawnOrb(nx * speed, ny * speed, phase == 2);
-                orbsFiredThisRound++;
+                // find a free slot
+                for (int i = 0; i < MAX_BOMBS; i++) {
+                    if (!bombs[i].alive) {
+                        double dir = (bombsSpawnedThisRound % 2 == 0) ? 1.0 : -1.0;
+                        // drop from mouth center
+                        bombs[i].spawn(
+                            HEAD_X + DISPLAY_W * 0.5 - OrbBomb::W * 0.5,
+                            HEAD_Y + DISPLAY_H,
+                            dir);
+                        bombsSpawnedThisRound++;
+                        break;
+                    }
+                }
             }
 
-            if (orbsFiredThisRound >= orbsThisRound && fireCooldown <= 0.f) {
+            if (bombsSpawnedThisRound >= bombsThisRound &&
+                bombSpawnCooldown <= 0.f) {
                 stateTimer = 0.f;
                 attackState = AttackState::FOAM_ATTACK;
-                // spawn two foam waves from center going left and right
                 spawnFoam(HEAD_X + DISPLAY_W * 0.5, FOAM_SPEED);
                 spawnFoam(HEAD_X + DISPLAY_W * 0.5, -FOAM_SPEED);
             }
             break;
         }
 
-        case AttackState::FOAM_ATTACK:
-            if (stateTimer >= FOAM_DURATION) {
+        case AttackState::FOAM_ATTACK: {
+            float foamDur = (phase == 2) ? FOAM_DURATION_P2 : FOAM_DURATION;
+            if (stateTimer >= foamDur) {
                 stateTimer = 0.f;
                 attackState = AttackState::IDLE;
-                // kill any remaining foam
                 for (int i = 0; i < MAX_FOAM; i++) foamWaves[i].alive = false;
             }
             break;
+        }
 
         case AttackState::DYING:
             break;
@@ -524,64 +627,93 @@ public:
     void draw(sf::RenderWindow& window) override {
         if (!alive && !dying) return;
 
-        // ?? Draw orbs ?????????????????????????????????????????
-        for (int i = 0; i < MAX_ORBS; i++) {
-            if (!orbs[i].alive) continue;
+        // ?? Bombs ?????????????????????????????????????????????
+        for (int i = 0; i < MAX_BOMBS; i++) {
+            if (!bombs[i].alive) continue;
+
+            bool flash = (bombs[i].fuseTimer >= OrbBomb::FUSE_TIME - OrbBomb::FLASH_START)
+                && ((int)(bombs[i].fuseTimer * 10) % 2 == 0);
+
             if (textureLoaded && orbSprite) {
-                sf::IntRect r = orbFrameFor(orbs[i].animFrame, orbs[i].isPhase2Type);
+                sf::IntRect r = bombs[i].exploding
+                    ? orbExplodeFrame(bombs[i].animFrame)
+                    : orbWalkFrame(bombs[i].animFrame);
                 orbSprite->setTextureRect(r);
-                float sc = GamakichiOrb::ORB_DISPLAY / static_cast<float>(r.size.x);
-                float sy = GamakichiOrb::ORB_DISPLAY / static_cast<float>(r.size.y);
-                orbSprite->setScale({ sc, sy });
-                orbSprite->setPosition({ (float)orbs[i].x, (float)orbs[i].y });
+                orbSprite->setScale({
+                    OrbBomb::W / static_cast<float>(r.size.x),
+                    OrbBomb::H / static_cast<float>(r.size.y)
+                    });
+                orbSprite->setPosition({ (float)bombs[i].x, (float)bombs[i].y });
+                if (flash)
+                    orbSprite->setColor(sf::Color(255, 100, 100, 255));
+                else
+                    orbSprite->setColor(sf::Color::White);
                 window.draw(*orbSprite);
+                orbSprite->setColor(sf::Color::White);
             }
             else {
-                sf::CircleShape c(GamakichiOrb::ORB_DISPLAY * 0.5f);
-                c.setFillColor(orbs[i].isPhase2Type ?
-                    sf::Color(220, 60, 60) : sf::Color(60, 60, 220));
-                c.setPosition({ (float)orbs[i].x, (float)orbs[i].y });
-                window.draw(c);
+                sf::RectangleShape r(sf::Vector2f(OrbBomb::W, OrbBomb::H));
+                r.setPosition({ (float)bombs[i].x, (float)bombs[i].y });
+                r.setFillColor(bombs[i].exploding ?
+                    sf::Color(255, 140, 0) :
+                    (flash ? sf::Color(255, 80, 80) : sf::Color(30, 30, 30)));
+                window.draw(r);
+            }
+
+            // blast radius circle when exploding
+            if (bombs[i].exploding) {
+                sf::CircleShape blast(OrbBomb::EXPLODE_RADIUS);
+                blast.setOrigin({ OrbBomb::EXPLODE_RADIUS, OrbBomb::EXPLODE_RADIUS });
+                blast.setPosition({
+                    (float)bombs[i].x + OrbBomb::W * 0.5f,
+                    (float)bombs[i].y + OrbBomb::H * 0.5f
+                    });
+                blast.setFillColor(sf::Color(255, 140, 0, 80));
+                blast.setOutlineColor(sf::Color(255, 200, 0, 180));
+                blast.setOutlineThickness(2.f);
+                window.draw(blast);
             }
         }
 
-        // ?? Draw foam ?????????????????????????????????????????
+        // ?? Foam ??????????????????????????????????????????????
         for (int i = 0; i < MAX_FOAM; i++) {
             if (!foamWaves[i].alive) continue;
             if (textureLoaded && foamSprite) {
                 sf::IntRect r = foamFrameFor(foamWaves[i].animFrame);
                 foamSprite->setTextureRect(r);
                 foamSprite->setScale({
-                    FoamWave::FOAM_DISPLAY_W / static_cast<float>(r.size.x),
-                    FoamWave::FOAM_DISPLAY_H / static_cast<float>(r.size.y)
+                    FoamWave::W / static_cast<float>(r.size.x),
+                    FoamWave::H / static_cast<float>(r.size.y)
                     });
                 foamSprite->setPosition({ (float)foamWaves[i].x, (float)foamWaves[i].y });
                 window.draw(*foamSprite);
             }
             else {
-                sf::RectangleShape r(sf::Vector2f(FoamWave::FOAM_DISPLAY_W, FoamWave::FOAM_DISPLAY_H));
-                r.setFillColor(sf::Color(100, 200, 255, 180));
+                sf::RectangleShape r(sf::Vector2f(FoamWave::W, FoamWave::H));
+                r.setFillColor(sf::Color(200, 240, 255, 180));
                 r.setPosition({ (float)foamWaves[i].x, (float)foamWaves[i].y });
                 window.draw(r);
             }
         }
 
-        // ?? Draw explosions ???????????????????????????????????
+        // ?? Explosions ????????????????????????????????????????
         for (int i = 0; i < MAX_EXPLOSIONS; i++) {
             if (!explosions[i].alive) continue;
             if (textureLoaded && explosionSprite) {
-                sf::IntRect r = (explosions[i].frame == 0) ? explosion_1 : explosion_2;
+                sf::IntRect r = (explosions[i].frame == 0) ?
+                    explosion_1 : explosion_2;
                 explosionSprite->setTextureRect(r);
+                float sz = explosions[i].isBombBlast ? 100.f : 70.f;
                 explosionSprite->setScale({
-                    80.f / static_cast<float>(r.size.x),
-                    80.f / static_cast<float>(r.size.y)
+                    sz / static_cast<float>(r.size.x),
+                    sz / static_cast<float>(r.size.y)
                     });
                 explosionSprite->setPosition({ explosions[i].x, explosions[i].y });
                 window.draw(*explosionSprite);
             }
         }
 
-        // ?? Draw head ?????????????????????????????????????????
+        // ?? Head ??????????????????????????????????????????????
         if (textureLoaded && headSprite) {
             sf::IntRect hr = mouthOpen ? head_open : head_closed;
             headSprite->setTextureRect(hr);
@@ -590,12 +722,10 @@ public:
                 DISPLAY_H / static_cast<float>(hr.size.y)
                 });
             headSprite->setPosition({ HEAD_X, HEAD_Y });
-
             if (dying && !flashVis)
                 headSprite->setColor(sf::Color(255, 80, 80, 255));
             else
                 headSprite->setColor(sf::Color::White);
-
             window.draw(*headSprite);
             headSprite->setColor(sf::Color::White);
         }
@@ -607,7 +737,7 @@ public:
             window.draw(r);
         }
 
-        // ?? Draw eye charge overlay ???????????????????????????
+        // ?? Eye charge overlay ????????????????????????????????
         if (eyeVisible && textureLoaded && eyeSprite) {
             sf::IntRect er = eyeFrameFor(eyeFrame);
             eyeSprite->setTextureRect(er);
@@ -615,19 +745,18 @@ public:
                 80.f / static_cast<float>(er.size.x),
                 80.f / static_cast<float>(er.size.y)
                 });
-            // position eye at center of head
             eyeSprite->setPosition({
                 HEAD_X + DISPLAY_W * 0.5f - 40.f,
-                HEAD_Y + DISPLAY_H * 0.4f - 40.f
+                HEAD_Y + DISPLAY_H * 0.35f - 40.f
                 });
             window.draw(*eyeSprite);
         }
 
-        if (dying) return; // no health bar while dying
+        if (dying) return;
 
         // ?? Health bar ????????????????????????????????????????
         float barX = SCREEN_W * 0.5f - 200.f;
-        float barY = HEAD_Y + DISPLAY_H + 8.f;
+        float barY = HEAD_Y + DISPLAY_H + 6.f;
         healthBarBg.setPosition({ barX, barY });
         window.draw(healthBarBg);
         float pct = (float)health / (float)MAX_HEALTH;

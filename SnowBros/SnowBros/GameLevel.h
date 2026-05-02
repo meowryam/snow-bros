@@ -870,11 +870,25 @@ private:
 
             // vs gamakichi
             if (hasGamakichi && gamakichi->getalive()) {
-                if (sbHB.findIntersection(gamakichi->getHitbox())) {
+                // snowball kills a bomb
+                bool hitBomb = false;
+                for (int b = 0; b < Gamakichi::MAX_BOMBS; b++) {
+                    if (!gamakichi->bombs[b].alive || gamakichi->bombs[b].exploding) continue;
+                    if (sbHB.findIntersection(gamakichi->bombs[b].getHitbox()).has_value()) {
+                        gamakichi->bombs[b].startExplode();
+                        sb->setalive(false);
+                        hitBomb = true;
+                        scoreSystem.onBottomKilled();
+                        gemSystem.enemykilled();
+                        break;
+                    }
+                }
+                // snowball hits the head directly
+                if (!hitBomb && sbHB.findIntersection(gamakichi->getHitbox()).has_value()) {
                     gamakichi->healthreduce(1);
                     sb->setalive(false);
                     if (gamakichi->gethealth() <= 0) {
-                        gamakichi->setalive(false);
+                        gamakichi->startDying();
                         scoreSystem.onGamakichiKilled();
                         gemSystem.gamakichikilled();
                         eventBus.post(GameEvent::ENEMY_KILLED);
@@ -1010,18 +1024,21 @@ private:
                 }
             }
             if (hasGamakichi && gamakichi->getalive()) {
-                for (int r = 0; r < Gamakichi::MAX_ROCKETS; r++) {
-                    if (gamakichi->rockets[r].alive &&
-                        phb.findIntersection(gamakichi->rockets[r].getHitbox())) {
+                // bomb contact damage
+                for (int b = 0; b < Gamakichi::MAX_BOMBS; b++) {
+                    if (!gamakichi->bombs[b].alive) continue;
+                    if (!gamakichi->bombs[b].exploding &&
+                        phb.findIntersection(gamakichi->bombs[b].getHitbox()).has_value()) {
+                        p.takeDamage(); return;
+                    }
+                    // blast radius damage
+                    if (gamakichi->bombs[b].exploding &&
+                        gamakichi->bombBlastHits(b, phb)) {
                         p.takeDamage(); return;
                     }
                 }
-                for (int c = 0; c < Gamakichi::MAX_CHILDREN; c++) {
-                    if (gamakichi->children[c].alive &&
-                        phb.findIntersection(gamakichi->children[c].getHitbox())) {
-                        p.takeDamage(); return;
-                    }
-                }
+                // foam damage
+               
             }
             };
         checkDamage(player1);
@@ -1257,6 +1274,7 @@ public:
             mogera->update(deltaTime);
         if (hasGamakichi && gamakichi->getalive()) {
             gamakichi->setPlayerPos(player1.getPosition().x, player1.getPosition().y);
+            gamakichi->setPlatforms(platforms, platformCount);
             gamakichi->update(deltaTime);
         }
 
