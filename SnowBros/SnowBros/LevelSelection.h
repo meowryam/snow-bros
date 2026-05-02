@@ -28,16 +28,16 @@ private:
     // ── Scattered positions — hand-placed on the open floor ───
     // Organic layout: upper arc, then lower arc
     static constexpr float POSITIONS[10][2] = {
-       { 255.f, 300.f },  // 1
-       { 345.f, 265.f },  // 2
-       { 415.f, 250.f },  // 3
-       { 505.f, 265.f },  // 4
-       { 590.f, 300.f },  // 5
-       { 245.f, 400.f },  // 6
-       { 335.f, 430.f },  // 7
-       { 415.f, 440.f },  // 8
-       { 500.f, 430.f },  // 9
-       { 585.f, 400.f },  // 10
+     { 240.f, 280.f },  // 1
+     { 350.f, 240.f },  // 2
+     { 430.f, 225.f },  // 3
+     { 520.f, 240.f },  // 4
+     { 610.f, 275.f },  // 5
+     { 230.f, 375.f },  // 6
+     { 330.f, 395.f },  // 7
+     { 420.f, 405.f },  // 8
+     { 510.f, 395.f },  // 9
+     { 600.f, 370.f },  // 10
     };
     static constexpr float HEX_R = 36.f;   // hexagon "radius"
     static constexpr float TITLE_Y = 28.f;
