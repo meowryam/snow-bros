@@ -1,3 +1,4 @@
+//fixed
 #include "Player.h"
 Player::Player()
     : playerData(*(new PlayerData())),  
@@ -133,14 +134,16 @@ void Player::update(float deltaTime) {
     if (!isAlive) return;
     if (invincibleTimer > 0.f)
         invincibleTimer -= deltaTime;
-    //gravity-validity
     if (!isOnGround && !balloonModeActive) {
-
         velocity.y += GRAVITY * deltaTime;
         if (velocity.y > MAX_FALL_SPEED) {
             velocity.y = MAX_FALL_SPEED;
         }
     }
+    else if (isOnGround) {
+        velocity.y = 0.f;  // kill any accumulated gravity
+    }
+    
 
     //balloon
     if (balloonModeActive) {
@@ -236,25 +239,38 @@ void Player::update(float deltaTime) {
         sprite.setTextureRect(walk1); // idle
     }
 
-    // Scale — use current frame size for correct proportions
+    // Fixed scale based on walk1 reference frame (220x275)
+      // so size never changes between frames — stops vibration
+    static constexpr float REF_W = 220.f;
+    static constexpr float REF_H = 275.f;
+    static constexpr float SCALE_X = 36.f / REF_W;  // = 0.1636f
+    static constexpr float SCALE_Y = 44.f / REF_H;  // = 0.1600f
+
     sf::IntRect cur = sprite.getTextureRect();
-    float scaleX = 36.f / static_cast<float>(cur.size.x);
-    float scaleY = 44.f / static_cast<float>(cur.size.y);
+
+    // Anchor origin at bottom-centre of the frame so feet stay planted
+    // regardless of how tall each frame is
+    float originX = REF_W / 2.f;   // fixed centre — never changes between frames
+    float originY = static_cast<float>(cur.size.y);       // feet = bottom
+
+    // Sprite foot position = bottom of hitbox
+    float footX = position.x + 18.f;   // centre of 36px hitbox
+    float footY = position.y + 44.f;   // bottom of 44px hitbox
 
     if (facing == Direction::LEFT) {
-        // flip: set origin to right edge of frame, mirror X
-        sprite.setOrigin({ static_cast<float>(cur.size.x), 0.f });
-        sprite.setScale({ scaleX, scaleY });
-        sprite.setPosition(position);   // position is always top-left of hitbox area
+        sprite.setOrigin({ originX, originY });
+        sprite.setScale({ SCALE_X, SCALE_Y });
     }
     else {
-        sprite.setOrigin({ 0.f, 0.f });
-        sprite.setScale({ -scaleX, scaleY });
-        sprite.setPosition(position);
+        sprite.setOrigin({ originX, originY });
+        sprite.setScale({ -SCALE_X, SCALE_Y });
     }
 
+    sprite.setPosition({ footX, footY });
+
+    // Hitbox stays exactly at position, unchanged
     hitbox = FloatRect(
-        Vector2f(position.x - 33.f, position.y),
+        Vector2f(position.x, position.y),
         Vector2f(36.f, 44.f)
     );
     debugBox.setPosition(Vector2f(hitbox.position.x, hitbox.position.y));
@@ -335,10 +351,21 @@ void Player::resetForNewLevel(Vector2f spawnPosition) {
     sprite.setPosition(position);
 }
 void Player::resolvePlatforms(Platform platforms[], int count) {
-    isOnGround = false;
+    // Only clear isOnGround if player is moving upward (jumped)
+    // Never clear it just to re-detect — that causes oscillation
+    if (velocity.y < 0.f) {
+        isOnGround = false;
+    }
 
+    if (isOnGround) {
+        // Already grounded — just keep velocity zeroed, no need to re-scan
+        velocity.y = 0.f;
+        return;
+    }
+
+    // Only reaches here if airborne (velocity.y >= 0, not on ground)
     for (int i = 0; i < count; i++) {
-        FloatRect pRect = platforms[i].rect;  
+        FloatRect pRect = platforms[i].rect;
 
         if (!hitbox.findIntersection(pRect)) continue;
 
@@ -351,7 +378,6 @@ void Player::resolvePlatforms(Platform platforms[], int count) {
         }
     }
 }
-
 Vector2f Player::getPosition() const {return position;}
 FloatRect Player::getHitbox() const {return hitbox;}
 PlayerState Player::getState() const {return state;}
