@@ -36,53 +36,16 @@ Game::Game()
 }
 
 
-//void Game::loadAllFonts() {
-//    loginScreen.loadFont(FONT_TITLE, FONT_UI);
-//    mainMenu.loadFont(FONT_TITLE, FONT_UI);
-//    hud.loadFont(FONT_UI);
-//    pauseScreen.loadFont(FONT_UI);
-//    gameOverScreen.loadFont(FONT_UI);
-//    leaderboardScreen.loadFont(FONT_UI);
-//    keyRemapScreen.loadFont(FONT_UI);
-//    shopScreen.loadFont(FONT_UI);
-//    levelSelectScreen.loadAssets(FONT_TITLE, "assets\\images\\LevelSelect_bg.png"); // ADD THIS
-//}
-
-
-void Game::loadAllFonts()
-{
-    // If Orbitron fails to load, fall back to PressStart2P for everything
-    bool orbitronLoaded = false;
-    {
-        sf::Font testFont;
-        orbitronLoaded = testFont.openFromFile(FONT_UI);
-    }
-
-    if (!orbitronLoaded)
-    {
-        // Fallback — use PressStart2P for everything
-        loginScreen.loadFont(FONT_TITLE, FONT_TITLE);
-        mainMenu.loadFont(FONT_TITLE, FONT_TITLE);
-        hud.loadFont(FONT_TITLE);
-        pauseScreen.loadFont(FONT_TITLE);
-        gameOverScreen.loadFont(FONT_TITLE);
-        leaderboardScreen.loadFont(FONT_TITLE);
-        keyRemapScreen.loadFont(FONT_TITLE);
-        shopScreen.loadFont(FONT_TITLE);
-        levelSelectScreen.loadAssets(FONT_TITLE, "assets\\images\\LevelSelect_bg.png"); // ADD THIS
-    }
-    else
-    {
-        loginScreen.loadFont(FONT_TITLE, FONT_UI);
-        mainMenu.loadFont(FONT_TITLE, FONT_UI);
-        hud.loadFont(FONT_UI);
-        pauseScreen.loadFont(FONT_UI);
-        gameOverScreen.loadFont(FONT_UI);
-        leaderboardScreen.loadFont(FONT_UI);
-        keyRemapScreen.loadFont(FONT_UI);
-        shopScreen.loadFont(FONT_UI);
-        levelSelectScreen.loadAssets(FONT_UI, "assets\\images\\LevelSelect_bg.png"); // ADD THIS
-    }
+void Game::loadAllFonts() {
+    loginScreen.loadFont(FONT_TITLE, FONT_UI);
+    mainMenu.loadFont(FONT_TITLE, FONT_UI);
+    hud.loadFont(FONT_UI);
+    pauseScreen.loadFont(FONT_UI);
+    gameOverScreen.loadFont(FONT_UI);
+    leaderboardScreen.loadFont(FONT_UI);
+    keyRemapScreen.loadFont(FONT_UI);
+    shopScreen.loadFont(FONT_UI);
+    levelSelectScreen.loadAssets(FONT_TITLE, "assets\\images\\LevelSelect_bg.png"); // ADD THIS
 }
 
 void Game::loadAllSounds() {
