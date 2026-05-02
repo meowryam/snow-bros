@@ -39,7 +39,7 @@ private:
     // Medallion geometry — tuned to the generated background image
     static constexpr float TITLE_Y = 30.f;   // was 52.f
     static constexpr float SUBTITLE_Y = 58.f;   // was 82.f
-    static constexpr float MED_R = 38.f;
+    static constexpr float MED_R = 45.f;
     static constexpr float MED_GAP_X = 28.f;          // was 22.f — more spacing
   
 
@@ -116,16 +116,16 @@ private:
 // ============================================================
 inline sf::Vector2f LevelSelectScreen::medalCentre(int i) const {
     static const sf::Vector2f centres[TOTAL_LEVELS] = {
-        { 208.f, 268.f },  // 1
-        { 355.f, 268.f },  // 2
-        { 513.f, 268.f },  // 3
-        { 674.f, 268.f },  // 4
-        { 828.f, 268.f },  // 5  — will clip, bg circles go wide
-        { 190.f, 341.f },  // 6
-        { 348.f, 341.f },  // 7
-        { 508.f, 341.f },  // 8
-        { 674.f, 341.f },  // 9
-        { 831.f, 341.f },  // 10
+        { 190.f, 340.f },  // 1
+        { 340.f, 340.f },  // 2
+        { 490.f, 340.f },  // 3
+        { 640.f, 340.f },  // 4
+        { 790.f, 340.f },  // 5
+        { 190.f, 430.f },  // 6
+        { 340.f, 430.f },  // 7
+        { 490.f, 430.f },  // 8
+        { 640.f, 430.f },  // 9
+        { 790.f, 430.f },  // 10
     };
     return centres[i];
 }
@@ -155,7 +155,7 @@ inline bool LevelSelectScreen::loadAssets(const string& fontPath,
     txtMessage.emplace(font, "", 8u);
 
     for (int i = 0; i < TOTAL_LEVELS; i++) {
-        txtNumber[i].emplace(font, to_string(i + 1), 18u);
+        txtNumber[i].emplace(font, to_string(i + 1), 22u);  // was 18u
         txtLock[i].emplace(font, "LOCKED", 5u);
     }
 
