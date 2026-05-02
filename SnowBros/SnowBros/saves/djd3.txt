@@ -1,0 +1,5 @@
+username=djd3
+current_level=1
+lives=2
+gem_count=480
+high_score=0

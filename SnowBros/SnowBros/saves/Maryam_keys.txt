@@ -1,0 +1,5 @@
+left=0
+right=3
+jump=22
+throw=57
+pause=36
