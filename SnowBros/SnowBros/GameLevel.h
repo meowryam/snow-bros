@@ -837,13 +837,13 @@ private:
             }
             if (!sb->getalive()) continue;
 
-            // vs mogera body
-            if (hasMogera && mogera->getalive()) {
+            // vs mogera body — skip if already dying
+            if (hasMogera && mogera->getalive() && !mogera->isDying()) {
                 if (sbHB.findIntersection(mogera->getHitbox())) {
                     mogera->healthreduce(1);
                     sb->setalive(false);
                     if (mogera->gethealth() <= 0) {
-                        mogera->setalive(false);
+                        mogera->startDying();          // plays 3s death anim, then sets alive=false
                         scoreSystem.onMogeraKilled();
                         gemSystem.Mogerakilled();
                         eventBus.post(GameEvent::ENEMY_KILLED);
@@ -852,8 +852,8 @@ private:
             }
             if (!sb->getalive()) continue;
 
-            // vs mogera children
-            if (hasMogera && mogera->getalive()) {
+            // vs mogera children — skip if dying
+            if (hasMogera && mogera->getalive() && !mogera->isDying()) {
                 for (int c = 0; c < Mogera::MAX_CHILDREN; c++) {
                     if (!mogera->children[c].alive) continue;
                     if (sbHB.findIntersection(mogera->children[c].getHitbox())) {
@@ -1001,7 +1001,7 @@ private:
                     }
                 }
             }
-            if (hasMogera && mogera->getalive()) {
+            if (hasMogera && mogera->getalive() && !mogera->isDying()) {
                 for (int c = 0; c < Mogera::MAX_CHILDREN; c++) {
                     if (mogera->children[c].alive &&
                         phb.findIntersection(mogera->children[c].getHitbox())) {
@@ -1032,7 +1032,8 @@ private:
         for (int i = 0; i < botomCount; i++)   if (botoms[i]->getalive())   return false;
         for (int i = 0; i < foogaCount; i++)   if (foogas[i]->getalive())   return false;
         for (int i = 0; i < tornadoCount; i++) if (tornados[i]->getalive()) return false;
-        if (hasMogera && mogera->getalive())    return false;
+        // Mogera counts as dead once dying animation starts
+        if (hasMogera && mogera->getalive() && !mogera->isDying()) return false;
         if (hasGamakichi && gamakichi->getalive()) return false;
         return true;
     }
@@ -1129,8 +1130,8 @@ public:
                 hasMogera = true;
             }
             else {
-                gamakichi = new Gamakichi(220, 380);
-                //  gamakichi->loadTexture(assetPath + "images\\Gamakichi.png");
+                gamakichi = new Gamakichi(0, 0);
+                gamakichi->loadTexture(assetPath + "images\\Gamakichi.png");
                 hasGamakichi = true;
             }
         }
@@ -1252,7 +1253,8 @@ public:
             if (tornados[i]->gettrap() || tornados[i]->isRolling())
                 tornados[i]->resolvePlatforms(platforms, platformCount);
         }
-        if (hasMogera && mogera->getalive())    mogera->update(deltaTime);
+        if (hasMogera && (mogera->getalive() || mogera->isDying()))
+            mogera->update(deltaTime);
         if (hasGamakichi && gamakichi->getalive()) {
             gamakichi->setPlayerPos(player1.getPosition().x, player1.getPosition().y);
             gamakichi->update(deltaTime);
