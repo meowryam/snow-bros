@@ -20,7 +20,7 @@ LevelsManager::LevelsManager() {
 	current = 0;
 
 	// levelno, bosslevel, starlevel, bottomcount, foogacount, tornadocount, enemyspeed_increaser, bgtheme, music
-	levels[0] = Levelblueprint(1, false, false, 1, 1, 0, 1.0f, "Snowy Village", "Standard");
+	levels[0] = Levelblueprint(1, false, false, 1, 0, 0, 1.0f, "Snowy Village", "Standard");
 	levels[1] = Levelblueprint(2, false, false, 1, 0, 0, 1.1f, "Ice Caves", "Standard");
 	levels[2] = Levelblueprint(3, false, false,1, 0, 0, 1.2f, "Winter Forest", "Standard");
 	levels[3] = Levelblueprint(4, false, false,1, 0, 0, 1.3f, "Frozen Lake", "Standard");
