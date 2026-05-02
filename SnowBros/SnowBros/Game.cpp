@@ -95,20 +95,26 @@ levelSelectScreen(playerData)
 
 void Game::loadAllFonts()
 {
-    // Check if font file exists before loading
     bool titleOk = sharedFontTitle.openFromFile(FONT_TITLE);
 
     if (!titleOk) {
-        // Try alternate path (from project directory instead of exe directory)
-        titleOk = sharedFontTitle.openFromFile("..\\..\\assets\\fonts\\PressStart2P-Regular.ttf");
-    }
-    if (!titleOk) {
-        // One more fallback
-        titleOk = sharedFontTitle.openFromFile("..\\assets\\fonts\\PressStart2P-Regular.ttf");
+        // Create a fresh font object for the second attempt
+        sf::Font tempFont;
+        if (tempFont.openFromFile("..\\..\\assets\\fonts\\PressStart2P-Regular.ttf")) {
+            sharedFontTitle = std::move(tempFont);
+            titleOk = true;
+        }
     }
 
-    // Only load screens if font loaded successfully
-    if (!titleOk) return;  // avoid null font crash
+    if (!titleOk) {
+        sf::Font tempFont2;
+        if (tempFont2.openFromFile("..\\assets\\fonts\\PressStart2P-Regular.ttf")) {
+            sharedFontTitle = std::move(tempFont2);
+            titleOk = true;
+        }
+    }
+
+    if (!titleOk) return;
 
     loginScreen.loadFont(sharedFontTitle, sharedFontTitle);
     mainMenu.loadFont(sharedFontTitle, sharedFontTitle);
@@ -120,9 +126,9 @@ void Game::loadAllFonts()
     shopScreen.loadFont(sharedFontTitle);
     levelSelectScreen.loadAssets(sharedFontTitle,
         "assets\\images\\LevelSelect_bg.png");
-    starLevelScreen.loadAssets(sharedFontTitle, "assets\\images\\StarLevel_bg.png");
+    starLevelScreen.loadAssets(sharedFontTitle,
+        "assets\\images\\StarLevel_bg.png");
 }
-
 void Game::loadAllSounds() {
     // soundManager.loadSound("throw",      "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\throw.wav");
     // soundManager.loadSound("encase",     "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\encase.wav");
