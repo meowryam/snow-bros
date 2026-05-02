@@ -512,6 +512,7 @@ void Game::saveAndSubmitScore()
 
     leaderboard.submitScore(
         playerData.getUsername(),
+
         playerData.getHighscore(),
         playerData.getCurrentLevel(),
         date
