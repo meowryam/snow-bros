@@ -51,38 +51,15 @@ Game::Game()
 
 void Game::loadAllFonts()
 {
-    // If Orbitron fails to load, fall back to PressStart2P for everything
-    bool orbitronLoaded = false;
-    {
-        sf::Font testFont;
-        orbitronLoaded = testFont.openFromFile(FONT_UI);
-    }
-
-    if (!orbitronLoaded)
-    {
-        // Fallback — use PressStart2P for everything
-        loginScreen.loadFont(FONT_TITLE, FONT_TITLE);
-        mainMenu.loadFont(FONT_TITLE, FONT_TITLE);
-        hud.loadFont(FONT_TITLE);
-        pauseScreen.loadFont(FONT_TITLE);
-        gameOverScreen.loadFont(FONT_TITLE);
-        leaderboardScreen.loadFont(FONT_TITLE);
-        keyRemapScreen.loadFont(FONT_TITLE);
-        shopScreen.loadFont(FONT_TITLE);
-        levelSelectScreen.loadAssets(FONT_TITLE, "assets\\images\\LevelSelect_bg.png"); // ADD THIS
-    }
-    else
-    {
-        loginScreen.loadFont(FONT_TITLE, FONT_UI);
-        mainMenu.loadFont(FONT_TITLE, FONT_UI);
-        hud.loadFont(FONT_UI);
-        pauseScreen.loadFont(FONT_UI);
-        gameOverScreen.loadFont(FONT_UI);
-        leaderboardScreen.loadFont(FONT_UI);
-        keyRemapScreen.loadFont(FONT_UI);
-        shopScreen.loadFont(FONT_UI);
-        levelSelectScreen.loadAssets(FONT_UI, "assets\\images\\LevelSelect_bg.png"); // ADD THIS
-    }
+    loginScreen.loadFont(FONT_TITLE, FONT_UI);
+    mainMenu.loadFont(FONT_TITLE, FONT_UI);
+    hud.loadFont(FONT_UI);
+    pauseScreen.loadFont(FONT_UI);
+    gameOverScreen.loadFont(FONT_UI);
+    leaderboardScreen.loadFont(FONT_UI);
+    keyRemapScreen.loadFont(FONT_UI);
+    shopScreen.loadFont(FONT_UI);
+    levelSelectScreen.loadAssets(FONT_UI, "assets\\images\\LevelSelect_bg.png");
 }
 
 void Game::loadAllSounds() {
@@ -153,10 +130,14 @@ void Game::run() //The main game loop setup
                 keyRemapScreen.handleEvent(*event);
                 if (keyRemapScreen.done) {
                     keyBindings.saveToFile(playerData.getUsername());
-                    currentState = GameState::PAUSED;
+                    currentState = prevState;   // go back to wherever it was opened from
                     keyRemapScreen.done = false;
                 }
+
+           
                 break;
+
+               
                 // Game.cpp — inside run(), in the switch(currentState) block
 // ADD this case, right before the default: break
 
@@ -244,9 +225,9 @@ void Game::handleMainMenuEvents(sf::Event& event)
         currentState = GameState::LEVEL_SELECT;  // CHANGE (was PLAYING)
        levelsManager.SpecificLevel(playerData.getCurrentLevel());
      // levelsManager.SpecificLevel(5);
-        gameLevel.loadLevel(levelsManager.getCurrentLevel());
+        //gameLevel.loadLevel(levelsManager.getCurrentLevel());
+       //soundManager.playMusic();
     
-        soundManager.playMusic();
     }
 
     else if (result == MainMenuResult::START_2PLAYER)
@@ -261,16 +242,16 @@ void Game::handleMainMenuEvents(sf::Event& event)
             Keyboard::Key::Left,
             Keyboard::Key::Right,
             Keyboard::Key::Up,
-            Keyboard::Key::Space
+            Keyboard::Key::Down
             
         );
         levelSelectScreen.reset();               // ADD
         currentState = GameState::LEVEL_SELECT;  // CHANGE (was PLAYING)
         levelsManager.SpecificLevel(playerData.getCurrentLevel());
-        gameLevel.loadLevel(levelsManager.getCurrentLevel());
+        //gameLevel.loadLevel(levelsManager.getCurrentLevel());
   
         player2.resetForNewLevel(sf::Vector2f(600.f, 500.f));
-        soundManager.playMusic();
+        //soundManager.playMusic();
     }
 
     else if (result == MainMenuResult::OPEN_SHOP) {
@@ -279,6 +260,7 @@ void Game::handleMainMenuEvents(sf::Event& event)
         currentState = GameState::SHOP;
     }
     else if (result == MainMenuResult::OPEN_KEYREMAP) {
+        prevState = currentState;    // ADD THIS
         keyRemapScreen.done = false;
         currentState = GameState::KEY_REMAP;
     }
