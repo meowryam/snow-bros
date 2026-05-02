@@ -136,16 +136,12 @@ void Player::update(float deltaTime) {
         invincibleTimer -= deltaTime;
     if (!isOnGround && !balloonModeActive) {
         velocity.y += GRAVITY * deltaTime;
-        if (velocity.y > MAX_FALL_SPEED) {
+        if (velocity.y > MAX_FALL_SPEED)
             velocity.y = MAX_FALL_SPEED;
-        }
+        if (velocity.y > 50.f && (state == PlayerState::IDLE || state == PlayerState::WALKING))
+            state = PlayerState::FALLING;
     }
-    else if (isOnGround) {
-        velocity.y = 0.f;  // kill any accumulated gravity
-    }
-    
-
-    //balloon
+    // balloon
     if (balloonModeActive) {
         velocity.y = -80.f;
         balloonModeTimer -= deltaTime;
@@ -156,7 +152,7 @@ void Player::update(float deltaTime) {
         }
     }
 
-    //speedboost
+    // speedboost
     if (speedBoostActive) {
         speedBoostTimer -= deltaTime;
         if (speedBoostTimer <= 0.f) {
@@ -166,45 +162,24 @@ void Player::update(float deltaTime) {
         }
     }
 
-    //playermovement
     position.x += velocity.x * deltaTime;
     position.y += velocity.y * deltaTime;
+    if (position.x + 36.f < 0.f)        position.x = screenWidth;
+    if (position.x > screenWidth)        position.x = -36.f;
 
-    //screen wrapping
-    const float spriteWidth = 48.f;
-
-
-    if (position.x < 33.f)
-    {
-        position.x = 33.f;
-        velocity.x = 0.f;
-    }
-    if (position.x > screenWidth - 5.f) 
-    {
-        position.x = screenWidth - 5.f;
-        velocity.x = 0.f;
-    }
-
-    
-    //sync hitbox
-      /*  if (facing == Direction::LEFT) {
-            sprite.setPosition(Vector2f(position.x + spriteWidth, position.y));
-             }
-        else {
-            sprite.setPosition(position);
-        }
-        hitbox = FloatRect(
-            Vector2f(position.x + 6.f, position.y + 2.f),
-            Vector2f(36.f, 44.f)
-        );
-        debugBox.setPosition(Vector2f(hitbox.position.x, hitbox.position.y));
-        */
+    // animation state reset
     if (state != prevState) {
-        animFrame = 0;
-        animTimer = 0.f;
+        // Don't reset frame when toggling between grounded states
+        bool groundedTransition =
+            (prevState == PlayerState::IDLE || prevState == PlayerState::WALKING) &&
+            (state == PlayerState::IDLE || state == PlayerState::WALKING);
+
+        if (!groundedTransition) {
+            animFrame = 0;
+            animTimer = 0.f;
+        }
         prevState = state;
     }
-
     animTimer += deltaTime;
     if (animTimer >= FRAME_DURATION) {
         animTimer = 0.f;
@@ -213,15 +188,11 @@ void Player::update(float deltaTime) {
 
     // Pick frame
     if (state == PlayerState::DEAD) {
-        sf::IntRect hurtFrames[7] = {
-            hurt1, hurt2, hurt3, hurt4, hurt5, hurt6, hurt7
-        };
+        sf::IntRect hurtFrames[7] = { hurt1, hurt2, hurt3, hurt4, hurt5, hurt6, hurt7 };
         sprite.setTextureRect(hurtFrames[std::min(animFrame, 6)]);
     }
     else if (state == PlayerState::THROWING) {
-        sf::IntRect throwFrames[7] = {
-            throw1, throw2, throw3, throw4, throw5, throw6, throw7
-        };
+        sf::IntRect throwFrames[7] = { throw1, throw2, throw3, throw4, throw5, throw6, throw7 };
         sprite.setTextureRect(throwFrames[animFrame % 7]);
     }
     else if (state == PlayerState::JUMPING || state == PlayerState::FALLING) {
@@ -236,26 +207,19 @@ void Player::update(float deltaTime) {
         sprite.setTextureRect(walkFrames[animFrame % 11]);
     }
     else {
-        sprite.setTextureRect(walk1); // idle
+        sprite.setTextureRect(walk1);
     }
 
-    // Fixed scale based on walk1 reference frame (220x275)
-      // so size never changes between frames — stops vibration
     static constexpr float REF_W = 220.f;
     static constexpr float REF_H = 275.f;
-    static constexpr float SCALE_X = 36.f / REF_W;  // = 0.1636f
-    static constexpr float SCALE_Y = 44.f / REF_H;  // = 0.1600f
+    static constexpr float SCALE_X = 36.f / REF_W;
+    static constexpr float SCALE_Y = 44.f / REF_H;
 
     sf::IntRect cur = sprite.getTextureRect();
-
-    // Anchor origin at bottom-centre of the frame so feet stay planted
-    // regardless of how tall each frame is
-    float originX = REF_W / 2.f;   // fixed centre — never changes between frames
-    float originY = static_cast<float>(cur.size.y);       // feet = bottom
-
-    // Sprite foot position = bottom of hitbox
-    float footX = position.x + 18.f;   // centre of 36px hitbox
-    float footY = position.y + 44.f;   // bottom of 44px hitbox
+    float originX = REF_W / 2.f; 
+    float originY = REF_H;
+    float footX = position.x + 18.f;
+    float footY = position.y + 44.f;
 
     if (facing == Direction::LEFT) {
         sprite.setOrigin({ originX, originY });
@@ -265,15 +229,34 @@ void Player::update(float deltaTime) {
         sprite.setOrigin({ originX, originY });
         sprite.setScale({ -SCALE_X, SCALE_Y });
     }
-
     sprite.setPosition({ footX, footY });
 
-    // Hitbox stays exactly at position, unchanged
-    hitbox = FloatRect(
-        Vector2f(position.x, position.y),
-        Vector2f(36.f, 44.f)
-    );
+    hitbox = FloatRect(Vector2f(position.x, position.y), Vector2f(36.f, 44.f));
     debugBox.setPosition(Vector2f(hitbox.position.x, hitbox.position.y));
+}
+
+void Player::resolvePlatforms(Platform platforms[], int count) {
+    // Clear ground state — re-confirmed below
+    isOnGround = false;
+
+    for (int i = 0; i < count; i++) {
+        FloatRect pRect = platforms[i].rect;
+        if (!hitbox.findIntersection(pRect)) continue;
+
+        float platTop = pRect.position.y;
+
+        if (velocity.y >= 0.f) {
+            // Snap feet exactly to platform top — no drift possible
+            position.y = platTop - 44.f;
+            velocity.y = 0.f;
+            isOnGround = true;
+            if (state == PlayerState::JUMPING || state == PlayerState::FALLING)
+                state = (velocity.x != 0.f) ? PlayerState::WALKING : PlayerState::IDLE;
+            // Immediately re-sync hitbox after snap
+            hitbox = FloatRect(Vector2f(position.x, position.y), Vector2f(36.f, 44.f));
+            break;
+        }
+    }
 }
 void Player::draw(RenderWindow& window) const {
    // if (!isAlive) return; 
@@ -284,7 +267,7 @@ void Player::draw(RenderWindow& window) const {
          }
 }
 void Player::landOnPlatform(float topOfPlatform) {
-    position.y = topOfPlatform - 48.f;
+    position.y = topOfPlatform - 44.f;  // was -48.f — must match hitbox height
     velocity.y = 0.f;
     isOnGround = true;
     if (state == PlayerState::JUMPING || state == PlayerState::FALLING) {
@@ -339,7 +322,7 @@ void Player::resetForNewLevel(Vector2f spawnPosition) {
     canJump = true;
     invincibleTimer = 3.f;  // 3 seconds of s
     isAlive = true;
-    state = PlayerState::FALLING; 
+    state = PlayerState::FALLING;
     facing = Direction::RIGHT;
     speedBoostActive = false;
     speedBoostTimer = 0.f;
@@ -347,37 +330,10 @@ void Player::resetForNewLevel(Vector2f spawnPosition) {
     balloonModeTimer = 0.f;
     snowballPowerActive = false;
     distanceIncreaseActive = false;
-    speed = BASE_SPEED; 
+    speed = BASE_SPEED;
     sprite.setPosition(position);
 }
-void Player::resolvePlatforms(Platform platforms[], int count) {
-    // Only clear isOnGround if player is moving upward (jumped)
-    // Never clear it just to re-detect — that causes oscillation
-    if (velocity.y < 0.f) {
-        isOnGround = false;
-    }
 
-    if (isOnGround) {
-        // Already grounded — just keep velocity zeroed, no need to re-scan
-        velocity.y = 0.f;
-        return;
-    }
-
-    // Only reaches here if airborne (velocity.y >= 0, not on ground)
-    for (int i = 0; i < count; i++) {
-        FloatRect pRect = platforms[i].rect;
-
-        if (!hitbox.findIntersection(pRect)) continue;
-
-        float playerFeet = position.y + 48.f;
-        float platTop = pRect.position.y;
-
-        if (velocity.y >= 0.f && playerFeet - velocity.y * 0.05f <= platTop + 5.f) {
-            landOnPlatform(platTop);
-            break;
-        }
-    }
-}
 Vector2f Player::getPosition() const {return position;}
 FloatRect Player::getHitbox() const {return hitbox;}
 PlayerState Player::getState() const {return state;}
