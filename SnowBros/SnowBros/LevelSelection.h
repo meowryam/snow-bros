@@ -39,7 +39,7 @@ private:
     // Medallion geometry — tuned to the generated background image
     static constexpr float TITLE_Y = 30.f;   // was 52.f
     static constexpr float SUBTITLE_Y = 58.f;   // was 82.f
-    static constexpr float MED_R = 33.f;          // was 38.f — slightly smaller
+    static constexpr float MED_R = 38.f;
     static constexpr float MED_GAP_X = 28.f;          // was 22.f — more spacing
   
 
@@ -114,15 +114,21 @@ private:
 // ============================================================
 //  Implementation  (header-only, mirrors ShopScreen pattern)
 // ============================================================
-
 inline sf::Vector2f LevelSelectScreen::medalCentre(int i) const {
-    int col = i % COLS;
-    int row = i / COLS;
-    float x = GRID_LEFT + col * (2.f * MED_R + MED_GAP_X);
-    float y = (row == 0) ? ROW1_Y : ROW2_Y;
-    return { x, y };
+    static const sf::Vector2f centres[TOTAL_LEVELS] = {
+        { 208.f, 268.f },  // 1
+        { 355.f, 268.f },  // 2
+        { 513.f, 268.f },  // 3
+        { 674.f, 268.f },  // 4
+        { 828.f, 268.f },  // 5  — will clip, bg circles go wide
+        { 190.f, 341.f },  // 6
+        { 348.f, 341.f },  // 7
+        { 508.f, 341.f },  // 8
+        { 674.f, 341.f },  // 9
+        { 831.f, 341.f },  // 10
+    };
+    return centres[i];
 }
-
 inline bool LevelSelectScreen::isUnlocked(int i) const {
     // i is 0-based; level number is i+1
     return (i + 1) <= playerData.getCurrentLevel();
@@ -245,26 +251,24 @@ inline void LevelSelectScreen::refreshMedallion(int i) {
     bool unlocked = isUnlocked(i);
     bool hovered = (i == hoveredIndex);
 
-    if (!unlocked) {
-        outerRing[i].setFillColor(COL_OUTER_LOCK);
-        outerRing[i].setOutlineColor(COL_OUTER_LOCK);
-        innerCircle[i].setFillColor(COL_INNER_LOCK);
-        TX(txtNumber[i]).setFillColor(COL_NUM_LOCK);
-    }
-    else if (hovered) {
-        outerRing[i].setFillColor(COL_OUTER_HOVER);
+    if (hovered && unlocked) {
+        // Glow on hover
+        outerRing[i].setFillColor(sf::Color(150, 230, 255, 120));
         outerRing[i].setOutlineColor(sf::Color(200, 240, 255, 255));
-        innerCircle[i].setFillColor(COL_INNER_HOVER);
-        TX(txtNumber[i]).setFillColor(COL_NUM_HOVER);
+        innerCircle[i].setFillColor(sf::Color(20, 80, 170, 160));
+        TX(txtNumber[i]).setFillColor(sf::Color(255, 255, 255, 255));
     }
     else {
-        outerRing[i].setFillColor(COL_OUTER_UNLOCK);
-        outerRing[i].setOutlineColor(sf::Color(100, 210, 255, 200));
-        innerCircle[i].setFillColor(COL_INNER_UNLOCK);
-        TX(txtNumber[i]).setFillColor(COL_NUM_UNLOCK);
+        // Fully transparent — just show the number
+        outerRing[i].setFillColor(sf::Color(0, 0, 0, 0));
+        outerRing[i].setOutlineColor(sf::Color(0, 0, 0, 0));
+        innerCircle[i].setFillColor(sf::Color(0, 0, 0, 0));
+        TX(txtNumber[i]).setFillColor(
+            unlocked ? sf::Color(210, 245, 255, 200)
+            : sf::Color(80, 100, 120, 150)
+        );
     }
 }
-
 inline void LevelSelectScreen::confirmSelection(int i) {
     if (!isUnlocked(i)) {
         postMessage("Level " + to_string(i + 1) + " is locked!");
