@@ -35,16 +35,16 @@ private:
     sf::RenderWindow window;        // the actual game window
     GameState currentState;  // tracks current state
     InputManager inputManager;      // handles keyboard
-    StarLevelScreen starLevelScreen;
+
+    sf::Font sharedFontUI;    // ADD — one font loaded once
+    sf::Font sharedFontTitle; // ADD — one title font loaded once
+
     // data
     PlayerData   playerData;
     PlayerData   player2Data;
-    Player     player1;
-    Player     player2;
-    GameLevel  gameLevel;
-    bool       twoPlayerMode;
     KeyBindings  keyBindings;
     Leaderboard  leaderboard;
+
 
     // systems
     ScoreSystem        scoreSystem;
@@ -52,9 +52,15 @@ private:
     EventBus           eventBus;
     SoundManager       soundManager;
     LevelsManager      levelsManager;
-
     // shop (needs playerData ref)
     ShopSystem   shopSystem;
+
+    Player     player1;
+    Player     player2;
+
+    GameLevel  gameLevel;
+    bool       twoPlayerMode;
+
 
     // UI screens
     LoginScreen        loginScreen;
@@ -66,12 +72,16 @@ private:
     KeyRemapScreen     keyRemapScreen;
     ShopScreen         shopScreen;
     LevelSelectScreen levelSelectScreen;
+    StarLevelScreen starLevelScreen;
+   
     int shopOpenedByPlayer = 1; // who opened the shop
-
     GameState prevState = GameState::MENU;
 
     // 30 FPS means each frame lasts 1/30th of a second
     const float TIME_PER_FRAME = 1.f / 30.f;
+
+    static const string FONT_TITLE;
+    static const string FONT_UI;
 
     // internal helpers
     void loadAllFonts();
@@ -88,12 +98,13 @@ private:
 
     void saveAndSubmitScore();
 
-    sf::Font sharedFontUI;    // ADD — one font loaded once
-    sf::Font sharedFontTitle; // ADD — one title font loaded once
+    
 
-    const string FONT_TITLE = "assets\\fonts\\PressStart2P-Regular.ttf";
-    const string FONT_UI = "assets\\fonts\\Orbitron-Regular.ttf";
+    //const string FONT_TITLE = "assets\\fonts\\PressStart2P-Regular.ttf";
+    //const string FONT_UI = "assets\\fonts\\Orbitron-Regular.ttf";
  
+    
+
 public:
     Game();   // sets up the window
     void run(); // starts the game loop

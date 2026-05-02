@@ -6,3 +6,11 @@ int main() {
     game.run(); // start the loop
     return 0;
 } 
+
+//int main()
+//{
+//    Game* game = new Game();
+//    game->run();
+//    delete game;
+//    return 0;
+//}

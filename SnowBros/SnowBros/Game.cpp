@@ -7,7 +7,10 @@
 Game::Game()    
     : window(sf::VideoMode({ 800u, 600u }), "Snow Bros"),
     currentState(GameState::LOGIN),
-    player2Data(),          // ADD — initialize before player2
+    playerData(),
+    player2Data(),         
+
+
     player2(player2Data, 2, 800.f, 600.f),
     scoreSystem(playerData),
     gemSystem(playerData),
@@ -476,3 +479,6 @@ void Game::saveAndSubmitScore()
         date
     );
 }
+
+const string Game::FONT_TITLE = "assets\\fonts\\PressStart2P-Regular.ttf";
+const string Game::FONT_UI = "assets\\fonts\\Orbitron-Regular.ttf";
