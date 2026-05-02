@@ -83,5 +83,6 @@
     <ClInclude Include="Tornadovariant.h" />
     <ClInclude Include="Collectable.h" />
     <ClInclude Include="LevelSelection.h" />
+    <ClInclude Include="StarLevelScreen.h" />
   </ItemGroup>
 </Project>
