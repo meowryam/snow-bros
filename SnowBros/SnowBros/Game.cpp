@@ -94,12 +94,22 @@ levelSelectScreen(playerData)
 //}
 
 void Game::loadAllFonts()
-{    
-    // Load fonts ONCE into shared objects
-    sharedFontTitle.openFromFile(FONT_TITLE);
-    //sharedFontUI.openFromFile(FONT_UI);
-   // starLevelScreen.loadAssets(FONT_TITLE, "assets\\images\\StarLevel_bg.png");
-    // Pass shared fonts to every screen
+{
+    // Check if font file exists before loading
+    bool titleOk = sharedFontTitle.openFromFile(FONT_TITLE);
+
+    if (!titleOk) {
+        // Try alternate path (from project directory instead of exe directory)
+        titleOk = sharedFontTitle.openFromFile("..\\..\\assets\\fonts\\PressStart2P-Regular.ttf");
+    }
+    if (!titleOk) {
+        // One more fallback
+        titleOk = sharedFontTitle.openFromFile("..\\assets\\fonts\\PressStart2P-Regular.ttf");
+    }
+
+    // Only load screens if font loaded successfully
+    if (!titleOk) return;  // avoid null font crash
+
     loginScreen.loadFont(sharedFontTitle, sharedFontTitle);
     mainMenu.loadFont(sharedFontTitle, sharedFontTitle);
     hud.loadFont(sharedFontTitle);
