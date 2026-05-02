@@ -120,7 +120,7 @@ void Game::loadAllFonts()
     shopScreen.loadFont(sharedFontTitle);
     levelSelectScreen.loadAssets(sharedFontTitle,
         "assets\\images\\LevelSelect_bg.png");
-    starLevelScreen.loadAssets(FONT_TITLE, "assets\\images\\StarLevel_bg.png");
+    starLevelScreen.loadAssets(sharedFontTitle, "assets\\images\\StarLevel_bg.png");
 }
 
 void Game::loadAllSounds() {

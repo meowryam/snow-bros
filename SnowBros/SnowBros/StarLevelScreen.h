@@ -20,7 +20,7 @@ public:
     StarLevelScreen(const StarLevelScreen&) = delete;
     StarLevelScreen& operator=(const StarLevelScreen&) = delete;
 
-    bool loadAssets(const string& fontPath,
+    bool loadAssets(sf::Font& sharedFont,
         const string& bgPath = "assets\\images\\StarLevel_bg.png");
 
     // Call before showing the screen. Generates 3 random choices.
@@ -65,7 +65,7 @@ private:
     bool layoutReady = false;
 
     // ── Assets ────────────────────────────────────────────────
-    sf::Font    font;       // PressStart2P — title/card name
+    sf::Font* font = nullptr;      // PressStart2P — title/card name
     //sf::Font    fontUI;     // Orbitron — desc + hotkey
     sf::Texture bgTex;
     bool        bgLoaded = false;
@@ -126,13 +126,13 @@ inline string StarLevelScreen::descriptionFor(const string& name) const {
     return "Mystery power!";
 }
 
-inline bool StarLevelScreen::loadAssets(const string& fontPath, const string& bgPath)
+inline bool StarLevelScreen::loadAssets(sf::Font& sharedFont, const string& bgPath)
 {
-    if (assetsLoaded) 
-        return true;  // add this guard at the top
+    if (assetsLoaded)
+        return true;
     assetsLoaded = true;
-    if (!font.openFromFile(fontPath))
-        return false;
+    font = &sharedFont;
+   
     //fontUI.openFromFile("assets\\fonts\\Orbitron-Regular.ttf");
 
     bgLoaded = bgTex.loadFromFile(bgPath);
@@ -146,16 +146,14 @@ inline bool StarLevelScreen::loadAssets(const string& fontPath, const string& bg
     }
 
     itemsLoaded = itemsTex.loadFromFile("assets\\images\\Items.png");
-
-    // Title
-    txtTitle.emplace(font, "STAR  LEVEL!", 22u);
-    txtSubtitle.emplace(font, "Choose your power-up", 13u);
+    txtTitle.emplace(*font, "STAR  LEVEL!", 22u);
+    txtSubtitle.emplace(*font, "Choose your power-up", 13u);
 
     // Per-card texts
     for (int i = 0; i < NUM_CARDS; i++) {
-        txtCardName[i].emplace(font, "", 11u);
-        txtCardDesc[i].emplace(font, "", 11u);
-        txtHotkey[i].emplace(font, "Press " + to_string(i + 1), 10u);
+        txtCardName[i].emplace(*font, "", 11u);
+        txtCardDesc[i].emplace(*font, "", 11u);
+        txtHotkey[i].emplace(*font, "Press " + to_string(i + 1), 10u);
     }
 
     return true;
