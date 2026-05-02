@@ -20,7 +20,10 @@ public:
     StarLevelScreen(const StarLevelScreen&) = delete;
     StarLevelScreen& operator=(const StarLevelScreen&) = delete;
 
-    bool loadAssets(sf::Font& sharedFont,
+   // bool loadAssets(sf::Font& sharedFont,
+     //   const string& bgPath = "assets\\images\\StarLevel_bg.png");
+
+    bool loadAssets(const string& fontPath,
         const string& bgPath = "assets\\images\\StarLevel_bg.png");
 
     // Call before showing the screen. Generates 3 random choices.
@@ -65,7 +68,8 @@ private:
     bool layoutReady = false;
 
     // ── Assets ────────────────────────────────────────────────
-    sf::Font* font = nullptr;      // PressStart2P — title/card name
+    //sf::Font* font = nullptr;      // PressStart2P — title/card name
+    sf::Font font;
     //sf::Font    fontUI;     // Orbitron — desc + hotkey
     sf::Texture bgTex;
     bool        bgLoaded = false;
@@ -118,7 +122,8 @@ private:
 //  Implementation
 // ============================================================
 
-inline string StarLevelScreen::descriptionFor(const string& name) const {
+inline string StarLevelScreen::descriptionFor(const string& name) const
+{
     if (name == "Speed Boost")        return "+50% movement\nspeed for 15s";
     if (name == "Snowball Power")     return "1-hit encase.\nLasts whole level";
     if (name == "Distance Increase")  return "Full-width throw.\nLasts whole level";
@@ -126,12 +131,15 @@ inline string StarLevelScreen::descriptionFor(const string& name) const {
     return "Mystery power!";
 }
 
-inline bool StarLevelScreen::loadAssets(sf::Font& sharedFont, const string& bgPath)
+inline bool StarLevelScreen::loadAssets(const string& fontPath, const string& bgPath)
 {
     if (assetsLoaded)
         return true;
+    //assetsLoaded = true;
+    //font = &sharedFont;
+
     assetsLoaded = true;
-    font = &sharedFont;
+    if (!font.openFromFile(fontPath)) return false;
    
     //fontUI.openFromFile("assets\\fonts\\Orbitron-Regular.ttf");
 
@@ -146,14 +154,14 @@ inline bool StarLevelScreen::loadAssets(sf::Font& sharedFont, const string& bgPa
     }
 
     itemsLoaded = itemsTex.loadFromFile("assets\\images\\Items.png");
-    txtTitle.emplace(*font, "STAR  LEVEL!", 22u);
-    txtSubtitle.emplace(*font, "Choose your power-up", 13u);
+    txtTitle.emplace(font, "STAR  LEVEL!", 22u);
+    txtSubtitle.emplace(font, "Choose your power-up", 13u);
 
     // Per-card texts
     for (int i = 0; i < NUM_CARDS; i++) {
-        txtCardName[i].emplace(*font, "", 11u);
-        txtCardDesc[i].emplace(*font, "", 11u);
-        txtHotkey[i].emplace(*font, "Press " + to_string(i + 1), 10u);
+        txtCardName[i].emplace(font, "", 11u);
+        txtCardDesc[i].emplace(font, "", 11u);
+        txtHotkey[i].emplace(font, "Press " + to_string(i + 1), 10u);
     }
 
     return true;

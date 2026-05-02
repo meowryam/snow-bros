@@ -45,7 +45,9 @@ void Game::loadAllFonts() {
     leaderboardScreen.loadFont(FONT_UI);
     keyRemapScreen.loadFont(FONT_UI);
     shopScreen.loadFont(FONT_UI);
-    levelSelectScreen.loadAssets(FONT_TITLE, "assets\\images\\LevelSelect_bg.png"); // ADD THIS
+    levelSelectScreen.loadAssets(FONT_TITLE, "assets\\images\\LevelSelect_bg.png"); // ADD 
+   // starLevelScreen.loadAssets(FONT_TITLE, "assets\\images\\StarLevel_bg.png");
+
 }
 
 void Game::loadAllSounds() {

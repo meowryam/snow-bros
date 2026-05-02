@@ -27,6 +27,7 @@
 #include "GameLevel.h"
 #include "Player.h"
 #include "LevelSelection.h"
+#include "StarLevelScreen.h"
 // This is the main Game class
 // It owns everything — the window, the loop, all the managers
 class Game {
