@@ -213,6 +213,26 @@ private:
                     }
                 }
             }
+            for (int ei = 0; ei < foogaCount; ei++) {
+                if (!foogas[ei]->getalive()) continue;
+                if (foogas[ei]->gettrap() && !foogas[ei]->isRolling()) {
+                    if (phb.findIntersection(foogas[ei]->getHitbox())) {
+                        double dir = (p.getPosition().x < foogas[ei]->getx()) ? 1.0 : -1.0;
+                        foogas[ei]->startRolling(dir);
+                    }
+                }
+            }
+
+            for (int ei = 0; ei < tornadoCount; ei++) {
+                if (!tornados[ei]->getalive()) continue;
+                if (tornados[ei]->gettrap() && !tornados[ei]->isRolling()) {
+                    if (phb.findIntersection(tornados[ei]->getHitbox())) {
+                        double dir = (p.getPosition().x < tornados[ei]->getx()) ? 1.0 : -1.0;
+                        tornados[ei]->startRolling(dir);
+                    }
+                }
+            }
+
             };
         checkKick(player1);
         if (player2) checkKick(*player2);
@@ -234,6 +254,40 @@ private:
                 spawnGem(gemX, gemY);
                 spawnRandomPickup(gemX, gemY);
                
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+        }
+
+
+
+        // Kill rolling foogas that hit screen edges
+        for (int ei = 0; ei < foogaCount; ei++) {
+            if (!foogas[ei]->getalive() || !foogas[ei]->isRolling()) continue;
+            float fx = static_cast<float>(foogas[ei]->getx());
+            if (fx < -50.f || fx > 850.f) {
+                foogas[ei]->setalive(false);
+                scoreSystem.onFoogaKilled();
+                gemSystem.enemykilled();
+                double gemX = (foogas[ei]->getx() < 0) ? 50.0 : 750.0;
+                double gemY = foogas[ei]->gety();
+                spawnGem(gemX, gemY);
+                spawnRandomPickup(gemX, gemY);
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+        }
+
+        // Kill rolling tornados that hit screen edges
+        for (int ei = 0; ei < tornadoCount; ei++) {
+            if (!tornados[ei]->getalive() || !tornados[ei]->isRolling()) continue;
+            float tx = static_cast<float>(tornados[ei]->getx());
+            if (tx < -50.f || tx > 850.f) {
+                tornados[ei]->setalive(false);
+                scoreSystem.onTornadoKilled();
+                gemSystem.enemykilled();
+                double gemX = (tornados[ei]->getx() < 0) ? 50.0 : 750.0;
+                double gemY = tornados[ei]->gety();
+                spawnGem(gemX, gemY);
+                spawnRandomPickup(gemX, gemY);
                 eventBus.post(GameEvent::ENEMY_KILLED);
             }
         }
@@ -416,7 +470,8 @@ public:
             for (int i = 0; i < lvl.getTornadocount() && tornadoCount < MAX_ENEMIES; i++) {
                 float sx = 200.f + i * 200.f;
                 Tornado* t = new Tornado(sx, 100);
-               t->loadTexture(assetPath + "images\\Tornado_Red.png");
+                t->loadTexture(assetPath + "images\\Tornado_Red.png");
+                t->loadSnowTexture(assetPath + "images\\Nick.png");  // ADD THIS
                 tornados[tornadoCount++] = t;
             }
         }
@@ -499,12 +554,17 @@ public:
             botoms[i]->resolvePlatforms(platforms, platformCount);
         }
         for (int i = 0; i < foogaCount; i++) {
-            if (foogas[i]->getalive()) foogas[i]->update(deltaTime);
+            if (!foogas[i]->getalive()) continue;
+            foogas[i]->update(deltaTime);
+            if (foogas[i]->gettrap() || foogas[i]->isRolling())
+                foogas[i]->resolvePlatforms(platforms, platformCount);
         }
         for (int i = 0; i < tornadoCount; i++) {
             if (!tornados[i]->getalive()) continue;
             tornados[i]->setPlayerPos(player1.getPosition().x, player1.getPosition().y);
             tornados[i]->update(deltaTime);
+            if (tornados[i]->gettrap() || tornados[i]->isRolling())
+                tornados[i]->resolvePlatforms(platforms, platformCount);
         }
         if (hasMogera && mogera->getalive())    mogera->update(deltaTime);
         if (hasGamakichi && gamakichi->getalive()) {
@@ -595,6 +655,10 @@ public:
             drawHB(player1.getHitbox(), sf::Color::Green);
             for (int i = 0; i < botomCount; i++)
                 if (botoms[i]->getalive()) drawHB(botoms[i]->getHitbox(), sf::Color::Red);
+            for (int i = 0; i < foogaCount; i++)
+                if (foogas[i]->getalive()) drawHB(foogas[i]->getHitbox(), sf::Color::Cyan);
+            for (int i = 0; i < tornadoCount; i++)
+                if (tornados[i]->getalive()) drawHB(tornados[i]->getHitbox(), sf::Color::Magenta);
         }
     }
 };

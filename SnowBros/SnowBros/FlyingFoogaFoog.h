@@ -7,12 +7,16 @@ class FlyingFoogaFoog : public Botom {
 protected:
     bool inFlight;
     float groundTimer;
-    static constexpr float GROUND_DURATION = 3.0f;  
+    static constexpr float GROUND_DURATION = 3.0f;
     float flightTimer;
-    static constexpr float FLIGHT_DURATION = 4.0f; 
+    static constexpr float FLIGHT_DURATION = 4.0f;
     float flightDirTimer;
     static constexpr float FLIGHT_DIR_INTERVAL = 1.0f;  // seconds between direction changes
     static constexpr float FLIGHT_SPEED = 160.f;
+
+    // Shadow Botom's HITS_TO_ENCASE — Foog needs 6 hits instead of 4
+    static constexpr int HITS_TO_ENCASE = 6;
+
     void pickRandomFlightDirection();
 
     // ── Sprite sheet rects ────────────────────────────────
@@ -39,8 +43,11 @@ protected:
     sf::IntRect frozen_fooga{ {49, 813}, {134, 150} };
 
 public:
-    FlyingFoogaFoog(double startX, double startY,  float scrW = 800.f, float scrH = 600.f);
+    FlyingFoogaFoog(double startX, double startY, float scrW = 800.f, float scrH = 600.f);
     void loadTexture(const std::string& path);
     void update(double deltaTime) override;
-    void draw(sf::RenderWindow& window) override; //blue
+    void draw(sf::RenderWindow& window) override;
+
+    // Override receiveSnowballHit so it uses our HITS_TO_ENCASE = 6
+    bool receiveSnowballHit();
 };
