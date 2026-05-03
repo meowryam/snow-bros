@@ -51,10 +51,16 @@ public:
     // Reset chain when player throws a new snowball
     void resetChain() { chainCount = 0; }
 
-    // Bonus level cash bundle collected — spec 9.2
+    // Bonus level cash bundle collected — spec 9.2 / 9.3
     void onBonusBundleCollected() {
         addScore(1000);
         playerData.setGemCount(playerData.getGemCount() + 10);
+    }
+
+    // Food item collected — awards the item's own point value
+    // Called from GameLevel when getType() == CollectableType::FOOD
+    void addFoodScore(int pts) {
+        addScore(pts);
     }
 
     int getScore() const { return playerData.getHighscore(); }

@@ -59,7 +59,9 @@ private:
 
     // debug
     bool showHitboxes;
-
+  
+    float levelCompleteTimer = -1.f;
+    static constexpr float LEVEL_COMPLETE_DELAY = 4.f;
     // refs
     PlayerData& playerData;
     ScoreSystem& scoreSystem;
@@ -72,15 +74,33 @@ private:
     void spawnRandomPickup(double x, double y) {
         if (collectableCount >= MAX_COLLECTABLES) return;
 
-        int roll = rand() % 10; // 0-9
+        int roll = rand() % 10;
         Collectable* pickup = nullptr;
 
-        if (roll == 0) pickup = new ExtraLifePickup(x, y);
-        else if (roll <= 2) pickup = new SpeedBoostPickup(x, y);
-        else if (roll <= 4) pickup = new SnowballPowerPickup(x, y);
-        else if (roll <= 6) pickup = new DistanceIncreasePickup(x, y);
-        else if (roll <= 8) pickup = new BalloonModePickup(x, y);
-        // roll == 9: no pickup (10% chance of nothing)
+        if (roll <= 3) {
+            // Food item — 40% chance, pick one of 6 types
+            int food = rand() % 6;
+            switch (food) {
+            case 0: pickup = new FoodSushiGold(x, y);      break;
+            case 1: pickup = new FoodSushiRedStrips(x, y); break;
+            case 2: pickup = new FoodSushiDarkBowl(x, y);  break;
+            case 3: pickup = new FoodSushiRedFish(x, y);   break;
+            case 4: pickup = new FoodSushiRedArc(x, y);    break;
+            case 5: pickup = new FoodSushiWhitePair(x, y); break;
+            }
+        }
+        else if (roll <= 8) {
+            // Power-up — 50% chance, pick one of 5 types
+            int pu = rand() % 5;
+            switch (pu) {
+            case 0: pickup = new ExtraLifePickup(x, y);        break;
+            case 1: pickup = new SpeedBoostPickup(x, y);       break;
+            case 2: pickup = new SnowballPowerPickup(x, y);    break;
+            case 3: pickup = new DistanceIncreasePickup(x, y); break;
+            case 4: pickup = new BalloonModePickup(x, y);      break;
+            }
+        }
+        // roll == 9: nothing (10%)
 
         if (pickup) collectables[collectableCount++] = pickup;
     }
@@ -113,6 +133,13 @@ private:
     void spawnGem(double x, double y) {
         if (collectableCount >= MAX_COLLECTABLES) return;
         collectables[collectableCount++] = new GemCollectable(x, y);
+    }
+    void spawnBossRain(int count) {
+        for (int i = 0; i < count; i++) {
+            if (collectableCount >= MAX_COLLECTABLES) break;
+            double spawnX = 20.0 + (rand() % 760);
+            collectables[collectableCount++] = new BonusCashBundle(spawnX);
+        }
     }
     void checkCollisions(Player& player1, Player* player2) {
 
@@ -168,16 +195,16 @@ private:
                 break;
             }
             if (!sb->getalive()) continue;
-
             // vs mogera body — skip if already dying
             if (hasMogera && mogera->getalive() && !mogera->isDying()) {
                 if (sbHB.findIntersection(mogera->getHitbox())) {
                     mogera->healthreduce(1);
                     sb->setalive(false);
                     if (mogera->gethealth() <= 0) {
-                        mogera->startDying();          // plays 3s death anim, then sets alive=false
+                        mogera->startDying();
                         scoreSystem.onMogeraKilled();
                         gemSystem.Mogerakilled();
+                        spawnBossRain(15);
                         eventBus.post(GameEvent::ENEMY_KILLED);
                     }
                 }
@@ -223,6 +250,7 @@ private:
                         gamakichi->startDying();
                         scoreSystem.onGamakichiKilled();
                         gemSystem.gamakichikilled();
+                        spawnBossRain(25);
                         eventBus.post(GameEvent::ENEMY_KILLED);
                     }
                 }
@@ -383,7 +411,7 @@ private:
         for (int i = 0; i < tornadoCount; i++) if (tornados[i]->getalive()) return false;
         // Mogera counts as dead once dying animation starts
         if (hasMogera && mogera->getalive() && !mogera->isDying()) return false;
-        if (hasGamakichi && gamakichi->getalive()) return false;
+        if (hasGamakichi && gamakichi->getalive() && !gamakichi->isDying()) return false;
         return true;
     }
 
@@ -425,6 +453,14 @@ public:
         BalloonModePickup::loadSharedTexture(itemsPath);
         ExtraLifePickup::loadSharedTexture(itemsPath);
         BonusCashBundle::loadSharedTexture(itemsPath);
+        GemCollectable::loadSharedTexture(itemsPath);
+        SpeedBoostPickup::loadSharedTexture(itemsPath);
+        SnowballPowerPickup::loadSharedTexture(itemsPath);
+        DistanceIncreasePickup::loadSharedTexture(itemsPath);
+        BalloonModePickup::loadSharedTexture(itemsPath);
+        ExtraLifePickup::loadSharedTexture(itemsPath);
+        BonusCashBundle::loadSharedTexture(itemsPath);
+        FoodSushiGold::loadSharedTexture(itemsPath);
         levelComplete = false;
         // TEMP: spawn one of each to verify sprites show
 
@@ -620,9 +656,18 @@ public:
             bool p2Collected = !p1Collected && player2 && collectables[i]->checkCollect(*player2);
 
             if (p1Collected || p2Collected) {
-                // Check if it was a gem specifically
-                if (dynamic_cast<GemCollectable*>(collectables[i])) {
+                switch (collectables[i]->getType()) {
+                case CollectableType::GEM:
                     gemSystem.addGems(1);
+                    break;
+                case CollectableType::FOOD:
+                    scoreSystem.addFoodScore(collectables[i]->getPointValue());
+                    break;
+                case CollectableType::CASH_BUNDLE:
+                    scoreSystem.onBonusBundleCollected();
+                    break;
+                case CollectableType::POWERUP:
+                    break; // effect already applied inside onCollect()
                 }
             }
         }
@@ -644,11 +689,22 @@ public:
                 player1.resetForNewLevel(Vector2f(100.f, 200.f));
             }
         }
-        // if (allEnemiesDead()) levelComplete = true;
-        if (allEnemiesDead() && (botomCount + foogaCount + tornadoCount > 0 || hasMogera || hasGamakichi))
-            levelComplete = true;
-
-
+        if (allEnemiesDead() && (botomCount + foogaCount + tornadoCount > 0 || hasMogera || hasGamakichi)) {
+            if (hasMogera || hasGamakichi) {
+                // Boss level — wait for rain to fall before advancing
+                if (levelCompleteTimer < 0.f)
+                    levelCompleteTimer = 0.f;
+                if (levelCompleteTimer >= 0.f) {
+                    levelCompleteTimer += static_cast<float>(deltaTime);
+                    if (levelCompleteTimer >= LEVEL_COMPLETE_DELAY)
+                        levelComplete = true;
+                }
+            }
+            else {
+                // Normal level — complete immediately
+                levelComplete = true;
+            }
+        }
 
         eventBus.clear();
     }
