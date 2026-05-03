@@ -175,7 +175,7 @@ protected:
     ShopScreen         shopScreen;
     LevelSelectScreen levelSelectScreen;
 
-    //StarLevelScreen    starLevelScreen;
+    StarLevelScreen    starLevelScreen;
     int shopOpenedByPlayer = 1; // who opened the shop
 
     GameState prevState = GameState::MENU;
@@ -196,7 +196,7 @@ protected:
     void handleMainMenuEvents(sf::Event& event);
      void handlePauseEvents(sf::Event& event);
      void handleGameOverEvents(sf::Event& event);
-
+     void handleStarLevelEvents(sf::Event& event);
     void saveAndSubmitScore();
 
     // const string FONT_TITLE = "assets\\fonts\\PressStart2P-Regular.ttf";
