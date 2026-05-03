@@ -2078,7 +2078,7 @@ void Game::loadAllFonts() {
     mainMenu.loadFont(fontPath);
     hud.loadFont(fontPath);
     pauseScreen.loadFont(fontPath);
-    //gameOverScreen.loadFont(fontPath);
+    gameOverScreen.loadFont(fontPath);
     leaderboardScreen.loadFont(fontPath);
     keyRemapScreen.loadFont(fontPath);
     shopScreen.loadFont(fontPath);
@@ -2143,8 +2143,8 @@ void Game::run() //The main game loop setup
                 break;
                   case GameState::PAUSED:
                        handlePauseEvents(*event); break;
-                  /* case GameState::GAME_OVER:
-                       handleGameOverEvents(*event); break; */
+                  case GameState::GAME_OVER:
+                       handleGameOverEvents(*event); break; 
             case GameState::LEVEL_SELECT:
                 levelSelectScreen.handleEvent(*event);
                 if (levelSelectScreen.done) {
@@ -2362,30 +2362,25 @@ void Game::handlePauseEvents(sf::Event& event) {
      //   soundManager.stopMusic();
     }
 }
-/*
 void Game::handleGameOverEvents(sf::Event& event) {
     GameOverResult result = gameOverScreen.handleEvent(event);
-
     if (result == GameOverResult::RETRY) {
         playerData.setLives(2);
         playerData.setCurrentLevel(1);
         levelsManager.SpecificLevel(1);
         player1.loadTexture("assets\\images\\Nick.png");
-        ///player2.loadTexture("assets\\images\\Player_Blue.png");
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
         gameOverScreen.reset();
         currentState = GameState::PLAYING;
-        soundManager.playMusic();
+       // soundManager.playMusic();
     }
     else if (result == GameOverResult::QUIT_TO_MENU) {
         saveAndSubmitScore();
         mainMenu.reset();
         currentState = GameState::MENU;
-        soundManager.stopMusic();
+      //  soundManager.stopMusic();
     }
-
-
-} */
+}
 void Game::processInput()
 {
     if (currentState == GameState::PLAYING) {
@@ -2395,13 +2390,13 @@ void Game::processInput()
            // soundManager.pauseMusic();
         }
     }
-    /*
+    
     // TEMP: press G to force game over screen for testing
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G)) {
         gameOverScreen.reset();
         currentState = GameState::GAME_OVER;
         soundManager.stopMusic();
-    } */
+    } 
 }
 void Game::update(float deltaTime)
 //Immediately exits if the game isn't in the PLAYING state ? nothing should update while paused or on a menu.
@@ -2412,6 +2407,7 @@ void Game::update(float deltaTime)
 
     if (playerData.getLives() <= 0) {
         saveAndSubmitScore();
+        gameOverScreen.reset();
         /*gameOverScreen.reset();
         currentState = GameState::GAME_OVER; //If the player has run out of lives, saves the score and transitions to the game over screen.
         soundManager.stopMusic();
@@ -2438,6 +2434,7 @@ void Game::update(float deltaTime)
             levelsManager.NextLevel();
             if (levelsManager.isGameDone()) {
                 saveAndSubmitScore();
+                gameOverScreen.reset();
                 currentState = GameState::GAME_OVER;
             }
             else //If there are no more levels, the game ends. 
@@ -2475,9 +2472,9 @@ void Game::draw() {
         case GameState::PAUSED:
             pauseScreen.draw(window);
             break;
-      /*  case GameState::GAME_OVER:
+       case GameState::GAME_OVER:
             gameOverScreen.draw(window, playerData);
-            break; */
+            break; 
     case GameState::KEY_REMAP:
         keyRemapScreen.draw(window);
         break;
