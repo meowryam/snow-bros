@@ -31,27 +31,27 @@ private:
     int    selectedOption = 0;
     string username;
 
-    // ── Frozen palette ────────────────────────────────────────────────────
+    
     sf::Color titleCol = sf::Color(200, 240, 255, 255);   // bright ice white-blue
     sf::Color subCol = sf::Color(160, 215, 255, 230);   // softer ice blue
     sf::Color hintCol = sf::Color(100, 160, 220, 170);   // dim ice hint
 
-    // Buttons — same as PauseScreen
+    
     sf::Color btnNormal = sf::Color(10, 30, 80, 120);
     sf::Color btnSel = sf::Color(40, 120, 220, 160);
     sf::Color btnOutNrm = sf::Color(60, 140, 220, 80);
     sf::Color btnOutSel = sf::Color(140, 220, 255, 255);
 
-    // Text inside buttons
+    
     sf::Color txtNormal = sf::Color(160, 210, 255, 220);
     sf::Color txtSel = sf::Color(255, 255, 255, 255);
 
-    // Background
+    
     sf::Texture bgTex;
     bool        bgLoaded = false;
     optional<sf::Sprite> bgSprite;
 
-    // Layout constants — centred, same width as PauseScreen buttons
+   
     static constexpr float CX = 400.f;
     static constexpr float BTN_W = 280.f;
     static constexpr float BTN_H = 38.f;
@@ -72,7 +72,7 @@ public:
     bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
 
-        // reuse the same frozen castle background as LoginScreen
+        
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
         if (bgLoaded) {
             bgSprite.emplace(bgTex);
@@ -116,7 +116,7 @@ public:
 
     void draw(sf::RenderWindow& window) {
 
-        // ── Background ────────────────────────────────────────────────────
+        
         if (bgLoaded) window.draw(*bgSprite);
         else {
             sf::RectangleShape fb({ 800.f, 600.f });
@@ -124,12 +124,12 @@ public:
             window.draw(fb);
         }
 
-        // Very subtle dark overlay — keeps art visible, text readable
+       
         sf::RectangleShape vignette({ 800.f, 600.f });
         vignette.setFillColor(sf::Color(0, 5, 20, 70));
         window.draw(vignette);
 
-        // ── Title ─────────────────────────────────────────────────────────
+       
         TX(txtTitle).setString("SNOW  BROS");
         TX(txtTitle).setCharacterSize(30u);
         TX(txtTitle).setFillColor(titleCol);
@@ -144,7 +144,6 @@ public:
         dividerTop.setFillColor(sf::Color(120, 200, 255, 80));
         window.draw(dividerTop);
 
-        // ── Subtitle (welcome) ────────────────────────────────────────────
         TX(txtSub).setString("Welcome back,  " + username + "!");
         TX(txtSub).setCharacterSize(11u);
         TX(txtSub).setFillColor(subCol);
@@ -152,7 +151,6 @@ public:
         centreText(TX(txtSub), 148.f);
         window.draw(TX(txtSub));
 
-        // ── Buttons ───────────────────────────────────────────────────────
         const char* opts[OPT_COUNT] = {
             "1 Player", "2 Player", "Shop",
             "Leaderboard", "Key Bindings", "Logout", "Quit"
@@ -187,7 +185,6 @@ public:
         dividerBot.setFillColor(sf::Color(120, 200, 255, 60));
         window.draw(dividerBot);
 
-        // ── Hint ──────────────────────────────────────────────────────────
         TX(txtHint).setString("Arrows to navigate   |   Enter to select");
         TX(txtHint).setCharacterSize(9u);
         TX(txtHint).setFillColor(hintCol);
