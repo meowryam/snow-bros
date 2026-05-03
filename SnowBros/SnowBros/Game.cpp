@@ -2092,13 +2092,15 @@ void Game::loadAllFonts() {
 
 
 void Game::loadAllSounds() {
-    // soundManager.loadSound("throw",      "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\throw.wav");
-    // soundManager.loadSound("encase",     "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\encase.wav");
-    // soundManager.loadSound("death",      "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\death.wav");
-    // soundManager.loadSound("levelup",    "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\levelup.wav");
-    // soundManager.loadSound("gemcollect", "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\gem.wav");
-    // soundManager.loadMusic("D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\bgm.ogg");
-    // soundManager.playMusic();
+
+    // NEW — one-shot SFX
+    soundManager.loadSound("gamestart", "assets\\sounds\\gamestart.wav");  // #2 game start jingle
+    soundManager.loadSound("levelstart", "assets\\sounds\\levelstart.wav"); // #4 next level fanfare
+
+    // NEW — background music streams
+    soundManager.loadMenuMusic("assets\\sounds\\menu_bgm.wav");      // #1
+    soundManager.loadGameMusic("assets\\sounds\\game_bgm.wav");      // #3
+    soundManager.loadGameOverMusic("assets\\sounds\\gameover_bgm.wav"); // #5
 }
 
 
@@ -2155,7 +2157,7 @@ void Game::run() //The main game loop setup
                         if (twoPlayerMode)
                             player2.resetForNewLevel(sf::Vector2f(600.f, 500.f));
                         currentState = GameState::PLAYING;
-                        soundManager.playMusic();
+                        soundManager.playGameMusic();
                     }
                     else {
                         // ESC / Back ? return to menu
@@ -2233,6 +2235,7 @@ void Game::handleLoginEvents(sf::Event& event)
         mainMenu.setUsername(playerData.getUsername());
         mainMenu.reset();
         currentState = GameState::MENU;
+        soundManager.playMenuMusic(); //new
     }
     else if (result == LoginResult::QUIT) {
         window.close();
@@ -2250,6 +2253,7 @@ void Game::handleSignupEvents(sf::Event& event)
         mainMenu.setUsername(playerData.getUsername());
         mainMenu.reset();
         currentState = GameState::MENU;
+        soundManager.playMenuMusic(); //new
     }
     else if (result == SignupResult::BACK) {
         currentState = GameState::LOGIN;
@@ -2277,8 +2281,10 @@ void Game::handleMainMenuEvents(sf::Event& event)
         // levelsManager.SpecificLevel(5);
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
 
-        soundManager.playMusic();
+        soundManager.playSound("gamestart");  // ADD
+        soundManager.playGameMusic();         // replaces playMusic()
     }
+
 
     else if (result == MainMenuResult::START_2PLAYER)
     {
@@ -2318,7 +2324,9 @@ void Game::handleMainMenuEvents(sf::Event& event)
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
 
         player2.resetForNewLevel(sf::Vector2f(600.f, 500.f));
-        soundManager.playMusic();
+
+        soundManager.playSound("gamestart");  // ADD
+        soundManager.playGameMusic();         // replaces playMusic()
     }
 
     else if (result == MainMenuResult::OPEN_SHOP) {
@@ -2337,6 +2345,7 @@ void Game::handleMainMenuEvents(sf::Event& event)
     else if (result == MainMenuResult::LOGOUT) {
         FileManager::savePlayerData(playerData);
         currentState = GameState::LOGIN;
+        soundManager.stopAll();   // ADD — silence everything on logout
     }
     else if (result == MainMenuResult::QUIT) {
         saveAndSubmitScore();
@@ -2348,7 +2357,7 @@ void Game::handlePauseEvents(sf::Event& event) {
     PauseResult result = pauseScreen.handleEvent(event);
     if (result == PauseResult::RESUME) {
         currentState = GameState::PLAYING;
-       // soundManager.playMusic();
+        soundManager.resumeGameMusic();
     }
     else if (result == PauseResult::OPEN_SHOP) {
         prevState = currentState;
@@ -2363,7 +2372,7 @@ void Game::handlePauseEvents(sf::Event& event) {
         FileManager::savePlayerData(playerData);
         mainMenu.reset();
         currentState = GameState::MENU;
-     //   soundManager.stopMusic();
+        soundManager.playMenuMusic();
     }
 }
 void Game::handleGameOverEvents(sf::Event& event) {
@@ -2417,7 +2426,7 @@ void Game::processInput()
         if (inputManager.isKeyHeld(keyBindings.pause)) {
             currentState = GameState::PAUSED;
             pauseScreen.reset();
-           // soundManager.pauseMusic();
+            soundManager.pauseGameMusic();
         }
     }
     
@@ -2425,7 +2434,7 @@ void Game::processInput()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G)) {
         gameOverScreen.reset();
         currentState = GameState::GAME_OVER;
-        soundManager.stopMusic();
+        soundManager.playGameOverMusic();
     } 
 }
 void Game::update(float deltaTime)
@@ -2436,6 +2445,8 @@ void Game::update(float deltaTime)
 
 
     if (playerData.getLives() <= 0) {
+        currentState = GameState::GAME_OVER;
+        soundManager.playGameOverMusic();   // ADD
         saveAndSubmitScore();
         gameOverScreen.reset();
         /*gameOverScreen.reset();
@@ -2463,6 +2474,8 @@ void Game::update(float deltaTime)
             playerData.setCurrentLevel(playerData.getCurrentLevel() + 1);
             levelsManager.NextLevel();
             if (levelsManager.isGameDone()) {
+                currentState = GameState::GAME_OVER;
+                soundManager.playGameOverMusic();   // ADD
                 saveAndSubmitScore();
                 gameOverScreen.reset();
                 currentState = GameState::GAME_OVER;
@@ -2474,6 +2487,8 @@ void Game::update(float deltaTime)
                     currentState = GameState::STAR_LEVEL;
                 }
                 gameLevel.loadLevel(levelsManager.getCurrentLevel());
+                soundManager.playSound("levelstart");  // ADD — fanfare
+                soundManager.playGameMusic();          // ADD — BGM restarts
             }
         }
     }
