@@ -296,6 +296,132 @@ private:
         checkKick(player1);
         if (player2) checkKick(*player2);
 
+
+
+        // Rolling Botom kills other enemies it passes through
+        for (int ri = 0; ri < botomCount; ri++) {
+            if (!botoms[ri]->getalive() || !botoms[ri]->isRolling()) continue;
+            sf::FloatRect rollingHB = botoms[ri]->getHitbox();
+
+            for (int ei = 0; ei < botomCount; ei++) {
+                if (ei == ri) continue;
+                if (!botoms[ei]->getalive() || botoms[ei]->gettrap()) continue;
+                if (!rollingHB.findIntersection(botoms[ei]->getHitbox())) continue;
+                botoms[ei]->setalive(false);
+                scoreSystem.onBottomKilled();
+                gemSystem.enemykilled();
+                spawnGem(botoms[ei]->getx(), botoms[ei]->gety());
+                spawnRandomPickup(botoms[ei]->getx(), botoms[ei]->gety());
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+
+            for (int ei = 0; ei < foogaCount; ei++) {
+                if (!foogas[ei]->getalive() || foogas[ei]->gettrap()) continue;
+                if (!rollingHB.findIntersection(foogas[ei]->getHitbox())) continue;
+                foogas[ei]->setalive(false);
+                scoreSystem.onFoogaKilled();
+                gemSystem.enemykilled();
+                spawnGem(foogas[ei]->getx(), foogas[ei]->gety());
+                spawnRandomPickup(foogas[ei]->getx(), foogas[ei]->gety());
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+
+            for (int ei = 0; ei < tornadoCount; ei++) {
+                if (!tornados[ei]->getalive() || tornados[ei]->gettrap()) continue;
+                if (!rollingHB.findIntersection(tornados[ei]->getHitbox())) continue;
+                tornados[ei]->setalive(false);
+                scoreSystem.onTornadoKilled();
+                gemSystem.enemykilled();
+                spawnGem(tornados[ei]->getx(), tornados[ei]->gety());
+                spawnRandomPickup(tornados[ei]->getx(), tornados[ei]->gety());
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+        }
+
+        // Rolling Fooga kills other enemies it passes through
+        for (int ri = 0; ri < foogaCount; ri++) {
+            if (!foogas[ri]->getalive() || !foogas[ri]->isRolling()) continue;
+            sf::FloatRect rollingHB = foogas[ri]->getHitbox();
+
+            for (int ei = 0; ei < botomCount; ei++) {
+                if (!botoms[ei]->getalive() || botoms[ei]->gettrap()) continue;
+                if (!rollingHB.findIntersection(botoms[ei]->getHitbox())) continue;
+                botoms[ei]->setalive(false);
+                scoreSystem.onBottomKilled();
+                gemSystem.enemykilled();
+                spawnGem(botoms[ei]->getx(), botoms[ei]->gety());
+                spawnRandomPickup(botoms[ei]->getx(), botoms[ei]->gety());
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+
+            for (int ei = 0; ei < foogaCount; ei++) {
+                if (ei == ri) continue;
+                if (!foogas[ei]->getalive() || foogas[ei]->gettrap()) continue;
+                if (!rollingHB.findIntersection(foogas[ei]->getHitbox())) continue;
+                foogas[ei]->setalive(false);
+                scoreSystem.onFoogaKilled();
+                gemSystem.enemykilled();
+                spawnGem(foogas[ei]->getx(), foogas[ei]->gety());
+                spawnRandomPickup(foogas[ei]->getx(), foogas[ei]->gety());
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+
+            for (int ei = 0; ei < tornadoCount; ei++) {
+                if (!tornados[ei]->getalive() || tornados[ei]->gettrap()) continue;
+                if (!rollingHB.findIntersection(tornados[ei]->getHitbox())) continue;
+                tornados[ei]->setalive(false);
+                scoreSystem.onTornadoKilled();
+                gemSystem.enemykilled();
+                spawnGem(tornados[ei]->getx(), tornados[ei]->gety());
+                spawnRandomPickup(tornados[ei]->getx(), tornados[ei]->gety());
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+        }
+
+        // Rolling Tornado kills other enemies it passes through
+        for (int ri = 0; ri < tornadoCount; ri++) {
+            if (!tornados[ri]->getalive() || !tornados[ri]->isRolling()) continue;
+            sf::FloatRect rollingHB = tornados[ri]->getHitbox();
+
+            for (int ei = 0; ei < botomCount; ei++) {
+                if (!botoms[ei]->getalive() || botoms[ei]->gettrap()) continue;
+                if (!rollingHB.findIntersection(botoms[ei]->getHitbox())) continue;
+                botoms[ei]->setalive(false);
+                scoreSystem.onBottomKilled();
+                gemSystem.enemykilled();
+                spawnGem(botoms[ei]->getx(), botoms[ei]->gety());
+                spawnRandomPickup(botoms[ei]->getx(), botoms[ei]->gety());
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+
+            for (int ei = 0; ei < foogaCount; ei++) {
+                if (!foogas[ei]->getalive() || foogas[ei]->gettrap()) continue;
+                if (!rollingHB.findIntersection(foogas[ei]->getHitbox())) continue;
+                foogas[ei]->setalive(false);
+                scoreSystem.onFoogaKilled();
+                gemSystem.enemykilled();
+                spawnGem(foogas[ei]->getx(), foogas[ei]->gety());
+                spawnRandomPickup(foogas[ei]->getx(), foogas[ei]->gety());
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+
+            for (int ei = 0; ei < tornadoCount; ei++) {
+                if (ei == ri) continue;
+                if (!tornados[ei]->getalive() || tornados[ei]->gettrap()) continue;
+                if (!rollingHB.findIntersection(tornados[ei]->getHitbox())) continue;
+                tornados[ei]->setalive(false);
+                scoreSystem.onTornadoKilled();
+                gemSystem.enemykilled();
+                spawnGem(tornados[ei]->getx(), tornados[ei]->gety());
+                spawnRandomPickup(tornados[ei]->getx(), tornados[ei]->gety());
+                eventBus.post(GameEvent::ENEMY_KILLED);
+            }
+        }
+
+
+
+
+
         // Kill rolling botoms that hit screen edges
         for (int ei = 0; ei < botomCount; ei++) {
             if (!botoms[ei]->getalive() || !botoms[ei]->isRolling()) continue;
