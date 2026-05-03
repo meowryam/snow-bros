@@ -2077,7 +2077,7 @@ void Game::loadAllFonts() {
     signupScreen.loadFont(fontPath);   // NEW
     mainMenu.loadFont(fontPath);
     hud.loadFont(fontPath);
-    //pauseScreen.loadFont(fontPath);
+    pauseScreen.loadFont(fontPath);
     //gameOverScreen.loadFont(fontPath);
     leaderboardScreen.loadFont(fontPath);
     keyRemapScreen.loadFont(fontPath);
@@ -2141,9 +2141,9 @@ void Game::run() //The main game loop setup
                     currentState = GameState::MENU;
                 }
                 break;
-                /*   case GameState::PAUSED:
+                  case GameState::PAUSED:
                        handlePauseEvents(*event); break;
-                   case GameState::GAME_OVER:
+                  /* case GameState::GAME_OVER:
                        handleGameOverEvents(*event); break; */
             case GameState::LEVEL_SELECT:
                 levelSelectScreen.handleEvent(*event);
@@ -2339,13 +2339,12 @@ void Game::handleMainMenuEvents(sf::Event& event)
         window.close();
     }
 }
-/*
-void Game::handlePauseEvents(sf::Event& event)
-{/*
+
+void Game::handlePauseEvents(sf::Event& event) {
     PauseResult result = pauseScreen.handleEvent(event);
     if (result == PauseResult::RESUME) {
         currentState = GameState::PLAYING;
-        soundManager.playMusic();
+       // soundManager.playMusic();
     }
     else if (result == PauseResult::OPEN_SHOP) {
         prevState = currentState;
@@ -2360,10 +2359,10 @@ void Game::handlePauseEvents(sf::Event& event)
         FileManager::savePlayerData(playerData);
         mainMenu.reset();
         currentState = GameState::MENU;
-        soundManager.stopMusic();
+     //   soundManager.stopMusic();
     }
 }
-
+/*
 void Game::handleGameOverEvents(sf::Event& event) {
     GameOverResult result = gameOverScreen.handleEvent(event);
 
@@ -2388,14 +2387,15 @@ void Game::handleGameOverEvents(sf::Event& event) {
 
 } */
 void Game::processInput()
-{/*
+{
     if (currentState == GameState::PLAYING) {
         if (inputManager.isKeyHeld(keyBindings.pause)) {
             currentState = GameState::PAUSED;
             pauseScreen.reset();
-            soundManager.pauseMusic();
+           // soundManager.pauseMusic();
         }
     }
+    /*
     // TEMP: press G to force game over screen for testing
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G)) {
         gameOverScreen.reset();
@@ -2472,10 +2472,10 @@ void Game::draw() {
         hud.draw(window, playerData, twoPlayerMode ? &player2Data : nullptr);
         //hud.draw(window, playerData); // this was when we had single player only
         break;
-        /*case GameState::PAUSED:
+        case GameState::PAUSED:
             pauseScreen.draw(window);
             break;
-        case GameState::GAME_OVER:
+      /*  case GameState::GAME_OVER:
             gameOverScreen.draw(window, playerData);
             break; */
     case GameState::KEY_REMAP:

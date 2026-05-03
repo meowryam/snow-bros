@@ -168,7 +168,7 @@ protected:
     SignupScreen       signupScreen;    // NEW
     MainMenu           mainMenu;
     HUD                hud;
-    //PauseScreen        pauseScreen;
+    PauseScreen        pauseScreen;
     //GameOverScreen     gameOverScreen;
     LeaderboardScreen  leaderboardScreen;
     KeyRemapScreen     keyRemapScreen;
@@ -194,7 +194,7 @@ protected:
     void handleLoginEvents(sf::Event& event);
     void handleSignupEvents(sf::Event& event);  // NEW
     void handleMainMenuEvents(sf::Event& event);
-    // void handlePauseEvents(sf::Event& event);
+     void handlePauseEvents(sf::Event& event);
      //void handleGameOverEvents(sf::Event& event);
 
     void saveAndSubmitScore();
