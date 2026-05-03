@@ -66,7 +66,7 @@ private:
     ShopScreen         shopScreen;
     LevelSelectScreen levelSelectScreen;
 
-    StarLevelScreen    starLevelScreen;
+    //StarLevelScreen    starLevelScreen;
     int shopOpenedByPlayer = 1; // who opened the shop
 
     GameState prevState = GameState::MENU;

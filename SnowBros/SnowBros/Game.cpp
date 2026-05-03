@@ -97,7 +97,7 @@ void Game::loadAllFonts() {
     keyRemapScreen.loadFont(fontPath);
     shopScreen.loadFont(fontPath);
     levelSelectScreen.loadAssets(fontPath, "assets\\images\\LevelSelect_bg.png");
-    starLevelScreen.loadAssets(fontPath, "assets\\images\\StarLevel_bg.png");
+    //starLevelScreen.loadAssets(fontPath, "assets\\images\\StarLevel_bg.png");
 }
 
 
