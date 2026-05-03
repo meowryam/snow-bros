@@ -48,7 +48,7 @@ struct Platform {
             while (remaining > 0.5f) {
                 float drawW = std::min(remaining, tileW);
                 sf::Sprite s(*tileTexture);
-                s.setTextureRect(sf::IntRect({ 0, 0 }, { (int)drawW, 48 }));
+                s.setTextureRect(sf::IntRect({ 0, 0 }, { (int)drawW, 24 }));
                 s.setPosition({ x, rect.position.y });
                 window.draw(s);
                 x += drawW;

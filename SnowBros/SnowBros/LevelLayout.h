@@ -83,9 +83,9 @@ public:
         }
 
         // Bring rows DOWN ? was too high
-        float p1y = H - 140.f;  // row 1 near bottom
-        float p2y = H - 260.f;  // row 2 mid
-        float p3y = H - 380.f;  // row 3 upper
+        float p1y = H - 160.f;  // row 1 near bottom
+        float p2y = H - 280.f;  // row 2 mid
+        float p3y = H - 400.f;  // row 3 upper
 
         // Row 1
         platforms[count++] = Platform(50, p1y, 220, ph, sf::Color(60, 100, 160));
