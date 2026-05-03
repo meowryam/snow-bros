@@ -1,0 +1,5 @@
+username=sehrish
+current_level=2
+lives=2
+gem_count=111
+high_score=1232
