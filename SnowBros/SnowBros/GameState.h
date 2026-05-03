@@ -13,13 +13,13 @@
 //    LEVEL_SELECT,
 //    STAR_LEVEL
 //};
-
 #pragma once
 
 enum class GameState {
     LOGIN,
     SIGNUP,
     MENU,
+    LEADERBOARD,
     PLAYING,
     PAUSED,
     GAME_OVER,
