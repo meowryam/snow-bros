@@ -47,18 +47,18 @@ Player::Player(PlayerData& data, int playerNum, float screenW, float screenH)
     canJump = true;
 
     if (playerNumber == 1) {
-        //p1 keys
-        keyLeft = Keyboard::Key::Left;
-        keyRight = Keyboard::Key::Right;
-        keyJump = Keyboard::Key::Up;
-        keyThrow = Keyboard::Key::Space;
-    }
-    else {
-        //p2 keys
+        // P1 uses WASD in 2-player (overridden to arrows in single player via setKeys)
         keyLeft = Keyboard::Key::A;
         keyRight = Keyboard::Key::D;
         keyJump = Keyboard::Key::W;
         keyThrow = Keyboard::Key::S;
+    }
+    else {
+        // P2 always uses arrow keys
+        keyLeft = Keyboard::Key::Left;
+        keyRight = Keyboard::Key::Right;
+        keyJump = Keyboard::Key::Up;
+        keyThrow = Keyboard::Key::Space;
     }
     state = PlayerState::FALLING;
     facing = Direction::RIGHT;     

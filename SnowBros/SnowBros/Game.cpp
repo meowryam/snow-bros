@@ -2284,13 +2284,30 @@ void Game::handleMainMenuEvents(sf::Event& event)
         player1.loadTexture("assets\\images\\Nick.png");
         player2.loadTexture("assets\\images\\Nick.png"); // or a different texture
 
+        /*player2.setKeys(
+            Keyboard::Key::Left,
+            Keyboard::Key::Right,
+            Keyboard::Key::Up,
+            Keyboard::Key::Space
+        );*/
+
+
+        // P1 gets WASD in 2-player mode
+        player1.setKeys(
+            Keyboard::Key::A,
+            Keyboard::Key::D,
+            Keyboard::Key::W,
+            Keyboard::Key::S
+        );
+        // P2 gets arrow keys
         player2.setKeys(
             Keyboard::Key::Left,
             Keyboard::Key::Right,
             Keyboard::Key::Up,
             Keyboard::Key::Space
-
         );
+
+
         levelSelectScreen.reset();               // ADD
         currentState = GameState::LEVEL_SELECT;  // CHANGE (was PLAYING)
         levelsManager.SpecificLevel(playerData.getCurrentLevel());
