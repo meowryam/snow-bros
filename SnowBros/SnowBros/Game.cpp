@@ -2231,10 +2231,12 @@ void Game::handleLoginEvents(sf::Event& event)
 {
     LoginResult result = loginScreen.handleEvent(event);
     if (result == LoginResult::NEW_GAME) {
+        saveAndSubmitScore();
         signupScreen.setUsername(loginScreen.getUsername());   // NEW
         currentState = GameState::SIGNUP;                      // NEW
     }
     else if (result == LoginResult::CONTINUE) {
+        saveAndSubmitScore();
         FileManager::loadPlayerData(loginScreen.getUsername(), playerData);
         keyBindings.loadFromFile(playerData.getUsername());
         mainMenu.setUsername(playerData.getUsername());
@@ -2340,6 +2342,7 @@ void Game::handleMainMenuEvents(sf::Event& event)
         currentState = GameState::SHOP;
     }
     else if (result == MainMenuResult::OPEN_LEADERBOARD) {
+        leaderboard.load();
         leaderboardScreen.done = false;
         currentState = GameState::LEADERBOARD;
     }
@@ -2348,6 +2351,7 @@ void Game::handleMainMenuEvents(sf::Event& event)
         currentState = GameState::KEY_REMAP;
     }
     else if (result == MainMenuResult::LOGOUT) {
+        saveAndSubmitScore();
         FileManager::savePlayerData(playerData);
         currentState = GameState::LOGIN;
         soundManager.stopAll();   // ADD — silence everything on logout
@@ -2454,6 +2458,8 @@ void Game::update(float deltaTime)
         soundManager.playGameOverMusic();   // ADD
         saveAndSubmitScore();
         gameOverScreen.reset();
+
+
         /*gameOverScreen.reset();
         currentState = GameState::GAME_OVER; //If the player has run out of lives, saves the score and transitions to the game over screen.
         soundManager.stopMusic();

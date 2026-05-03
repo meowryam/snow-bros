@@ -60,10 +60,29 @@ public:
     }
 
     // Try to insert a new score — keeps top 10 sorted
+    /*void submitScore(const string& username, int score, int level, const string& date) {
+        if (count == MAX_ENTRIES && score <= entries[count - 1].score)
+            return;*/
+
+
     void submitScore(const string& username, int score, int level, const string& date) {
-        // check if qualifies
+        if (username.empty()) return;      // ADD — skip blank usernames
+        // update existing entry for same player if score is higher
+        for (int i = 0; i < count; i++) {
+            if (entries[i].username == username) {
+                if (score <= entries[i].score) return;  // existing score is better
+                // remove old entry, re-insert below
+                for (int j = i; j < count - 1; j++)
+                    entries[j] = entries[j + 1];
+                count--;
+                break;
+            }
+        }
         if (count == MAX_ENTRIES && score <= entries[count - 1].score)
             return;
+
+
+
 
         // insert
         if (count < MAX_ENTRIES) count++;
