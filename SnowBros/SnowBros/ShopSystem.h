@@ -146,42 +146,33 @@ private:
     optional<Text> txtMessage;
     optional<Text> txtBack;
 
- 
-    const Color CARD_NORMAL{ 6, 18, 40, 185 };     //dark icy blue
-    const Color CARD_SEL{ 20, 55, 110, 215 };      //brighter ice glow
-    const Color CARD_BOUGHT{ 20, 95, 120, 235 }; //deeper, richer ice
-    const  Color CARD_POOR{ 20, 35, 60, 200 }; //visible but muted
-
-    const Color BTN_BUY{ 70, 170, 200, 235 };      //icy cyan
+ //colour pallete (soft icy blue)
+    const Color CARD_NORMAL{ 6, 18, 40, 185 };    
+    const Color CARD_SEL{ 20, 55, 110, 215 };      
+    const Color CARD_BOUGHT{ 20, 95, 120, 235 }; 
+    const  Color CARD_POOR{ 20, 35, 60, 200 }; 
+    const Color BTN_BUY{ 70, 170, 200, 235 };     
     const Color BTN_OFF{ 40, 60, 90, 180 };
     const Color BTN_OWN{ 60, 180, 170, 255 };
     const Color COL_BTN_OWN_TXT{ 230, 255, 250, 255 };
-
-    const Color COL_NAME_NORMAL{ 190, 230, 255, 255 };   //ice white-blue
-    const Color COL_NAME_SEL{ 220, 245, 255, 255 };      //brighter frost
+    const Color COL_NAME_NORMAL{ 190, 230, 255, 255 };   
+    const Color COL_NAME_SEL{ 220, 245, 255, 255 };      
     const Color COL_NAME_POOR{ 160, 180, 200, 220 };
     const Color COL_DESC_POOR{ 130, 150, 170, 200 };
     const Color COL_COST_POOR{ 100, 130, 150, 200 };
-    const Color COL_DESC_NORMAL{ 160, 200, 235, 210 };   //soft ice blue
-
-
-    const Color COL_COST{ 120, 220, 255, 255 };          //glowing cyan
-
-    const Color COL_BTN_TXT{ 240, 250, 255, 255 };       //frosty white
+    const Color COL_DESC_NORMAL{ 160, 200, 235, 210 };   
+    const Color COL_COST{ 120, 220, 255, 255 };          
+    const Color COL_BTN_TXT{ 240, 250, 255, 255 };      
     const Color COL_BTN_OFF_TXT{ 120, 140, 160, 180 };
-   
-   
-    const Color OUTLINE_SEL{ 120, 220, 255, 255 };       //cyan glow
+    const Color OUTLINE_SEL{ 120, 220, 255, 255 };       
     const Color OUTLINE_NRM{ 40, 90, 140, 160 };
     const Color OUTLINE_POOR{ 25, 50, 80, 100 };
-    const Color OUTLINE_OWNED{ 150, 255, 240, 255 }; //crisp icy glow
+    const Color OUTLINE_OWNED{ 150, 255, 240, 255 }; 
     const Color COL_NAME_OWNED{ 220, 255, 245, 255 };
     const Color COL_DESC_OWNED{ 180, 235, 225, 220 };
-   
-
-    const Color GEM_COL{ 120, 220, 255, 255 };           // matches crystals
-    const Color GREEN_OK{ 100, 255, 200, 255 };          // icy success
-    const Color RED_ERR{ 220, 80, 80, 255 };             // keep readable
+    const Color GEM_COL{ 120, 220, 255, 255 };          
+    const Color GREEN_OK{ 100, 255, 200, 255 };          
+    const Color RED_ERR{ 220, 80, 80, 255 };             
 
     
     Text& TX(optional<Text>& t) { return t.value(); }
