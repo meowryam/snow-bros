@@ -3,11 +3,10 @@
 #include "PlayerData.h"
 using namespace std;
 
-// In-game overlay — shows lives, gems, level, score
 class HUD
 {
 private:
-    sf::Font font;   // font must outlive any sf::Text that references it
+    sf::Font font;   
 
     optional<sf::Text> livesText;
     optional<sf::Text> p1LivesText;
@@ -30,14 +29,23 @@ private:
     }
 
 public:
-    bool loadFont(const string& path) {
-        if (!font.openFromFile(path)) return false;
+    bool loadFont(const string& path)
+    {
+        if (!font.openFromFile(path)) 
+            return false;
+
         livesText.emplace(font);
+
         gemsText.emplace(font);
+
         levelText.emplace(font);
+
         scoreText.emplace(font);
+
         p1LivesText.emplace(font);
+
         p2LivesText.emplace(font);
+
         return true;
     }
 
@@ -54,8 +62,8 @@ public:
         topBar.setFillColor(barColor);
         window.draw(topBar);
 
-        if (data2 == nullptr) {
-            // ?? Single player layout (your existing code) ??
+        if (data2 == nullptr)
+        {
             T(livesText).setString("LIVES: " + to_string(data.getLives()));
             T(livesText).setCharacterSize(16);
             T(livesText).setFillColor(white);
@@ -84,50 +92,11 @@ public:
             T(scoreText).setPosition({ W - 20.f, 12.f });
             window.draw(T(scoreText));
         }
-        //else {
-        //    // ?? Multiplayer layout ??
-        //    // Player 1 on the LEFT side
-        //    T(livesText).setString("P1 LV: " + to_string(data.getLives()));
-        //    T(livesText).setCharacterSize(11);
-        //    T(livesText).setFillColor(sf::Color(100, 220, 255, 255)); // blue tint for P1
-        //    T(livesText).setPosition({ 10.f, 4.f });
-        //    window.draw(T(livesText));
+        
+        
 
-        //    T(gemsText).setString("P1 GM: " + to_string(data.getGemCount()));
-        //    T(gemsText).setCharacterSize(11);
-        //    T(gemsText).setFillColor(sf::Color(100, 220, 255, 255));
-        //    T(gemsText).setPosition({ 10.f, 24.f });
-        //    window.draw(T(gemsText));
-
-        //    // Level in the CENTER
-        //    T(levelText).setString("LEVEL " + to_string(data.getCurrentLevel()));
-        //    T(levelText).setCharacterSize(13);
-        //    T(levelText).setFillColor(white);
-        //    sf::FloatRect lb = T(levelText).getLocalBounds();
-        //    T(levelText).setOrigin({ lb.size.x / 2.f, 0.f });
-        //    T(levelText).setPosition({ W / 2.f, 14.f });
-        //    window.draw(T(levelText));
-
-        //    // Player 2 on the RIGHT side
-        //    T(scoreText).setString("P2 LV: " + to_string(data2->getLives()));
-        //    T(scoreText).setCharacterSize(11);
-        //    T(scoreText).setFillColor(sf::Color(255, 180, 80, 255)); // orange tint for P2
-        //    sf::FloatRect sb = T(scoreText).getLocalBounds();
-        //    T(scoreText).setOrigin({ sb.size.x, 0.f });
-        //    T(scoreText).setPosition({ W - 10.f, 4.f });
-        //    window.draw(T(scoreText));
-
-        //    T(livesText).setString("P2 GM: " + to_string(data2->getGemCount()));
-        //    T(livesText).setCharacterSize(11);
-        //    T(livesText).setFillColor(sf::Color(255, 180, 80, 255));
-        //    sf::FloatRect lb2 = T(livesText).getLocalBounds();
-        //    T(livesText).setOrigin({ lb2.size.x, 0.f });
-        //    T(livesText).setPosition({ W - 10.f, 24.f });
-        //    window.draw(T(livesText));
-        //}
-
-        else {
-            // P1 LEFT — use dedicated objects
+        else 
+        {
             T(p1LivesText).setString("P1 LV: " + to_string(data.getLives()));
             T(p1LivesText).setCharacterSize(11);
             T(p1LivesText).setFillColor(sf::Color(100, 220, 255, 255));
@@ -140,7 +109,6 @@ public:
             T(gemsText).setPosition({ 10.f, 24.f });
             window.draw(T(gemsText));
 
-            // CENTER
             T(levelText).setString("LEVEL " + to_string(data.getCurrentLevel()));
             T(levelText).setCharacterSize(13);
             T(levelText).setFillColor(white);
@@ -149,7 +117,6 @@ public:
             T(levelText).setPosition({ W / 2.f, 14.f });
             window.draw(T(levelText));
 
-            // P2 RIGHT — use dedicated objects
             T(p2LivesText).setString("P2 LV: " + to_string(data2->getLives()));
             T(p2LivesText).setCharacterSize(11);
             T(p2LivesText).setFillColor(sf::Color(255, 180, 80, 255));

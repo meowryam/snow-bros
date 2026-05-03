@@ -160,7 +160,7 @@ private:
     sf::Text& TX(optional<sf::Text>& t) { return t.value(); }
 
     void setupLayout(const PlayerData& data) {
-        // Panel
+        
         panel.setSize({ PANEL_W, PANEL_H });
         panel.setPosition({ PANEL_X, PANEL_Y });
         panel.setFillColor(PANEL_FILL);
@@ -172,7 +172,7 @@ private:
         panelOutline.setOutlineThickness(2.f);
         panelOutline.setOutlineColor(PANEL_OUTLINE);
 
-        // Title
+        
         TX(titleText).setFillColor(COL_TITLE);
         TX(titleText).setStyle(sf::Text::Bold);
         TX(titleText).setLetterSpacing(4.f);
@@ -184,15 +184,15 @@ private:
                 });
         }
 
-        // Divider
+        
         divider.setSize({ PANEL_W - 30.f, 1.5f });
         divider.setPosition({ PANEL_X + 15.f, PANEL_Y + 78.f });
         divider.setFillColor(DIV_COL);
 
-        // Stats
+        
         TX(statsText).setFillColor(COL_STATS);
 
-        // Buttons
+       
         const char* labels[2] = { "Retry", "Quit to Menu" };
         for (int i = 0; i < 2; i++) {
             float by = BTNS_TOP + i * (BTN_H + BTN_GAP);
@@ -202,7 +202,7 @@ private:
             TX(optionTexts[i]).setString(labels[i]);
         }
 
-        // Hint
+        
         TX(hintText).setFillColor(COL_HINT);
         {
             auto lb = TX(hintText).getLocalBounds();

@@ -4,11 +4,13 @@
 #include <sstream>
 #include <filesystem>
 
-string FileManager::getSavePath(const string& username) {
+string FileManager::getSavePath(const string& username)
+{
     return "saves/" + username + ".txt";
 }
 
-bool FileManager::savePlayerData(const PlayerData& data) {
+bool FileManager::savePlayerData(const PlayerData& data) 
+{
     filesystem::create_directories("saves");
 
     ofstream file(getSavePath(data.getUsername()));
@@ -23,25 +25,30 @@ bool FileManager::savePlayerData(const PlayerData& data) {
     return true;
 }
 
-bool FileManager::loadPlayerData(const string& username, PlayerData& outData) {
+bool FileManager::loadPlayerData(const string& username, PlayerData& outData)
+{
      ifstream file(getSavePath(username));
     if (!file.is_open()) return false; //new player
 
  string line;
  while (getline(file, line)) //line by line read
     {
-	 istringstream ss(line); //handles current-level=3
+	 istringstream ss(line); 
        string key, value;
         if (getline(ss, key, '=') && getline(ss, value)) 
         {
             if (key == "username")    
                 outData.setUsername(value);
+
             else if (key == "current_level") 
                 outData.setCurrentLevel(stoi(value));
+
             else if (key == "lives") 
                 outData.setLives(stoi(value));
+
             else if (key == "gem_count")  
                 outData.setGemCount(stoi(value));
+
             else if (key == "high_score")   
                 outData.setHighscore(stoi(value));
         }
@@ -49,7 +56,8 @@ bool FileManager::loadPlayerData(const string& username, PlayerData& outData) {
     return true;
 }
 
-bool FileManager::saveExists(const string& username) {
+bool FileManager::saveExists(const string& username) 
+{
   ifstream file(getSavePath(username));
     return file.is_open();
 }
