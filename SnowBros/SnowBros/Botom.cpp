@@ -1,6 +1,5 @@
  #include "Botom.h"
 #include <cstdlib>   
-
 #include "sfmlcolours.h"
 using namespace sfmlcolours;
 
@@ -37,10 +36,9 @@ void Botom::update(double deltaTime) {
     if (trap && rolling) {
         x += xspeed * deltaTime;
        
-            // in update(), replace the shakeoutTimer block:
             shakeoutTimer -= static_cast<float>(deltaTime);
             if (shakeoutTimer <= 0.f) {
-                alive = false;  // died from rolling too long
+                alive = false;  
                 return;
             }
         
@@ -53,16 +51,14 @@ void Botom::update(double deltaTime) {
     }
 
     if (trap && !rolling) {
-        // Count down escape timer
         escapeTimer -= static_cast<float>(deltaTime);
         if (escapeTimer <= 0.f) {
-            // Revive — escape from snowball
             trap = false;
             snowballHits = 0;
             escapeTimer = 0.f;
             xspeed = (rand() % 2 == 0) ? speed : -speed;
         }
-        // Still animate even while trapped
+       
         animTimer += static_cast<float>(deltaTime);
         if (animTimer >= FRAME_DURATION) {
             animTimer = 0.f;
@@ -103,7 +99,7 @@ void Botom::update(double deltaTime) {
         hitFlashTimer -= static_cast<float>(deltaTime);
 
 
-    // ── Animate ──────────────────────────────────────────
+//animate
     animTimer += static_cast<float>(deltaTime);
     if (animTimer >= FRAME_DURATION) {
         animTimer = 0.f;
@@ -113,49 +109,34 @@ void Botom::update(double deltaTime) {
     if (!textureLoaded || !sprite) return;
 
     if (!alive) {
-        // cycle through dying frames
-        sf::IntRect dyingFrames[9] = {
+        IntRect dyingFrames[9] = {
             dying_frame1, dying_frame2, dying_frame3,
             dying_frame4, dying_frame5, dying_frame6,
             dying_frame7, dying_frame8, dying_frame9
         };
-        int idx = std::min(animFrame, 8);   // clamp so it stays on last frame
+        int idx = std::min(animFrame, 8);   
         sprite->setTextureRect(dyingFrames[idx]);
     }
-    else if (trap && rolling) {
-        // alternate between the two topped frames while rolling
-        sprite->setTextureRect(animFrame % 2 == 0 ? topped_frame1 : topped_frame2);
-    }
-    else if (trap) {
-        // fully encased — show completed snowball (last frame)
-        sprite->setTextureRect(snow_r2_s4);
-    }
+    else if (trap && rolling) { sprite->setTextureRect(animFrame % 2 == 0 ? topped_frame1 : topped_frame2);  }
+    else if (trap) { sprite->setTextureRect(snow_r2_s4);}
     else if (snowballHits == 1) {
-        // first hit — just starting to encase
-        sf::IntRect encaseFrames[4] = { snow_r1_s1, snow_r1_s2, snow_r1_s3, snow_r1_s4 };
+        IntRect encaseFrames[4] = { snow_r1_s1, snow_r1_s2, snow_r1_s3, snow_r1_s4 };
         sprite->setTextureRect(encaseFrames[animFrame % 4]);
     }
-    else if (std::abs(xspeed) > speed * 1.5) {
-        // charging — flip between the two charge frames
-        sprite->setTextureRect(animFrame % 2 == 0 ? charging_frame1 : charging_frame2);
-    }
+    else if (std::abs(xspeed) > speed * 1.5) { sprite->setTextureRect(animFrame % 2 == 0 ? charging_frame1 : charging_frame2); }
     else {
-        // normal walk — cycle through 3 walk frames
-        sf::IntRect walkFrames[3] = { idle, walking, walking_frame2 };
+        IntRect walkFrames[3] = { idle, walking, walking_frame2 };
         sprite->setTextureRect(walkFrames[animFrame % 3]);
     }
-    // ── Jump timer ───────────────────────────────────
     jumpTimer -= static_cast<float>(deltaTime);
     if (jumpTimer <= 0.f && isOnGround) {
         yspeed = JUMP_FORCE;
         isOnGround = false;
         isJumping = true;
-        jumpTimer = randFloat(2.f, 4.f);   // reset for next jump
+        jumpTimer = randFloat(2.f, 4.f);  
     }
 
     if (yspeed >= 0.f) isJumping = false;  // falling, not jumping anymore
-    // Flip sprite horizontally based on movement direction
-  // In update(), replace the flip block with:
     float scaleX = hitboxbotom_width / static_cast<float>(idle.size.x);
     float scaleY = hitboxbotom_height / static_cast<float>(idle.size.y);
 
@@ -167,7 +148,7 @@ void Botom::update(double deltaTime) {
 
 
 
-void Botom::draw(sf::RenderWindow& window) {
+void Botom::draw(RenderWindow& window) {
     if (!alive) return;
 
     bool showingSnow = (trap && !rolling) || snowballHits > 0;
@@ -215,23 +196,25 @@ void Botom::draw(sf::RenderWindow& window) {
 
     }
     else {
-        sf::RectangleShape rect(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
-        rect.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
-        if (trap)                     rect.setFillColor(sf::Color::White);
-        else if (hitFlashTimer > 0.f) rect.setFillColor(sf::Color::Yellow);
-        else                          rect.setFillColor(sf::Color::Red);
+        RectangleShape rect(Vector2f(hitboxbotom_width, hitboxbotom_height));
+        rect.setPosition(Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        if (trap) rect.setFillColor(Color::White);
+        else if (hitFlashTimer > 0.f) rect.setFillColor(Color::Yellow);
+        else rect.setFillColor(Color::Red);
         window.draw(rect);
     }
 
     if (showDebug) {
-        sf::RectangleShape outline(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
-        outline.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
-        outline.setFillColor(sf::Color::Transparent);
+        RectangleShape outline(Vector2f(hitboxbotom_width, hitboxbotom_height));
+        outline.setPosition(Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        outline.setFillColor(Color::Transparent);
         outline.setOutlineThickness(1.f);
-        outline.setOutlineColor(sf::Color::Red);
+        outline.setOutlineColor(Color::Red);
         window.draw(outline);
     }
 }
+
+
 
 
 bool Botom::receiveSnowballHit() {
@@ -249,7 +232,7 @@ bool Botom::receiveSnowballHit() {
         rolling = false;  
         xspeed = 0.0;
         yspeed = 0.0;
-        escapeTimer = ESCAPE_DURATION;   // ADD THIS
+        escapeTimer = ESCAPE_DURATION;   
         return true;
     }
     return false;
@@ -285,17 +268,20 @@ void Botom::startRolling(double dir) {
     yspeed = 0.0;
 }
 
+
+
 bool Botom::isRolling() const {
     return rolling;
 }
+
+
+
 
 void Botom::loadTexture(const std::string& path) {
     textureLoaded = texture.loadFromFile(path);
     if (textureLoaded) {
         sprite.emplace(texture);
         sprite->setTextureRect(idle);
-
-        // Scale sprite so it visually matches the hitbox size
         float scaleX = hitboxbotom_width / static_cast<float>(idle.size.x);
         float scaleY = hitboxbotom_height / static_cast<float>(idle.size.y);
         sprite->setScale({ scaleX, scaleY });

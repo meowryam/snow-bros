@@ -142,7 +142,6 @@
     <ClCompile Include="Levelblueprint.cpp" />
     <ClCompile Include="LevelsManager.cpp" />
     <ClCompile Include="Loginscreen.cpp" />
-    <ClCompile Include="Mogera.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="sfmlcolours.cpp" />
     <ClCompile Include="SnowBall.cpp" />
@@ -152,7 +151,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Botom.h" />
-    <ClInclude Include="botomvariant.h" />
     <ClInclude Include="Collectable.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyFactory.h" />
@@ -197,7 +195,6 @@
     <ClInclude Include="StarLevel.h" />
     <ClInclude Include="StarLevelScreen.h" />
     <ClInclude Include="Tornado.h" />
-    <ClInclude Include="Tornadovariant.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

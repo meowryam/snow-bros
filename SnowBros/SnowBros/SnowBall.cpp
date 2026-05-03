@@ -23,7 +23,7 @@ void Snowball::update(double deltaTime) {
     }
 
     x += xspeed * deltaTime;
-    //screen wrap
+//screen wrap
     animTimer += static_cast<float>(deltaTime);
     if (animTimer >= FRAME_DURATION) {
         animTimer = 0.f;
@@ -32,25 +32,15 @@ void Snowball::update(double deltaTime) {
 
     if (x + snowballhitboxsize < 0.f || x > screenWidth)  alive = false;
 }
-/*
+
 void Snowball::draw(RenderWindow& window) {
     if (!alive) return;
 
-    RectangleShape rect(Vector2f(snowballhitboxsize, snowballhitboxsize));
-    rect.setPosition(Vector2f(static_cast<float>(x), static_cast<float>(y)));
-    if (powerful) {rect.setFillColor(Color(180, 220, 255));}
-    else {rect.setFillColor(sf::Color::White);}
-    window.draw(rect);
-}
-*/
-void Snowball::draw(sf::RenderWindow& window) {
-    if (!alive) return;
-
     if (textureLoaded && sprite) {
-        sf::IntRect cur;
+        IntRect cur;
 
         if (snowState == SnowballState::ROLLING) {
-            sf::IntRect rollFrames[12] = {
+            IntRect rollFrames[12] = {
                 roll1, roll2, roll3, roll4,
                 roll5, roll6, roll7, roll8,
                 roll9, roll10, roll11, roll12
@@ -59,16 +49,16 @@ void Snowball::draw(sf::RenderWindow& window) {
             cur = rollFrames[frameIdx];
         }
         else  {
-        // Use flame sprites for flying
+        
         cur = powerful ? flame_red : flame_blue;
     }
         
         sprite->setTextureRect(cur);
-        float targetSize = powerful ? 32.f : 28.f; // flames are a bit bigger visually
+        float targetSize = powerful ? 32.f : 28.f; 
         float scaleX = targetSize / static_cast<float>(cur.size.x);
         float scaleY = targetSize / static_cast<float>(cur.size.y);
         if (direction >0) {
-            // flying left — flip horizontally
+           
             sprite->setScale({ -scaleX, scaleY });
             sprite->setPosition({ static_cast<float>(x) + targetSize, static_cast<float>(y) });
         }
@@ -79,10 +69,9 @@ void Snowball::draw(sf::RenderWindow& window) {
         window.draw(*sprite);
     }
     else {
-        // fallback rectangle
-        sf::RectangleShape rect(sf::Vector2f(snowballhitboxsize, snowballhitboxsize));
-        rect.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
-        rect.setFillColor(powerful ? sf::Color(180, 220, 255) : sf::Color::White);
+        RectangleShape rect(Vector2f(snowballhitboxsize, snowballhitboxsize));
+        rect.setPosition(Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        rect.setFillColor(powerful ? Color(180, 220, 255):Color::White);
         window.draw(rect);
     }
 }
@@ -92,8 +81,8 @@ void Snowball::draw(sf::RenderWindow& window) {
 void Snowball::resolvePlatforms(Platform platforms[], int count) {
     if (snowState != SnowballState::ROLLING) return;
     for (int i = 0; i < count; i++) {
-        sf::FloatRect pRect = platforms[i].rect;
-        sf::FloatRect hb = getHitbox();
+        FloatRect pRect = platforms[i].rect;
+        FloatRect hb = getHitbox();
         if (!hb.findIntersection(pRect)) continue;
         float feet = (float)y + snowballhitboxsize;
         float platTop = pRect.position.y;
@@ -108,25 +97,18 @@ void Snowball::resolvePlatforms(Platform platforms[], int count) {
 bool Snowball::isRolling() const {
     return snowState == SnowballState::ROLLING;
 }
-
-
-
 void Snowball::addSnow() {
     powerful = true;
     xspeed = direction * (LONG_RANGE_SPEED * 0.8);
 }
-
 void Snowball::setLongRange() {
     longRange = true;
     xspeed = direction * LONG_RANGE_SPEED;
 }
-
 FloatRect Snowball::getHitbox() const {
     return FloatRect(Vector2f(static_cast<float>(x), static_cast<float>(y)), Vector2f(snowballhitboxsize, snowballhitboxsize) );
 }
-
 float Snowball::getSize() const { return snowballhitboxsize;}
-
 void Snowball::startRolling(double dir) {
     snowState = SnowballState::ROLLING;
     xspeed = dir * 300.0;   // rolling speed

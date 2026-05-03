@@ -7,8 +7,7 @@ static float randFloatT(float low, float high)
     return low + static_cast<float>(rand()) / RAND_MAX * (high - low);
 }
 
-Tornado::Tornado(double startX, double startY, float scrW, float scrH)
-    : FlyingFoogaFoog(startX, startY, scrW, scrH)
+Tornado::Tornado(double startX, double startY, float scrW, float scrH) : FlyingFoogaFoog(startX, startY, scrW, scrH)
 {
     playerX = 400.0;
     playerY = 300.0;
@@ -16,10 +15,12 @@ Tornado::Tornado(double startX, double startY, float scrW, float scrH)
     currentFlightSpeed = randFloatT(MIN_FLIGHT_SPEED, MAX_FLIGHT_SPEED);
 }
 
+
 void Tornado::setPlayerPos(double px, double py) {
     playerX = px;
     playerY = py;
 }
+
 
 void Tornado::randomizeFlightSpeed() {
     currentFlightSpeed = randFloatT(MIN_FLIGHT_SPEED, MAX_FLIGHT_SPEED);
@@ -32,6 +33,7 @@ void Tornado::randomizeFlightSpeed() {
         yspeed = (cy / len) * currentFlightSpeed;
     }
 }
+
 
 void Tornado::fireKnife() {
     for (int i = 0; i < MAX_KNIVES; i++) {
@@ -55,20 +57,16 @@ void Tornado::fireKnife() {
 
 void Tornado::update(double deltaTime) {
     if (!alive) return;
-
-    // ── Snow state: disable flight, let FlyingFoogaFoog/Botom handle everything ──
-    // This covers partial hits, fully trapped, rolling, escape timer,
-    // gravity drop to ground — identical to Foog/Botom behaviour.
     if (trap || snowballHits > 0) {
         inFlight = false;
-        // Kill any in-flight knives when encased
+// Kill any in-flight knives when encased
         for (int i = 0; i < MAX_KNIVES; i++)
             knives[i].alive = false;
         FlyingFoogaFoog::update(deltaTime);
         return;
     }
 
-    // ── Normal Tornado behaviour ──────────────────────────
+
     bool wasInFlight = inFlight;
     FlyingFoogaFoog::update(deltaTime);
     if (inFlight && !wasInFlight) { randomizeFlightSpeed(); }
@@ -90,8 +88,7 @@ void Tornado::update(double deltaTime) {
     }
 }
 
-// Override receiveSnowballHit so it uses Tornado::HITS_TO_ENCASE (8).
-// Logic is identical to Botom/Foog — only the threshold differs.
+
 bool Tornado::receiveSnowballHit() {
     if (trap || !alive) return false;
 
@@ -102,12 +99,12 @@ bool Tornado::receiveSnowballHit() {
         xspeed *= 0.5;
     }
 
-    if (snowballHits >= HITS_TO_ENCASE) {   // 8 — our shadowed constant
+    if (snowballHits >= HITS_TO_ENCASE) {   
         trap = true;
         rolling = false;
         xspeed = 0.0;
         yspeed = 0.0;
-        inFlight = false;   // stop flying immediately, gravity takes over
+        inFlight = false;   //gravity
         escapeTimer = ESCAPE_DURATION;
         return true;
     }
@@ -125,23 +122,19 @@ void Tornado::loadTexture(const std::string& path) {
     }
 }
 
+
 void Tornado::draw(sf::RenderWindow& window) {
     if (!alive) return;
 
-    // ── Snow state: delegate entirely to Botom::draw() ───────────────
-    // Botom::draw() handles partial snow overlay, fully encased snowball,
-    // rolling snowball, and fallback rectangle — no duplication needed.
     if (trap || snowballHits > 0) {
         Botom::draw(window);
-        return;  // knives are killed in update() when encased, so no need to draw them
+        return;  
     }
-
-    // ── Normal Tornado drawing ────────────────────────────────────────
     if (tornadoTextureLoaded && tornadoSprite) {
-        sf::IntRect chosenFrame = t_idle;
+       IntRect chosenFrame = t_idle;
 
         if (inFlight) {
-            sf::IntRect spinFrames[9] = {
+            IntRect spinFrames[9] = {
                 t_spin1, t_spin2, t_spin3, t_spin4,
                 t_spin5, t_spin6, t_spin7, t_spin8, t_spin9
             };
@@ -151,7 +144,7 @@ void Tornado::draw(sf::RenderWindow& window) {
             chosenFrame = (animFrame % 2 == 0) ? t_throw1 : t_throw2;
         }
         else {
-            sf::IntRect runFrames[3] = { t_run1, t_run2, t_run3 };
+            IntRect runFrames[3] = { t_run1, t_run2, t_run3 };
             chosenFrame = runFrames[animFrame % 3];
         }
 
@@ -165,30 +158,31 @@ void Tornado::draw(sf::RenderWindow& window) {
             drawX += hitboxbotom_width;
         }
         else {
-            tornadoSprite->setScale({ scaleX, scaleY });
+            tornadoSprite->setScale({scaleX, scaleY});
         }
         tornadoSprite->setPosition({ drawX, static_cast<float>(y) });
         window.draw(*tornadoSprite);
     }
+
     else {
-        sf::RectangleShape rect(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
-        rect.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
-        if (hitFlashTimer > 0.f) rect.setFillColor(sf::Color(220, 180, 255));
-        else if (inFlight)            rect.setFillColor(sf::Color(200, 0, 200));
-        else                          rect.setFillColor(sf::Color(120, 0, 180));
+        RectangleShape rect(Vector2f(hitboxbotom_width, hitboxbotom_height));
+        rect.setPosition(Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        if (hitFlashTimer > 0.f) rect.setFillColor(Color(220, 180, 255));
+        else if (inFlight) rect.setFillColor(Color(200, 0, 200));
+        else rect.setFillColor(Color(120, 0, 180));
         window.draw(rect);
     }
 
     if (showDebug) {
-        sf::RectangleShape outline(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
-        outline.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
-        outline.setFillColor(sf::Color::Transparent);
+        RectangleShape outline(Vector2f(hitboxbotom_width, hitboxbotom_height));
+        outline.setPosition(Vector2f(static_cast<float>(x), static_cast<float>(y)));
+        outline.setFillColor(Color::Transparent);
         outline.setOutlineThickness(1.f);
-        outline.setOutlineColor(sf::Color::Red);
+        outline.setOutlineColor(Color::Red);
         window.draw(outline);
     }
 
-    // Draw knives only when not encased
+// Draw knives only when not encased
     for (int i = 0; i < MAX_KNIVES; i++)
         knives[i].draw(window);
 }

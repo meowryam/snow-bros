@@ -13,7 +13,6 @@
     <ClCompile Include="FlyingFoogaFoog.cpp" />
     <ClCompile Include="Tornado.cpp" />
     <ClCompile Include="Gamakichi.cpp" />
-    <ClCompile Include="Mogera.cpp" />
     <ClCompile Include="SnowBall.cpp" />
     <ClCompile Include="sfmlcolours.cpp" />
     <ClCompile Include="Loginscreen.cpp" />
@@ -77,10 +76,8 @@
     <ClInclude Include="LevelLayout.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="GameLevel.h" />
-    <ClInclude Include="botomvariant.h" />
     <ClInclude Include="sfmlcolours.h" />
     <ClInclude Include="foogavariant.h" />
-    <ClInclude Include="Tornadovariant.h" />
     <ClInclude Include="Collectable.h" />
     <ClInclude Include="LevelSelection.h" />
     <ClInclude Include="StarLevelScreen.h" />

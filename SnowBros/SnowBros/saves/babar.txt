@@ -1,0 +1,5 @@
+username=babar
+current_level=6
+lives=0
+gem_count=336
+high_score=8669
