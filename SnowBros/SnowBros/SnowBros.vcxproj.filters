@@ -6,7 +6,6 @@
     <ClCompile Include="Levelblueprint.cpp" />
     <ClCompile Include="LevelsManager.cpp" />
     <ClCompile Include="StarLevel.cpp" />
-    <ClCompile Include="ShopScreen.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="EnemyFactory.cpp" />
     <ClCompile Include="Player.cpp" />

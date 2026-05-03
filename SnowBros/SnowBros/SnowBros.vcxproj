@@ -145,7 +145,6 @@
     <ClCompile Include="Mogera.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="sfmlcolours.cpp" />
-    <ClCompile Include="ShopScreen.cpp" />
     <ClCompile Include="SnowBall.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="StarLevel.cpp" />
