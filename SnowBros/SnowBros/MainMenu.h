@@ -189,6 +189,8 @@ private:
     sf::RectangleShape leftBar;   // decorative side bars
     sf::RectangleShape rightBar;
 
+    sf::RectangleShape optBtns[7];
+
     int selectedOption;
     string username;
 
@@ -199,6 +201,11 @@ private:
     sf::Color normalCol = sf::Color(160, 180, 255, 255);
     sf::Color barColor = sf::Color(80, 220, 255, 60);
     sf::Color hintCol = sf::Color(100, 120, 180, 255);
+
+    sf::Color btnNormal = sf::Color(10, 30, 80, 120);
+    sf::Color btnSelected = sf::Color(40, 120, 220, 160);
+    sf::Color btnOutNorm = sf::Color(60, 140, 220, 80);
+    sf::Color btnOutSel = sf::Color(140, 220, 255, 255);
 
     sf::Text& T(optional<sf::Text>& t) { return t.value(); }
 
@@ -293,7 +300,7 @@ public:
         window.draw(T(subtitleText));
 
         // menu options
-        string opts[7] = { "1 Player", "2 Player", "Shop", "Leaderboard", "Key Bindings", "Logout", "Quit" };
+        /*string opts[7] = { "1 Player", "2 Player", "Shop", "Leaderboard", "Key Bindings", "Logout", "Quit" };
         for (int i = 0; i < 7; i++) {
             T(optionTexts[i]).setString((selectedOption == i ? ">  " : "   ") + opts[i]);
             T(optionTexts[i]).setCharacterSize(22);
@@ -302,7 +309,44 @@ public:
             T(optionTexts[i]).setOrigin({ ob.size.x / 2.f, 0.f });
             T(optionTexts[i]).setPosition({ W / 2.f - 50.f, 200.f + i * 46.f });
             window.draw(T(optionTexts[i]));
+        }*/
+
+
+        // menu options
+        string opts[7] = { "1 Player", "2 Player", "Shop", "Leaderboard", "Key Bindings", "Logout", "Quit" };
+        const float BTN_W = 260.f;
+        const float BTN_H = 38.f;
+        const float BTN_GAP = 10.f;
+        const float BTN_LEFT = W / 2.f - BTN_W / 2.f;
+        const float BTNS_TOP = 200.f;
+
+        for (int i = 0; i < 7; i++) {
+            bool sel = (selectedOption == i);
+            float by = BTNS_TOP + i * (BTN_H + BTN_GAP);
+
+            // draw button box
+            optBtns[i].setSize({ BTN_W, BTN_H });
+            optBtns[i].setPosition({ BTN_LEFT, by });
+            optBtns[i].setFillColor(sel ? btnSelected : btnNormal);
+            optBtns[i].setOutlineThickness(1.5f);
+            optBtns[i].setOutlineColor(sel ? btnOutSel : btnOutNorm);
+            window.draw(optBtns[i]);
+
+            // draw label centered in box
+            T(optionTexts[i]).setString(opts[i]);
+            T(optionTexts[i]).setCharacterSize(18);
+            T(optionTexts[i]).setFillColor(sel ? selectedCol : normalCol);
+            T(optionTexts[i]).setStyle(sel ? sf::Text::Bold : sf::Text::Regular);
+            sf::FloatRect ob = T(optionTexts[i]).getLocalBounds();
+            T(optionTexts[i]).setOrigin({ 0.f, 0.f });
+            T(optionTexts[i]).setPosition({
+                BTN_LEFT + (BTN_W - ob.size.x) / 2.f,
+                by + (BTN_H - ob.size.y) / 2.f - 2.f
+                });
+            window.draw(T(optionTexts[i]));
         }
+
+
 
         // hint
         T(hintText).setString("Up/Down to navigate  |  Enter to select");
