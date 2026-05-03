@@ -38,21 +38,33 @@ private:
     sf::Text& T(optional<sf::Text>& t) { return t.value(); }
 
     sf::Font font;        // title font (PressStart2P)
-    sf::Font fontUI;      // ui font (Orbitron)
+  //  sf::Font fontUI;      // ui font (Orbitron)
 
 public:
     MainMenu() : selectedOption(0) {}
 
-    bool loadFont(const string& titlePath, const string& uiPath) {
-        if (!font.openFromFile(titlePath)) return false;
-        if (!fontUI.openFromFile(uiPath)) return false;
-        titleText.emplace(font);       // title uses PressStart2P
-        subtitleText.emplace(fontUI);  // rest use Orbitron
-        hintText.emplace(fontUI);
+    //bool loadFont(const string& titlePath, const string& uiPath) {
+    //    if (!font.openFromFile(titlePath)) return false;
+    //    if (!fontUI.openFromFile(uiPath)) return false;
+    //    titleText.emplace(font);       // title uses PressStart2P
+    //    subtitleText.emplace(fontUI);  // rest use Orbitron
+    //    hintText.emplace(fontUI);
+    //    for (int i = 0; i < 6; i++)
+    //        optionTexts[i].emplace(fontUI);
+    //    return true;
+    //}
+
+
+    bool loadFont(const string& path) {
+        if (!font.openFromFile(path)) return false;
+        titleText.emplace(font);
+        subtitleText.emplace(font);
+        hintText.emplace(font);
         for (int i = 0; i < 6; i++)
-            optionTexts[i].emplace(fontUI);
+            optionTexts[i].emplace(font);
         return true;
     }
+
 
     void setUsername(const string& name) { username = name; }
     void reset() { selectedOption = 0; }

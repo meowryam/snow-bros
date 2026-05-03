@@ -36,19 +36,73 @@ Game::Game()
 }
 
 
-void Game::loadAllFonts() {
-    loginScreen.loadFont(FONT_TITLE, FONT_UI);
-    mainMenu.loadFont(FONT_TITLE, FONT_UI);
-    hud.loadFont(FONT_UI);
-    pauseScreen.loadFont(FONT_UI);
-    gameOverScreen.loadFont(FONT_UI);
-    leaderboardScreen.loadFont(FONT_UI);
-    keyRemapScreen.loadFont(FONT_UI);
-    shopScreen.loadFont(FONT_UI);
-    levelSelectScreen.loadAssets(FONT_TITLE, "assets\\images\\LevelSelect_bg.png"); // ADD 
-   // starLevelScreen.loadAssets(FONT_TITLE, "assets\\images\\StarLevel_bg.png");
+//void Game::loadAllFonts() {
+//    loginScreen.loadFont(FONT_TITLE, FONT_UI);
+//    mainMenu.loadFont(FONT_TITLE, FONT_UI);
+//    hud.loadFont(FONT_UI);
+//    pauseScreen.loadFont(FONT_UI);
+//    gameOverScreen.loadFont(FONT_UI);
+//    leaderboardScreen.loadFont(FONT_UI);
+//    keyRemapScreen.loadFont(FONT_UI);
+//    shopScreen.loadFont(FONT_UI);
+// //   levelSelectScreen.loadAssets(FONT_TITLE, "assets\\images\\LevelSelect_bg.png"); // ADD 
+//   // starLevelScreen.loadAssets(FONT_TITLE, "assets\\images\\StarLevel_bg.png");
+//
+//}
 
+
+//void Game::loadAllFonts() {
+//    string fontPath = "assets\\fonts\\PressStart2P-Regular.ttf"; // ? put your actual font file here
+//
+//    loginScreen.loadFont(fontPath);
+//    mainMenu.loadFont(fontPath);
+//    hud.loadFont(fontPath);
+//    pauseScreen.loadFont(fontPath);
+//    gameOverScreen.loadFont(fontPath);
+//    leaderboardScreen.loadFont(fontPath);
+//    keyRemapScreen.loadFont(fontPath);
+//    shopScreen.loadFont(fontPath);
+//    levelSelectScreen.loadAssets(fontPath, "assets\\images\\LevelSelect_bg.png");
+//    starLevelScreen.loadAssets(fontPath, "assets\\images\\StarLevel_bg.png"); // ADD THIS
+//}
+
+//void Game::loadAllFonts() {
+//    string fontTitle = "assets\\fonts\\PressStart2P-Regular.ttf";
+//    string fontUI = "assets\\fonts\\Orbitron Light.ttf";
+//
+//    //loginScreen.loadFont(fontTitle, fontUI);
+//    //mainMenu.loadFont(fontTitle, fontUI);
+//    loginScreen.loadFont(fontTitle);
+//    mainMenu.loadFont(fontTitle);
+//    hud.loadFont(fontUI);
+//    pauseScreen.loadFont(fontUI);
+//    gameOverScreen.loadFont(fontUI);
+//    leaderboardScreen.loadFont(fontUI);
+//    keyRemapScreen.loadFont(fontUI);
+//    shopScreen.loadFont(fontUI);
+//    levelSelectScreen.loadAssets(fontTitle, "assets\\images\\LevelSelect_bg.png");
+//    starLevelScreen.loadAssets(fontTitle, "assets\\images\\StarLevel_bg.png");
+//}
+
+
+void Game::loadAllFonts() {
+    string fontPath = "assets\\fonts\\PressStart2P-Regular.ttf";
+
+    loginScreen.loadFont(fontPath);
+    mainMenu.loadFont(fontPath);
+    hud.loadFont(fontPath);
+    pauseScreen.loadFont(fontPath);
+    gameOverScreen.loadFont(fontPath);
+    leaderboardScreen.loadFont(fontPath);
+    keyRemapScreen.loadFont(fontPath);
+    shopScreen.loadFont(fontPath);
+    levelSelectScreen.loadAssets(fontPath, "assets\\images\\LevelSelect_bg.png");
+    starLevelScreen.loadAssets(fontPath, "assets\\images\\StarLevel_bg.png");
 }
+
+
+
+
 
 void Game::loadAllSounds() {
     // soundManager.loadSound("throw",      "D:\\Fast\\oop\\SnowBros\\SnowBros\\SnowBros\\assets\\sounds\\throw.wav");

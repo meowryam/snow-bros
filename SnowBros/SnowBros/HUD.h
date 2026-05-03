@@ -41,6 +41,8 @@ public:
         return true;
     }
 
+
+
     
 
     void draw(sf::RenderWindow& window, const PlayerData& data, const PlayerData* data2 = nullptr)

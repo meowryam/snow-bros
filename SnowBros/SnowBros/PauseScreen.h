@@ -44,6 +44,8 @@ public:
         return true;
     }
 
+
+
     void reset() { selectedOption = 0; }
 
     PauseResult handleEvent(sf::Event& event) {
