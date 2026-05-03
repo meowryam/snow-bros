@@ -293,8 +293,7 @@ private:
             }
 
             };
-        checkKick(player1);
-        if (player2) checkKick(*player2);
+       
 
 
 
@@ -529,6 +528,9 @@ private:
             };
         checkDamage(player1);
         if (player2) checkDamage(*player2);
+
+        checkKick(player1);
+        if (player2) checkKick(*player2);
     }
 
     bool allEnemiesDead() {
@@ -721,7 +723,7 @@ public:
             if (!player2->getWantsToThrow()) p2ThrowHeld = false;
 
             // Respawn player 2 on death
-            if (!player2->getIsAlive()) {
+            if (!player2->getIsAlive() && player2->isDeathTimerDone()) {
                 if (playerData.getLives() > 0) {
                     player2->resetForNewLevel(sf::Vector2f(600.f, 200.f));
                 }
@@ -810,7 +812,7 @@ public:
         }
         collectableCount = alive;
         // Handle player death
-        if (!player1.getIsAlive()) {
+        if (!player1.getIsAlive() && player1.isDeathTimerDone()) {
             if (playerData.getLives() > 0) {
                 player1.resetForNewLevel(Vector2f(100.f, 200.f));
             }

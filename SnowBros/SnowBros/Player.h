@@ -45,6 +45,7 @@ private:
     sf::FloatRect hitbox;
     bool showDebug;
     float invincibleTimer;
+    float deathTimer;
     sf::RectangleShape debugBox;
     bool speedBoostActive;
     float speedBoostTimer;      
@@ -126,6 +127,7 @@ public:
     void setOnGround(bool onGround);
     // remove: bool isInvincible() const { return false; }
     bool isInvincible() const { return invincibleTimer > 0.f; }
+    bool isDeathTimerDone() const { return deathTimer <= 0.f; }
     void resolvePlatforms(Platform platforms[], int count);
     bool getWantsToThrow() const { return wantsToThrow; }
 

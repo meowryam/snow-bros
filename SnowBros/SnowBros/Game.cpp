@@ -1988,11 +1988,16 @@
 
 // Sets up the window at 800x600 pixels, titled "Snow Bros"
 //The constructor's initializer list. Creates the window at 800x600,sets the starting state to LOGIN
+
+
 Game::Game()
     : window(sf::VideoMode({ 800u, 600u }), "Snow Bros"),
     currentState(GameState::LOGIN),
-    player2Data(),          // ADD ? initialize before player2
+    player2Data(),
+    player1(playerData, 1, 800.f, 600.f),
     player2(player2Data, 2, 800.f, 600.f),
+
+  
     scoreSystem(playerData),
     gemSystem(playerData),
     shopSystem(playerData),

@@ -12,6 +12,7 @@ Player::Player()
     velocity = Vector2f(0.f, 0.f);
     speed = BASE_SPEED;
     invincibleTimer = 3.f;  // 3 seconds of spawn protection
+    deathTimer = 0.f;
     wantsToThrow = false;
     isOnGround = false;
     canJump = true;
@@ -72,7 +73,8 @@ Player::Player(PlayerData& data, int playerNum, float screenW, float screenH)
     debugBox.setOutlineColor(Color::Green);        
     debugBox.setOutlineThickness(1.f);
     showDebug = false;
-
+    invincibleTimer = 3.f;
+    deathTimer = 0.f;
     speedBoostActive = false;
     speedBoostTimer = 0.f;
     balloonModeActive = false;
@@ -131,7 +133,17 @@ void Player::handleInput() {
     }
 }
 void Player::update(float deltaTime) {
-    if (!isAlive) return;
+    if (!isAlive) {
+        if (deathTimer > 0.f) {
+            deathTimer -= deltaTime;
+            // play dead animation while waiting
+            animTimer += deltaTime;
+            if (animTimer >= FRAME_DURATION) { animTimer = 0.f; animFrame++; }
+            sf::IntRect hurtFrames[7] = { hurt1, hurt2, hurt3, hurt4, hurt5, hurt6, hurt7 };
+            sprite.setTextureRect(hurtFrames[std::min(animFrame, 6)]);
+        }
+        return;
+    }
     if (invincibleTimer > 0.f)
         invincibleTimer -= deltaTime;
     if (!isOnGround && !balloonModeActive) {
@@ -279,18 +291,20 @@ void Player::leaveGround() {
 }
 void Player::takeDamage()
 {
-    if (!isAlive) return; 
+    if (!isAlive) return;
+    if (invincibleTimer > 0.f) return;
     int currentLives = playerData.getLives();
-    if (currentLives <= 0) return; // or else, lives were going negative
+    if (currentLives <= 0) return;
     playerData.setLives(currentLives - 1);
 
-    if (playerData.getLives() <= 0) {
-        isAlive = false;
-        state = PlayerState::DEAD;
+    state = PlayerState::DEAD;
+    isAlive = false;
+
+    if (playerData.getLives() > 0) {
+        deathTimer = 2.0f;   // 2 seconds of death animation before respawn
     }
     else {
-        state = PlayerState::DEAD;
-        isAlive = false;
+        deathTimer = 0.f;    // game over — no respawn
     }
 }
 
@@ -321,6 +335,7 @@ void Player::resetForNewLevel(Vector2f spawnPosition) {
     isOnGround = false;
     canJump = true;
     invincibleTimer = 3.f;  // 3 seconds of s
+    deathTimer = 0.f;
     isAlive = true;
     state = PlayerState::FALLING;
     facing = Direction::RIGHT;
