@@ -7,14 +7,16 @@
 #include "PasswordHasher.h"
 using namespace std;
 
-enum class LoginResult {
+enum class LoginResult
+{
     NONE,
     NEW_GAME,
     CONTINUE,
     QUIT
 };
 
-class LoginScreen {
+class LoginScreen
+{
 private:
     sf::Font font;
 
@@ -66,22 +68,31 @@ private:
     static constexpr float BTN_H = 40.f;
     static constexpr float BX = CX - BW * 0.5f;
 
-    sf::Text& TX(optional<sf::Text>& t) { return t.value(); }
+    sf::Text& TX(optional<sf::Text>& t)
+    {
+        return t.value();
+    }
 
-    string loadHashForUser(const string& username) const {
+    string loadHashForUser(const string& username) const
+    {
         ifstream file("users.dat");
         if (!file.is_open()) return "";
         string line;
-        while (getline(file, line)) {
+        while (getline(file, line))
+        {
             size_t sep = line.find(':');
             if (sep == string::npos) continue;
             if (line.substr(0, sep) == username) return line.substr(sep + 1);
         }
         return "";
     }
-    bool hasPassword(const string& username) const { return !loadHashForUser(username).empty(); }
+    bool hasPassword(const string& username) const 
+    {
+        return !loadHashForUser(username).empty();
+    }
 
-    void centreText(sf::Text& t, float y) {
+    void centreText(sf::Text& t, float y)
+    {
         auto lb = t.getLocalBounds();
         t.setPosition({ CX - lb.size.x * 0.5f, y });
     }
@@ -89,10 +100,14 @@ private:
 public:
     LoginScreen() : waitingForInput(true), waitingForPassword(false), selectedOption(0), saveFound(false) {}
 
-    bool loadFont(const string& path) {
-        if (!font.openFromFile(path)) return false;
+    bool loadFont(const string& path) 
+    {
+        if (!font.openFromFile(path))
+            return false;
+
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
-        if (bgLoaded) {
+        if (bgLoaded) 
+        {
             bgSprite.emplace(bgTex);
             sf::Vector2u ts = bgTex.getSize();
             bgSprite->setScale({ 800.f / static_cast<float>(ts.x), 600.f / static_cast<float>(ts.y) });
@@ -109,79 +124,138 @@ public:
         return true;
     }
 
-    LoginResult handleEvent(sf::Event& event) {
-        if (waitingForInput) {
-            if (auto* kp = event.getIf<sf::Event::KeyPressed>()) {
-                if (kp->code == sf::Keyboard::Key::Enter) {
-                    if (usernameInput.empty()) { errorMsg = "Please enter a username!"; return LoginResult::NONE; }
+    LoginResult handleEvent(sf::Event& event)
+    {
+        if (waitingForInput)
+        {
+            if (auto* kp = event.getIf<sf::Event::KeyPressed>()) 
+            {
+                if (kp->code == sf::Keyboard::Key::Enter)
+                {
+                    if (usernameInput.empty())
+                    {
+                        errorMsg = "Please enter a username!"; 
+                        return LoginResult::NONE;
+                    }
                     errorMsg = "";
                     saveFound = FileManager::saveExists(usernameInput);
-                    if (saveFound && hasPassword(usernameInput)) { waitingForInput = false; waitingForPassword = true; }
-                    else { waitingForInput = false; }
+                    if (saveFound && hasPassword(usernameInput)) 
+                    {
+                        waitingForInput = false; 
+                        waitingForPassword = true; 
+                    }
+
+                    else 
+                    {
+                        waitingForInput = false; 
+                    }
                 }
                 else if (kp->code == sf::Keyboard::Key::Backspace) {
                     if (!usernameInput.empty()) usernameInput.pop_back();
                 }
             }
-            if (auto* te = event.getIf<sf::Event::TextEntered>()) {
+
+            if (auto* te = event.getIf<sf::Event::TextEntered>()) 
+            {
                 char c = (char)te->unicode;
-                if (usernameInput.size() < 16 && (isalnum(c) || c == '_') && c >= 32) usernameInput += c;
+                if (usernameInput.size() < 16 && (isalnum(c) || c == '_') && c >= 32) 
+                    usernameInput += c;
             }
             return LoginResult::NONE;
         }
 
-        if (waitingForPassword) {
-            if (auto* kp = event.getIf<sf::Event::KeyPressed>()) {
-                if (kp->code == sf::Keyboard::Key::Enter) {
-                    if (passwordInput.empty()) { errorMsg = "Please enter your password!"; return LoginResult::NONE; }
-                    string stored = loadHashForUser(usernameInput);
-                    if (PasswordHasher::verifyPassword(passwordInput, stored)) {
-                        errorMsg = ""; waitingForPassword = false; return LoginResult::CONTINUE;
+        if (waitingForPassword) 
+        {
+            if (auto* kp = event.getIf<sf::Event::KeyPressed>())
+            {
+                if (kp->code == sf::Keyboard::Key::Enter) 
+                {
+                    if (passwordInput.empty()) 
+                    { 
+                        errorMsg = "Please enter your password!";
+                    return LoginResult::NONE;
                     }
-                    else { errorMsg = "Incorrect password. Try again."; passwordInput.clear(); return LoginResult::NONE; }
+                    string stored = loadHashForUser(usernameInput);
+                    if (PasswordHasher::verifyPassword(passwordInput, stored)) 
+                    {
+                        errorMsg = ""; waitingForPassword = false;
+                        return LoginResult::CONTINUE;
+                    }
+                    else 
+                    {
+                        errorMsg = "Incorrect password. Try again."; 
+                        passwordInput.clear();
+                        return LoginResult::NONE;
+                    }
                 }
-                else if (kp->code == sf::Keyboard::Key::Backspace) {
+                else if (kp->code == sf::Keyboard::Key::Backspace) 
+                {
                     if (!passwordInput.empty()) passwordInput.pop_back();
                 }
-                else if (kp->code == sf::Keyboard::Key::Escape) {
+                else if (kp->code == sf::Keyboard::Key::Escape)
+                {
                     waitingForPassword = false; waitingForInput = true;
                     passwordInput.clear(); usernameInput.clear(); errorMsg.clear();
                 }
             }
-            if (auto* te = event.getIf<sf::Event::TextEntered>()) {
+            if (auto* te = event.getIf<sf::Event::TextEntered>()) 
+            {
                 uint32_t c = te->unicode;
-                if (passwordInput.size() < 30 && c >= 32 && c < 127) passwordInput += static_cast<char>(c);
+                if (passwordInput.size() < 30 && c >= 32 && c < 127)
+                    passwordInput += static_cast<char>(c);
             }
             return LoginResult::NONE;
         }
 
-        if (auto* kp = event.getIf<sf::Event::KeyPressed>()) {
+        if (auto* kp = event.getIf<sf::Event::KeyPressed>())
+        {
             int maxOpt = saveFound ? 3 : 2;
-            if (kp->code == sf::Keyboard::Key::Up)        selectedOption = (selectedOption - 1 + maxOpt) % maxOpt;
-            else if (kp->code == sf::Keyboard::Key::Down) selectedOption = (selectedOption + 1) % maxOpt;
-            else if (kp->code == sf::Keyboard::Key::Enter) {
+            if (kp->code == sf::Keyboard::Key::Up)   
+                selectedOption = (selectedOption - 1 + maxOpt) % maxOpt;
+            else if (kp->code == sf::Keyboard::Key::Down)
+                selectedOption = (selectedOption + 1) % maxOpt;
+            else if (kp->code == sf::Keyboard::Key::Enter)
+            {
                 if (saveFound) {
-                    if (selectedOption == 0) return LoginResult::NEW_GAME;
-                    if (selectedOption == 1) return LoginResult::CONTINUE;
-                    if (selectedOption == 2) return LoginResult::QUIT;
+                    if (selectedOption == 0)
+                        return LoginResult::NEW_GAME;
+
+                    if (selectedOption == 1) 
+                        return LoginResult::CONTINUE;
+
+                    if (selectedOption == 2)
+                        return LoginResult::QUIT;
                 }
-                else {
-                    if (selectedOption == 0) return LoginResult::NEW_GAME;
-                    if (selectedOption == 1) return LoginResult::QUIT;
+                else
+                {
+                    if (selectedOption == 0)
+                        return LoginResult::NEW_GAME;
+
+                    if (selectedOption == 1) 
+                        return LoginResult::QUIT;
                 }
             }
-            else if (kp->code == sf::Keyboard::Key::Escape) {
-                waitingForInput = true; usernameInput.clear(); passwordInput.clear(); selectedOption = 0;
+            else if (kp->code == sf::Keyboard::Key::Escape)
+            {
+                waitingForInput = true;
+                usernameInput.clear();
+                passwordInput.clear();
+                selectedOption = 0;
             }
         }
         return LoginResult::NONE;
     }
 
-    string getUsername() const { return usernameInput; }
+    string getUsername() const 
+    {
+        return usernameInput;
+    }
 
-    void draw(sf::RenderWindow& win) {
+    void draw(sf::RenderWindow& win) 
+    {
         if (bgLoaded) win.draw(*bgSprite);
-        else {
+        else
+        {
             sf::RectangleShape fb({ 800.f, 600.f }); fb.setFillColor(bgFallback); win.draw(fb);
         }
 
@@ -206,7 +280,8 @@ public:
         win.draw(divider);
 
         // ── Phase 1 : username ────────────────────────────────────────
-        if (waitingForInput) {
+        if (waitingForInput)
+        {
             TX(txtPrompt).setString("Enter Username:");
             TX(txtPrompt).setCharacterSize(12u);
             TX(txtPrompt).setFillColor(iceMid);
@@ -227,7 +302,8 @@ public:
             TX(txtInputField).setPosition({ BX + 12.f, 218.f });
             win.draw(TX(txtInputField));
 
-            if (!errorMsg.empty()) {
+            if (!errorMsg.empty()) 
+            {
                 TX(txtError).setString(errorMsg);
                 TX(txtError).setCharacterSize(10u);
                 TX(txtError).setFillColor(redErr);
@@ -243,7 +319,8 @@ public:
         }
 
         // ── Phase 2 : password ────────────────────────────────────────
-        else if (waitingForPassword) {
+        else if (waitingForPassword) 
+        {
             TX(txtSub).setString("Welcome back,  " + usernameInput + "!");
             TX(txtSub).setCharacterSize(13u);
             TX(txtSub).setFillColor(greenOk);
@@ -271,7 +348,8 @@ public:
             TX(txtPwdField).setPosition({ BX + 12.f, 240.f });
             win.draw(TX(txtPwdField));
 
-            if (!errorMsg.empty()) {
+            if (!errorMsg.empty())
+            {
                 TX(txtError).setString(errorMsg);
                 TX(txtError).setCharacterSize(10u);
                 TX(txtError).setFillColor(redErr);
@@ -287,7 +365,8 @@ public:
         }
 
         // ── Phase 3 : menu ────────────────────────────────────────────
-        else {
+        else
+        {
             TX(txtSub).setString("Welcome,  " + usernameInput + "!");
             TX(txtSub).setCharacterSize(13u);
             TX(txtSub).setFillColor(greenOk);
@@ -303,7 +382,8 @@ public:
             float btnStartY = 212.f;
             float btnStep = BTN_H + 14.f;
 
-            for (int i = 0; i < optCount; i++) {
+            for (int i = 0; i < optCount; i++) 
+            {
                 bool sel = (i == selectedOption);
                 float by = btnStartY + i * btnStep;
 

@@ -4,9 +4,8 @@
 #include <sstream>
 using namespace std;
 
-// Stores top 10 scores globally — spec 9.4
-// Each entry: player name, score, level reached, date
-struct LeaderboardEntry {
+struct LeaderboardEntry 
+{
     string username;
     int    score;
     int    levelReached;
@@ -14,7 +13,8 @@ struct LeaderboardEntry {
 
     LeaderboardEntry() : score(0), levelReached(0) {}
     LeaderboardEntry(string u, int s, int l, string d)
-        : username(u), score(s), levelReached(l), date(d) {
+        : username(u), score(s), levelReached(l), date(d) 
+    {
     }
 };
 
@@ -35,27 +35,21 @@ public:
         if (!file.is_open()) return;
 
         string line;
-        while (getline(file, line) && count < MAX_ENTRIES) {
+        while (getline(file, line) && count < MAX_ENTRIES) 
+        {
             istringstream ss(line);
             string username, score, level, date;
-            if (getline(ss, username, ',') &&
-                getline(ss, score, ',') &&
-                getline(ss, level, ',') &&
-                getline(ss, date, ',')) {
-                entries[count++] = LeaderboardEntry(
-                    username, stoi(score), stoi(level), date);
+            if (getline(ss, username, ',') && getline(ss, score, ',') && getline(ss, level, ',') && getline(ss, date, ',')) { entries[count++] = LeaderboardEntry( username, stoi(score), stoi(level), date);
             }
         }
     }
 
-    void save() {
+    void save()
+    {
         ofstream file(filePath);
         if (!file.is_open()) return;
         for (int i = 0; i < count; i++) {
-            file << entries[i].username << ","
-                << entries[i].score << ","
-                << entries[i].levelReached << ","
-                << entries[i].date << "\n";
+            file << entries[i].username << "," << entries[i].score << "," << entries[i].levelReached << "," << entries[i].date << "\n";
         }
     }
 
@@ -66,12 +60,14 @@ public:
 
 
     void submitScore(const string& username, int score, int level, const string& date) {
-        if (username.empty()) return;      // ADD — skip blank usernames
-        // update existing entry for same player if score is higher
-        for (int i = 0; i < count; i++) {
-            if (entries[i].username == username) {
-                if (score <= entries[i].score) return;  // existing score is better
-                // remove old entry, re-insert below
+        if (username.empty())
+            return;     
+
+        for (int i = 0; i < count; i++)
+        {
+            if (entries[i].username == username)
+            {
+                if (score <= entries[i].score) return; 
                 for (int j = i; j < count - 1; j++)
                     entries[j] = entries[j + 1];
                 count--;
@@ -88,7 +84,8 @@ public:
         if (count < MAX_ENTRIES) count++;
         int i = count - 1;
         // shift down
-        while (i > 0 && entries[i - 1].score < score) {
+        while (i > 0 && entries[i - 1].score < score) 
+        {
             entries[i] = entries[i - 1];
             i--;
         }
@@ -96,10 +93,17 @@ public:
         save();
     }
 
-    int getCount() const { return count; }
-    const LeaderboardEntry& getEntry(int i) const { return entries[i]; }
+    int getCount() const
+    { 
+        return count;
+    }
+    const LeaderboardEntry& getEntry(int i) const
+    { 
+        return entries[i]; 
+    }
 
-    bool isHighScore(int score) const {
+    bool isHighScore(int score) const 
+    {
         if (count < MAX_ENTRIES) return true;
         return score > entries[count - 1].score;
     }

@@ -37,10 +37,14 @@ public:
 
     LeaderboardScreen(Leaderboard& lb) : leaderboard(lb), done(false) {}
 
-    bool loadFont(const string& path) {
-        if (!font.openFromFile(path)) return false;
+    bool loadFont(const string& path)
+    {
+        if (!font.openFromFile(path)) 
+            return false;
+
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
-        if (bgLoaded) {
+        if (bgLoaded)
+        {
             bgSprite.emplace(bgTex);
             sf::Vector2u ts = bgTex.getSize();
             bgSprite->setScale({ 800.f / static_cast<float>(ts.x), 600.f / static_cast<float>(ts.y) });
@@ -54,20 +58,23 @@ public:
         return true;
     }
 
-    void handleEvent(sf::Event& event) {
+    void handleEvent(sf::Event& event)
+    {
         if (auto* kp = event.getIf<sf::Event::KeyPressed>())
             if (kp->code == sf::Keyboard::Key::Escape ||
                 kp->code == sf::Keyboard::Key::Enter)
                 done = true;
     }
 
-    void draw(sf::RenderWindow& window) {
+    void draw(sf::RenderWindow& window)
+    {
         float W = (float)window.getSize().x;
         float H = (float)window.getSize().y;
 
         // Background
         if (bgLoaded) window.draw(*bgSprite);
-        else {
+        else 
+        {
             sf::RectangleShape fb({ 800.f, 600.f });
             fb.setFillColor(sf::Color(5, 12, 35, 255));
             window.draw(fb);
@@ -103,7 +110,8 @@ public:
         T(headerText).setPosition({ W / 2.f - panelW / 2.f + 24.f, H / 2.f - panelH / 2.f + 72.f });
         window.draw(T(headerText));
 
-        if (leaderboard.getCount() == 0) {
+        if (leaderboard.getCount() == 0)
+        {
             T(emptyText).setString("No scores yet — be the first!");
             T(emptyText).setCharacterSize(18);
             T(emptyText).setFillColor(normalCol);
@@ -112,13 +120,15 @@ public:
             T(emptyText).setPosition({ W / 2.f, H / 2.f });
             window.draw(T(emptyText));
         }
-        else {
+        else 
+        {
             for (int i = 0; i < leaderboard.getCount(); i++) {
                 const LeaderboardEntry& e = leaderboard.getEntry(i);
                 float rowY = H / 2.f - panelH / 2.f + 100.f + i * 36.f;
 
                 // highlight top 3
-                if (i < 3) {
+                if (i < 3)
+                {
                     rowHighlight.setSize({ panelW - 20.f, 30.f });
                     rowHighlight.setPosition({ W / 2.f - panelW / 2.f + 10.f, rowY - 4.f });
                     rowHighlight.setFillColor(sf::Color(255, 255, 255, i == 0 ? 18 : 10));
@@ -135,10 +145,17 @@ public:
                 string level = to_string(e.levelReached);
 
                 // spaces for alignment
-                while (rank.size() < 5)  rank += " ";
-                while (name.size() < 20) name += " ";
-                while (score.size() < 10) score += " ";
-                while (level.size() < 8)  level += " ";
+                while (rank.size() < 5) 
+                    rank += " ";
+
+                while (name.size() < 20) 
+                    name += " ";
+
+                while (score.size() < 10) 
+                    score += " ";
+
+                while (level.size() < 8) 
+                    level += " ";
 
                 T(rowTexts[i]).setString(rank + name + score + level + e.date);
                 T(rowTexts[i]).setCharacterSize(15);

@@ -6,33 +6,25 @@
 #include "PasswordHasher.h"
 using namespace std;
 
-// Returned by SignupScreen to Game after processing
 enum class SignupResult {
-    NONE,       // still on screen
-    DONE,       // account created successfully -> start NEW_GAME
-    BACK        // user pressed ESC -> go back to LoginScreen
+    NONE,       
+    DONE,       
+    BACK        
 };
 
-// -----------------------------------------------------------------------
-// SignupScreen
-//   Shown after "New Game" is chosen in LoginScreen.
-//   Collects a password + confirm, hashes it, and appends to users.dat.
-//   Game should then treat this exactly like LoginResult::NEW_GAME.
-// -----------------------------------------------------------------------
 class SignupScreen {
 private:
     sf::Font font;
     bool fontLoaded = false;
 
-    string username;            // passed in from LoginScreen (already chosen)
+    string username;            
     string passwordInput;
     string confirmInput;
 
-    int  focusedField = 0;      // 0 = password, 1 = confirm
+    int  focusedField = 0;      
     string errorMsg;
     bool success = false;
 
-    // colours matching your LoginScreen palette
     sf::Color bgFallback = sf::Color(5, 12, 35, 255);
     sf::Color titleCol = sf::Color(200, 240, 255, 255);   // ice white-blue
     sf::Color subCol = sf::Color(160, 215, 255, 230);   // softer ice blue
@@ -74,7 +66,8 @@ private:
 public:
     SignupScreen() {}
 
-    bool loadFont(const string& path) {
+    bool loadFont(const string& path)
+    {
         if (!font.openFromFile(path)) return false;
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
         if (bgLoaded) {
@@ -94,8 +87,8 @@ public:
         return true;
     }
 
-    // Call this before switching to SIGNUP state so the screen knows who signed up
-    void setUsername(const string& uname) {
+    void setUsername(const string& uname)
+    {
         username = uname;
         passwordInput.clear();
         confirmInput.clear();
@@ -105,42 +98,51 @@ public:
     }
 
     SignupResult handleEvent(sf::Event& event) {
-        if (auto* mp = event.getIf<sf::Event::MouseButtonPressed>()) {
+        if (auto* mp = event.getIf<sf::Event::MouseButtonPressed>())
+        {
             float cy = (float)mp->position.y;
             if (cy >= 232.f && cy <= 276.f) focusedField = 0;
             else if (cy >= 317.f && cy <= 361.f) focusedField = 1;
         }
 
-        if (auto* kp = event.getIf<sf::Event::KeyPressed>()) {
+        if (auto* kp = event.getIf<sf::Event::KeyPressed>())
+        {
             if (kp->code == sf::Keyboard::Key::Tab ||
                 kp->code == sf::Keyboard::Key::Down ||
                 kp->code == sf::Keyboard::Key::Up) {
                 focusedField = (focusedField + 1) % 2;
             }
-            else if (kp->code == sf::Keyboard::Key::Backspace) {
+            else if (kp->code == sf::Keyboard::Key::Backspace) 
+            {
                 string& field = (focusedField == 0) ? passwordInput : confirmInput;
                 if (!field.empty()) field.pop_back();
             }
-            else if (kp->code == sf::Keyboard::Key::Escape) {
+            else if (kp->code == sf::Keyboard::Key::Escape)
+            {
                 return SignupResult::BACK;
             }
-            else if (kp->code == sf::Keyboard::Key::Enter) {
+            else if (kp->code == sf::Keyboard::Key::Enter) 
+            {
                 // Validate
-                if (passwordInput.empty() || confirmInput.empty()) {
+                if (passwordInput.empty() || confirmInput.empty())
+                {
                     errorMsg = "Please fill in both fields.";
                     return SignupResult::NONE;
                 }
-                if (passwordInput.size() < 4) {
+                if (passwordInput.size() < 4)
+                {
                     errorMsg = "Password must be at least 4 characters.";
                     return SignupResult::NONE;
                 }
-                if (passwordInput != confirmInput) {
+                if (passwordInput != confirmInput) 
+                {
                     errorMsg = "Passwords do not match!";
                     confirmInput.clear();
                     return SignupResult::NONE;
                 }
                 // Save hashed password
-                if (!saveUser(username, passwordInput)) {
+                if (!saveUser(username, passwordInput))
+                {
                     errorMsg = "Error saving account. Try again.";
                     return SignupResult::NONE;
                 }
@@ -150,7 +152,8 @@ public:
             }
         }
 
-        if (auto* te = event.getIf<sf::Event::TextEntered>()) {
+        if (auto* te = event.getIf<sf::Event::TextEntered>()) 
+        {
             uint32_t c = te->unicode;
             if (c >= 32 && c < 127) {
                 string& field = (focusedField == 0) ? passwordInput : confirmInput;
@@ -166,7 +169,6 @@ public:
         float W = (float)window.getSize().x;
         float H = (float)window.getSize().y;
 
-        // Background
         if (bgLoaded) window.draw(*bgSprite);
         else {
             sf::RectangleShape fb({ 800.f, 600.f }); fb.setFillColor(bgFallback); window.draw(fb);
@@ -175,7 +177,6 @@ public:
         vignette.setFillColor(sf::Color(0, 5, 20, 70));
         window.draw(vignette);
 
-        // Title
         T(titleText).setString("SNOW BROS");
         T(titleText).setCharacterSize(30u);
         T(titleText).setFillColor(titleCol);
@@ -186,7 +187,6 @@ public:
         T(titleText).setPosition({ W / 2.f, 60.f });
         window.draw(T(titleText));
 
-        // Subtitle
         T(subtitleText).setString("Create Password for: " + username);
         T(subtitleText).setCharacterSize(16);
         T(subtitleText).setFillColor(subCol);
@@ -195,7 +195,6 @@ public:
         T(subtitleText).setPosition({ W / 2.f, 155.f });
         window.draw(T(subtitleText));
 
-        // ---- Password field ----
         T(pwLabel).setString("Password:");
         T(pwLabel).setCharacterSize(14);
         T(pwLabel).setFillColor(iceMid);
@@ -204,7 +203,6 @@ public:
 
         passwordBox.setSize({ 320.f, 44.f });
         passwordBox.setPosition({ W / 2.f - 160.f, 232.f });
-        // For passwordBox:
         passwordBox.setFillColor(inputFill);
         passwordBox.setOutlineThickness(1.8f);
         passwordBox.setOutlineColor(focusedField == 0 ? inputOutAct : inputOutNrm);
@@ -218,7 +216,6 @@ public:
         T(pwText).setPosition({ W / 2.f - 148.f, 242.f });
         window.draw(T(pwText));
 
-        // ---- Confirm field ----
         T(cfLabel).setString("Confirm Password:");
         T(cfLabel).setCharacterSize(14);
         T(cfLabel).setFillColor(iceMid);
@@ -240,7 +237,6 @@ public:
         T(cfText).setPosition({ W / 2.f - 148.f, 327.f });
         window.draw(T(cfText));
 
-        // ---- Error / success message ----
         if (!errorMsg.empty()) {
             T(errorText).setString(errorMsg);
             T(errorText).setCharacterSize(13);
@@ -251,7 +247,6 @@ public:
             window.draw(T(errorText));
         }
 
-        // ---- Bottom hint ----
         T(hintText).setString("Tab to switch field   |   Enter to confirm   |   ESC to go back");
         T(hintText).setCharacterSize(11);
         T(hintText).setFillColor(iceDim);
