@@ -1992,7 +1992,7 @@
 
 Game::Game()
     : window(sf::VideoMode({ 800u, 600u }), "Snow Bros"),
-    currentState(GameState::LOGIN),
+    currentState(GameState::SPLASH),
     player2Data(),
     player1(playerData, 1, 800.f, 600.f),
     player2(player2Data, 2, 800.f, 600.f),
@@ -2021,6 +2021,10 @@ Game::Game()
     window.setFramerateLimit(30); // lock to 30 FPS
     leaderboard.load(); // loads the leaderboard from disk
     loadAllFonts(); // loads all fonts and sounds.
+    splashScreen.load(
+        "assets\\fonts\\Orbitron Light.ttf",
+        "assets\\images\\splash_logo.png"   // your Snow Bros image
+    );
     loadAllSounds();
 }
 
@@ -2136,12 +2140,18 @@ void Game::run() //The main game loop setup
             switch (currentState)
                 //Routes each event to the correct handler depending on which screen is currently active.
             {
+            case GameState::SPLASH:
+                splashScreen.handleEvent(*event);
+                break;
             case GameState::LOGIN:
-                handleLoginEvents(*event); break;
+                handleLoginEvents(*event);
+                break;
             case GameState::SIGNUP:
-                handleSignupEvents(*event); break;   // NEW
+                handleSignupEvents(*event); 
+                break;   // NEW
             case GameState::MENU:
-                handleMainMenuEvents(*event); break;
+                handleMainMenuEvents(*event);
+                break;
             case GameState::LEADERBOARD:
                 leaderboardScreen.handleEvent(*event);
                 if (leaderboardScreen.done) {
@@ -2446,9 +2456,15 @@ void Game::processInput()
         soundManager.playGameOverMusic();
     } 
 }
+
 void Game::update(float deltaTime)
-//Immediately exits if the game isn't in the PLAYING state ? nothing should update while paused or on a menu.
 {
+    if (currentState == GameState::SPLASH) {
+        splashScreen.update(deltaTime);
+        if (splashScreen.isDone())
+            currentState = GameState::LOGIN;
+        return;
+    }
     if (currentState != GameState::PLAYING) return;
 
 
@@ -2512,6 +2528,9 @@ void Game::draw() {
     switch (currentState)  //draws whatever belongs to the current state, then displays it.
         //how you move between menus, gameplay, pause, and game over.
     {
+    case GameState::SPLASH:
+        splashScreen.draw(window);
+        break;
     case GameState::LOGIN:
         loginScreen.draw(window);
         break;

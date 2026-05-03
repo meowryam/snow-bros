@@ -83,5 +83,6 @@
     <ClInclude Include="StarLevelScreen.h" />
     <ClInclude Include="PasswordHasher.h" />
     <ClInclude Include="Signupscreen.h" />
+    <ClInclude Include="SplashScreen.h" />
   </ItemGroup>
 </Project>

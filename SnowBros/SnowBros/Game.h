@@ -122,6 +122,7 @@
 #include "SoundManager.h"
 #include "LevelsManager.h"
 
+#include "SplashScreen.h"
 #include "LoginScreen.h"
 #include "SignupScreen.h"   // NEW
 #include "MainMenu.h"
@@ -164,6 +165,7 @@ protected:
     ShopSystem   shopSystem;
 
     // UI screens
+    SplashScreen splashScreen;
     LoginScreen        loginScreen;
     SignupScreen       signupScreen;    // NEW
     MainMenu           mainMenu;

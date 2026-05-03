@@ -1,6 +1,7 @@
 #pragma once
 
 enum class GameState {
+    SPLASH,
     LOGIN,
     SIGNUP,
     MENU,
