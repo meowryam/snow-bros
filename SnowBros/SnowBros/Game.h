@@ -138,7 +138,7 @@
 // This is the main Game class
 // It owns everything ? the window, the loop, all the managers
 class Game {
-private:
+protected:
     sf::RenderWindow window;        // the actual game window
     GameState currentState;  // tracks current state
     InputManager inputManager;      // handles keyboard
