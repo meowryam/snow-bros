@@ -141,6 +141,7 @@
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Levelblueprint.cpp" />
     <ClCompile Include="LevelsManager.cpp" />
+    <ClCompile Include="Loginscreen.cpp" />
     <ClCompile Include="Mogera.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="sfmlcolours.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="LoginScreen.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Mogera.h" />
+    <ClInclude Include="PasswordHasher.h" />
     <ClInclude Include="PauseScreen.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
@@ -190,6 +192,7 @@
     <ClInclude Include="ScoreSystem.h" />
     <ClInclude Include="sfmlcolours.h" />
     <ClInclude Include="ShopSystem.h" />
+    <ClInclude Include="Signupscreen.h" />
     <ClInclude Include="Snowball.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="StarLevel.h" />

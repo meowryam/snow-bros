@@ -1,0 +1,5 @@
+username=nii
+current_level=9
+lives=2
+gem_count=1718
+high_score=27076

@@ -1,0 +1,5 @@
+username=kiwi
+current_level=1
+lives=2
+gem_count=506
+high_score=799
