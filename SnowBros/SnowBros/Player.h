@@ -22,7 +22,6 @@ private:
     Sprite sprite;
     Vector2f position;
     Vector2f velocity;
-    // Each frame we do: position += velocity * deltaTime
     float speed;
     static constexpr float BASE_SPEED = 200.f;
     static constexpr float JUMP_FORCE = -600.f;
@@ -57,12 +56,11 @@ private:
     PlayerData& playerData;
     int playerNumber;
    
-    // ── Animation ─────────────────────────────────────
+   
     float animTimer = 0.f;
     int   animFrame = 0;
     static constexpr float FRAME_DURATION = 0.12f;
 
-    // All walk frames face RIGHT — flip via scale for left
     sf::IntRect walk1{ { 110,  76}, {220, 275} };
     sf::IntRect walk2{ { 407,  74}, {196, 281} };
     sf::IntRect walk3{ { 702,  70}, {226, 287} };
@@ -74,13 +72,9 @@ private:
     sf::IntRect walk9{ {1002, 369}, {230, 281} };
     sf::IntRect walk10{ {1295, 373}, {282, 269} };
     sf::IntRect walk11{ {1595, 376}, {278, 262} };
-
-    // Jump (3 frames)
     sf::IntRect jump1{ {1579,660}, {318, 312} };
     sf::IntRect jump2{ {1891,654}, {293, 336} };
     sf::IntRect jump3{ {2203,656}, {290, 309} };
-
-    // Throw (7 frames)
     sf::IntRect throw1{ {  48, 969}, {322, 312} };
     sf::IntRect throw2{ { 361, 969}, {293, 314} };
     sf::IntRect throw3{ { 664,1029}, {304, 266} };
@@ -88,8 +82,6 @@ private:
     sf::IntRect throw5{ {1268,1012}, {311, 205} };
     sf::IntRect throw6{ {1577,1014}, {306, 181} };
     sf::IntRect throw7{ {1881, 999}, {316, 159} };
-
-    // Hurt (7 frames)
     sf::IntRect hurt1{ {  73,1275}, {254, 211} };
     sf::IntRect hurt2{ { 336,1287}, {248, 254} };
     sf::IntRect hurt3{ { 755,1302}, {225, 233} };
@@ -125,7 +117,6 @@ public:
     bool isBalloonModeActive() const;
     void setShowDebug(bool show);
     void setOnGround(bool onGround);
-    // remove: bool isInvincible() const { return false; }
     bool isInvincible() const { return invincibleTimer > 0.f; }
     bool isDeathTimerDone() const { return deathTimer <= 0.f; }
     void resolvePlatforms(Platform platforms[], int count);

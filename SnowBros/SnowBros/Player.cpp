@@ -1,4 +1,4 @@
-//fixed
+
 #include "Player.h"
 Player::Player()
     : playerData(*(new PlayerData())),  
@@ -48,14 +48,14 @@ Player::Player(PlayerData& data, int playerNum, float screenW, float screenH)
     canJump = true;
 
     if (playerNumber == 1) {
-        // P1 uses WASD in 2-player (overridden to arrows in single player via setKeys)
+        
         keyLeft = Keyboard::Key::A;
         keyRight = Keyboard::Key::D;
         keyJump = Keyboard::Key::W;
         keyThrow = Keyboard::Key::S;
     }
     else {
-        // P2 always uses arrow keys
+        
         keyLeft = Keyboard::Key::Left;
         keyRight = Keyboard::Key::Right;
         keyJump = Keyboard::Key::Up;
@@ -66,7 +66,7 @@ Player::Player(PlayerData& data, int playerNum, float screenW, float screenH)
     isAlive = true;
 
     hitbox = FloatRect(Vector2f(position.x, position.y), Vector2f(36.f, 44.f));
-    //(position, size) — both Vector2f.
+    
 
     debugBox.setSize(Vector2f(36.f, 44.f));
     debugBox.setFillColor(Color::Transparent);     
@@ -84,35 +84,28 @@ Player::Player(PlayerData& data, int playerNum, float screenW, float screenH)
 
     sprite.setPosition(position);
    }
-/*
-bool Player::loadTexture(const string& path) {
 
-    if (!texture.loadFromFile(path)) {  return false; }
-    sprite.setTexture(texture);
-    sprite.setScale(Vector2f(1.5f, 1.5f));
-    return true;
-} */
 bool Player::loadTexture(const string& path) {
     if (!texture.loadFromFile(path)) return false;
     sprite.setTexture(texture);
     sprite.setTextureRect(walk1);
-    sprite.setOrigin({ 0.f, 0.f });   // default: no flip, faces LEFT naturally
+    sprite.setOrigin({ 0.f, 0.f });   
     return true;
 }
 
 void Player::handleInput() {
     if (!isAlive) return;
-    velocity.x = 0.f; //no key pressed
+    velocity.x = 0.f; 
 
     if (Keyboard::isKeyPressed(keyLeft)) {
         velocity.x = -speed; 
         facing = Direction::LEFT;
-       // sprite.setScale(sf::Vector2f(-1.5f, 1.5f));
+      
     }
     else if (Keyboard::isKeyPressed(keyRight)) {
         velocity.x = speed; 
         facing = Direction::RIGHT;
-        //sprite.setScale(sf::Vector2f(1.5f, 1.5f));
+       
     }
     if (Keyboard::isKeyPressed(keyJump)) {
         if (isOnGround && canJump) {
@@ -136,7 +129,7 @@ void Player::update(float deltaTime) {
     if (!isAlive) {
         if (deathTimer > 0.f) {
             deathTimer -= deltaTime;
-            // play dead animation while waiting
+          
             animTimer += deltaTime;
             if (animTimer >= FRAME_DURATION) { animTimer = 0.f; animFrame++; }
             sf::IntRect hurtFrames[7] = { hurt1, hurt2, hurt3, hurt4, hurt5, hurt6, hurt7 };
@@ -153,7 +146,7 @@ void Player::update(float deltaTime) {
         if (velocity.y > 50.f && (state == PlayerState::IDLE || state == PlayerState::WALKING))
             state = PlayerState::FALLING;
     }
-    // balloon
+ // balloon
     if (balloonModeActive) {
         velocity.y = -80.f;
         balloonModeTimer -= deltaTime;
@@ -163,8 +156,7 @@ void Player::update(float deltaTime) {
             velocity.y = 0.f;
         }
     }
-
-    // speedboost
+// speedboost
     if (speedBoostActive) {
         speedBoostTimer -= deltaTime;
         if (speedBoostTimer <= 0.f) {
@@ -179,9 +171,9 @@ void Player::update(float deltaTime) {
     if (position.x + 36.f < 0.f)        position.x = screenWidth;
     if (position.x > screenWidth)        position.x = -36.f;
 
-    // animation state reset
+// animation state reset
     if (state != prevState) {
-        // Don't reset frame when toggling between grounded states
+        
         bool groundedTransition =
             (prevState == PlayerState::IDLE || prevState == PlayerState::WALKING) &&
             (state == PlayerState::IDLE || state == PlayerState::WALKING);
@@ -198,7 +190,7 @@ void Player::update(float deltaTime) {
         animFrame++;
     }
 
-    // Pick frame
+ // Pick frame
     if (state == PlayerState::DEAD) {
         sf::IntRect hurtFrames[7] = { hurt1, hurt2, hurt3, hurt4, hurt5, hurt6, hurt7 };
         sprite.setTextureRect(hurtFrames[std::min(animFrame, 6)]);
@@ -248,7 +240,7 @@ void Player::update(float deltaTime) {
 }
 
 void Player::resolvePlatforms(Platform platforms[], int count) {
-    // Clear ground state — re-confirmed below
+    
     isOnGround = false;
 
     for (int i = 0; i < count; i++) {
@@ -258,20 +250,20 @@ void Player::resolvePlatforms(Platform platforms[], int count) {
         float platTop = pRect.position.y;
 
         if (velocity.y >= 0.f) {
-            // Snap feet exactly to platform top — no drift possible
+           
             position.y = platTop - 44.f;
             velocity.y = 0.f;
             isOnGround = true;
             if (state == PlayerState::JUMPING || state == PlayerState::FALLING)
                 state = (velocity.x != 0.f) ? PlayerState::WALKING : PlayerState::IDLE;
-            // Immediately re-sync hitbox after snap
+          
             hitbox = FloatRect(Vector2f(position.x, position.y), Vector2f(36.f, 44.f));
             break;
         }
     }
 }
 void Player::draw(RenderWindow& window) const {
-   // if (!isAlive) return; 
+  
     window.draw(sprite);
 
     if (showDebug) {
@@ -279,7 +271,7 @@ void Player::draw(RenderWindow& window) const {
          }
 }
 void Player::landOnPlatform(float topOfPlatform) {
-    position.y = topOfPlatform - 44.f;  // was -48.f — must match hitbox height
+    position.y = topOfPlatform - 44.f; 
     velocity.y = 0.f;
     isOnGround = true;
     if (state == PlayerState::JUMPING || state == PlayerState::FALLING) {
@@ -301,10 +293,10 @@ void Player::takeDamage()
     isAlive = false;
 
     if (playerData.getLives() > 0) {
-        deathTimer = 2.0f;   // 2 seconds of death animation before respawn
+        deathTimer = 2.0f;   
     }
     else {
-        deathTimer = 0.f;    // game over — no respawn
+        deathTimer = 0.f;    
     }
 }
 
