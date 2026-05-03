@@ -22,6 +22,7 @@ public:
     bool done = false;
 
 private:
+    sf::Font    font;
     static constexpr int   TOTAL_LEVELS = 10;
     static constexpr int   COLS = 5;
 
@@ -47,7 +48,7 @@ private:
     static constexpr float TITLE_Y = 28.f;
 
     PlayerData& playerData;
-    sf::Font    font;
+   
     bool        layoutReady = false;
     int         hoveredIndex = 0;
 

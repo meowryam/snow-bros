@@ -15,6 +15,8 @@ enum class LoginResult {
 
 class LoginScreen {
 private:
+    sf::Font font;      // PressStart2P for title
+
     string usernameInput;   // what the player is typing
     bool waitingForInput;   // true = typing username, false = showing menu
 
@@ -44,7 +46,7 @@ private:
 
     sf::Text& T(optional<sf::Text>& t) { return t.value(); }
 
-    sf::Font font;      // PressStart2P for title
+   
     //sf::Font fontUI;    // Orbitron for rest
 
 public:

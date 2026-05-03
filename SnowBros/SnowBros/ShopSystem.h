@@ -180,6 +180,8 @@ public:
     bool done = false;
 
 private:
+    sf::Font    font;
+
     // ── layout ─────────────────────────────────────────────────
     static constexpr int   ITEM_COUNT = 6;
     static constexpr int   COLS = 3;
@@ -220,7 +222,7 @@ private:
 
     // ── state ──────────────────────────────────────────────────
     ShopSystem& shop;
-    sf::Font    font;
+   
     bool        layoutReady = false;
     int         selectedIndex = 0;
     bool        purchased[ITEM_COUNT] = {};

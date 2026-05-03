@@ -707,7 +707,7 @@ private:
     bool             hasMogera;
     Gamakichi* gamakichi;
     bool             hasGamakichi;
-    static const int MAX_COLLECTABLES = 32;
+    static const int MAX_COLLECTABLES = 64;
     Collectable* collectables[MAX_COLLECTABLES];
     int collectableCount = 0;
     // snowballs
@@ -1065,9 +1065,9 @@ public:
         eventBus(eb), keyBindings(kb), assetPath(assetsPath),
         botomCount(0), foogaCount(0), tornadoCount(0),
         hasMogera(false), hasGamakichi(false),
-        snowballCount(0), bgLoaded(false),
+        snowballCount(0), bgLoaded(false), collectableCount(0),
         showHitboxes(false), platformCount(0),
-        levelComplete(false),
+        levelComplete(false), 
         mogera(nullptr), gamakichi(nullptr)
     {
         for (int i = 0; i < MAX_ENEMIES; i++) { botoms[i] = nullptr; foogas[i] = nullptr; tornados[i] = nullptr; }

@@ -7,6 +7,8 @@ using namespace std;
 class HUD
 {
 private:
+    sf::Font font;   // font must outlive any sf::Text that references it
+
     optional<sf::Text> livesText;
     optional<sf::Text> p1LivesText;
     optional<sf::Text> p2LivesText;
@@ -27,8 +29,6 @@ private:
         return t.value();
     }
 
-    sf::Font font;   // just one font now
-
 public:
     bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
@@ -41,10 +41,9 @@ public:
         return true;
     }
 
-
-
     
 
+    
     void draw(sf::RenderWindow& window, const PlayerData& data, const PlayerData* data2 = nullptr)
     {
         float W = (float)window.getSize().x;

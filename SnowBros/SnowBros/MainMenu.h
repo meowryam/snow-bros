@@ -15,6 +15,9 @@ enum class MainMenuResult {
 
 class MainMenu {
 private:
+
+    sf::Font font;        // title font (PressStart2P)
+
     optional<sf::Text> titleText;
     optional<sf::Text> subtitleText;
     optional<sf::Text> optionTexts[6];
@@ -37,7 +40,7 @@ private:
 
     sf::Text& T(optional<sf::Text>& t) { return t.value(); }
 
-    sf::Font font;        // title font (PressStart2P)
+   
   //  sf::Font fontUI;      // ui font (Orbitron)
 
 public:

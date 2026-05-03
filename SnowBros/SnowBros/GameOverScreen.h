@@ -109,6 +109,8 @@ public:
     }
 
 private:
+
+    sf::Font  font;
     // ── layout constants ───────────────────────────────────────
     static constexpr float PANEL_W = 360.f;
     static constexpr float PANEL_H = 310.f;
@@ -139,7 +141,7 @@ private:
     const sf::Color COL_HINT{ 130,  80,  70, 180 };
 
     // ── state ──────────────────────────────────────────────────
-    sf::Font  font;
+    
     bool      layoutReady = false;
     int       selectedOption;
 

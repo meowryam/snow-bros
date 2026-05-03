@@ -104,6 +104,8 @@ public:
     }
 
 private:
+
+    sf::Font  font;
     static constexpr int OPT_COUNT = 4;
 
     // ── layout constants ───────────────────────────────────────
@@ -131,7 +133,7 @@ private:
     const sf::Color COL_HINT{ 100, 160, 220, 160 };   // faint hint
 
     // ── state ──────────────────────────────────────────────────
-    sf::Font  font;
+   
     bool      layoutReady = false;
     int       selectedOption;
 
