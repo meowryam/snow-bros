@@ -26,25 +26,22 @@ private:
     static constexpr int   TOTAL_LEVELS = 10;
     static constexpr int   COLS = 5;
 
-    // ── Scattered positions — hand-placed on the open floor ───
+    
     static constexpr float POSITIONS[10][2] = {
-        // Row 1 (top) — 3 hexagons
+       
         { 280.f, 220.f },  // 1
         { 420.f, 220.f },  // 2
         { 560.f, 220.f },  // 3
-
-        // Row 2 (middle) — 4 hexagons
         { 210.f, 315.f },  // 4
         { 350.f, 315.f },  // 5
         { 490.f, 315.f },  // 6
         { 630.f, 315.f },  // 7
-
-        // Row 3 (bottom) — 3 hexagons
         { 280.f, 400.f },  // 8
         { 420.f, 400.f },  // 9
         { 560.f, 400.f },  // 10
+
     };
-    static constexpr float HEX_R = 36.f;   // hexagon "radius"
+    static constexpr float HEX_R = 36.f;   
     static constexpr float TITLE_Y = 28.f;
 
     PlayerData& playerData;
@@ -55,34 +52,27 @@ private:
     sf::Texture          bgTex;
     bool                 bgLoaded = false;
     optional<sf::Sprite> bgSprite;
-
-    // Each medallion: hexagon shape (drawn as circle with 6 points) + label
-    sf::CircleShape      hexShape[TOTAL_LEVELS];   // 6-sided
+    sf::CircleShape      hexShape[TOTAL_LEVELS];  
     sf::CircleShape      innerGlow[TOTAL_LEVELS];
     optional<sf::Text>   txtNumber[TOTAL_LEVELS];
-    optional<sf::Text>   txtLabel[TOTAL_LEVELS];   // "LOCKED" or level name
-
+    optional<sf::Text>   txtLabel[TOTAL_LEVELS];  
     optional<sf::Text>   txtTitle;
     optional<sf::Text>   txtBack;
     optional<sf::Text>   txtMessage;
-
     sf::RectangleShape   backBtn;
 
     float messageTimer = 0.f;
     bool  showMessage = false;
 
-    // ── Palette ───────────────────────────────────────────────
-    // Unlocked — warm ice blue
+    
     const sf::Color C_HEX_UNLOCK{ 60,  160, 230, 180 };
     const sf::Color C_GLOW_UNLOCK{ 20,   80, 160, 140 };
     const sf::Color C_NUM_UNLOCK{ 220, 245, 255, 255 };
     const sf::Color C_OUT_UNLOCK{ 120, 210, 255, 220 };
-    // Hovered — bright cyan glow
     const sf::Color C_HEX_HOVER{ 100, 210, 255, 220 };
     const sf::Color C_GLOW_HOVER{ 30, 120, 220, 200 };
     const sf::Color C_NUM_HOVER{ 255, 255, 255, 255 };
     const sf::Color C_OUT_HOVER{ 200, 240, 255, 255 };
-    // Locked — dark muted
     const sf::Color C_HEX_LOCK{ 20,  35,  60, 160 };
     const sf::Color C_GLOW_LOCK{ 10,  20,  40, 140 };
     const sf::Color C_NUM_LOCK{ 70,  90, 110, 140 };
@@ -98,7 +88,7 @@ private:
     void handleClick(sf::Vector2f mp);
 };
 
-// ── Implementation ────────────────────────────────────────────
+
 
 inline sf::Vector2f LevelSelectScreen::centre(int i) const {
     return { POSITIONS[i][0], POSITIONS[i][1] };
@@ -144,7 +134,7 @@ inline void LevelSelectScreen::reset() {
 }
 
 inline void LevelSelectScreen::setupLayout() {
-    // Title — semi-transparent bar at top
+   
     TX(txtTitle).setFillColor(sf::Color(200, 235, 255, 230));
     TX(txtTitle).setStyle(sf::Text::Bold);
     {
@@ -152,7 +142,7 @@ inline void LevelSelectScreen::setupLayout() {
         TX(txtTitle).setPosition({ 400.f - lb.size.x * 0.5f, TITLE_Y });
     }
 
-    // Back button
+  
     backBtn.setSize({ 140.f, 30.f });
     backBtn.setPosition({ 330.f, 548.f });
     backBtn.setFillColor(sf::Color(5, 18, 45, 200));
@@ -169,7 +159,7 @@ inline void LevelSelectScreen::setupLayout() {
 
     TX(txtMessage).setPosition({ 400.f, 522.f });
 
-    // Medallions — hexagons (6-point circle)
+   
     for (int i = 0; i < TOTAL_LEVELS; i++) {
         sf::Vector2f c = centre(i);
 
@@ -187,7 +177,7 @@ inline void LevelSelectScreen::setupLayout() {
         innerGlow[i].setPosition(c);
         innerGlow[i].setRotation(sf::degrees(30.f));
 
-        // Number centred
+       
         TX(txtNumber[i]).setStyle(sf::Text::Bold);
         {
             auto lb = TX(txtNumber[i]).getLocalBounds();
@@ -197,7 +187,7 @@ inline void LevelSelectScreen::setupLayout() {
                 });
         }
 
-        // "LOCKED" below number
+      
         {
             auto lb = TX(txtLabel[i]).getLocalBounds();
             TX(txtLabel[i]).setPosition({
@@ -236,7 +226,7 @@ inline void LevelSelectScreen::refreshMedallion(int i) {
         TX(txtNumber[i]).setFillColor(C_NUM_LOCK);
     }
 
-    // Update lock label text
+    
     TX(txtLabel[i]).setString(unlocked ? "" : "LCK");
 }
 
@@ -316,7 +306,7 @@ inline void LevelSelectScreen::draw(sf::RenderWindow& window) {
         if (messageTimer <= 0.f) showMessage = false;
     }
 
-    // Background
+    
     if (bgLoaded)
         window.draw(*bgSprite);
     else {
@@ -325,7 +315,6 @@ inline void LevelSelectScreen::draw(sf::RenderWindow& window) {
         window.draw(fb);
     }
 
-    // Dark overlay at top for title readability
     sf::RectangleShape topBar({ 800.f, 55.f });
     topBar.setFillColor(sf::Color(0, 5, 20, 140));
     window.draw(topBar);
