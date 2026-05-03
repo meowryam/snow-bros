@@ -3,9 +3,9 @@
 
 struct Knife {
 
-    double x, y;           
-    double xspeed, yspeed; 
-    bool   alive;          
+    double x, y;
+    double xspeed, yspeed;
+    bool   alive;
     static constexpr float knifehitboxwidth = 16.f;
     static constexpr float knifehitboxheight = 8.f;
 
@@ -26,7 +26,7 @@ struct Knife {
         if (!alive) return;
         RectangleShape rect(Vector2f(knifehitboxwidth, knifehitboxheight));
         rect.setPosition(Vector2f(static_cast<float>(x), static_cast<float>(y)));
-        rect.setFillColor(Color(255, 220, 50));  
+        rect.setFillColor(Color(255, 220, 50));
         window.draw(rect);
     }
 };
@@ -35,19 +35,21 @@ struct Knife {
 
 class Tornado : public FlyingFoogaFoog {
 public:
-    static const int MAX_KNIVES = 6;  
+    static const int MAX_KNIVES = 6;
     Knife knives[MAX_KNIVES];
 private:
     double playerX, playerY;
     float knifeTimer;
-    static constexpr float KNIFE_INTERVAL = 2.5f;  
-    static constexpr float KNIFE_SPEED = 350.f;  
+    static constexpr float KNIFE_INTERVAL = 2.5f;
+    static constexpr float KNIFE_SPEED = 350.f;
     float currentFlightSpeed;
-    static constexpr float MIN_FLIGHT_SPEED = 60.f;   
-    static constexpr float MAX_FLIGHT_SPEED = 320.f;  
+    static constexpr float MIN_FLIGHT_SPEED = 60.f;
+    static constexpr float MAX_FLIGHT_SPEED = 320.f;
     void fireKnife();
     void randomizeFlightSpeed();
 
+    // Shadow FlyingFoogaFoog's HITS_TO_ENCASE — Tornado needs 8 hits
+    static constexpr int HITS_TO_ENCASE = 8;
 
 private:
     // ── Sprite rects ─────────────────────────────────────
@@ -115,17 +117,18 @@ private:
     sf::IntRect t_ring1{ {619, 873}, {117, 120} };
     sf::IntRect t_ring2{ {751, 873}, {121, 121} };
 
-    // add to private:
     sf::Texture tornadoTexture;
     std::optional<sf::Sprite> tornadoSprite;
     bool tornadoTextureLoaded = false;
-public:
 
+public:
     Tornado(double startX, double startY,
         float scrW = 800.f, float scrH = 600.f);
     void setPlayerPos(double px, double py);
     void update(double deltaTime) override;
     void draw(sf::RenderWindow& window) override;
     void loadTexture(const std::string& path);
- 
+
+    // Override receiveSnowballHit so it uses Tornado::HITS_TO_ENCASE (8)
+    bool receiveSnowballHit();
 };

@@ -3,140 +3,247 @@
 #include "PlayerData.h"
 using namespace std;
 
-enum class GameOverResult
-    //Three possible outcomes from the game over screen
-{
-    NONE, //means the player hasn't chosen anything yet.
+enum class GameOverResult {
+    NONE,
     RETRY,
     QUIT_TO_MENU
 };
 
 class GameOverScreen {
-private:
-    sf::Font font;
-    optional<sf::Text> titleText; //these texts may or may not exist yet
-    optional<sf::Text> statsText;
-    optional<sf::Text> optionTexts[2];
-    optional<sf::Text> hintText;
-
-    //Two rectangles 
-    sf::RectangleShape background; //background covers the whole screen
-    sf::RectangleShape panel; //panel is the smaller centered box that holds the menu.
-
-    int selectedOption;
-
-    sf::Color bgColor = sf::Color(40, 0, 0, 255);
-    sf::Color panelColor = sf::Color(80, 10, 10, 230);
-    sf::Color redTitle = sf::Color(255, 60, 60, 255);
-    sf::Color selectedCol = sf::Color(255, 220, 50, 255);
-    sf::Color normalCol = sf::Color(220, 160, 160, 255);
-    sf::Color statsCol = sf::Color(200, 200, 255, 255);
-    sf::Color hintCol = sf::Color(150, 100, 100, 255);
-
-    sf::Text& T(optional<sf::Text>& t) { return t.value(); }
-
 public:
     GameOverScreen() : selectedOption(0) {}
+    GameOverScreen(const GameOverScreen&) = delete;
+    GameOverScreen& operator=(const GameOverScreen&) = delete;
 
     bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
-        titleText.emplace(font);
-        statsText.emplace(font);
-        hintText.emplace(font);
+
+        bgLoaded = bgTex.loadFromFile("assets\\images\\GameOver_bg.png");
+        if (bgLoaded) {
+            bgSprite.emplace(bgTex);
+            sf::Vector2u ts = bgTex.getSize();
+            bgSprite->setScale({
+                800.f / static_cast<float>(ts.x),
+                600.f / static_cast<float>(ts.y)
+                });
+        }
+        titleText.emplace(font, "GAME  OVER", 30u);
+        statsText.emplace(font, "", 14u);
+        hintText.emplace(font, "Arrows to navigate  |  Enter to select", 9u);
         for (int i = 0; i < 2; i++)
-            optionTexts[i].emplace(font);
+            optionTexts[i].emplace(font, "", 20u);
+
+        layoutReady = false;
         return true;
     }
 
-    void reset() //Resets the cursor back to the first option (Retry) whenever the screen is opened.
-    { 
+    void reset() {
         selectedOption = 0;
+        layoutReady = false;
     }
 
     GameOverResult handleEvent(sf::Event& event) {
-        if (auto* kp = event.getIf<sf::Event::KeyPressed>()) //Checks if the event is a key press. If it is, kp points to the key data, otherwise it's nullptr.
-        {
+        if (auto* kp = event.getIf<sf::Event::KeyPressed>()) {
             if (kp->code == sf::Keyboard::Key::Up ||
                 kp->code == sf::Keyboard::Key::Down)
-                selectedOption = 1 - selectedOption; // toggle between 0 and 1, trick for flipping between two values
+            {
+                selectedOption = 1 - selectedOption;
+                refreshOptions();
+            }
             else if (kp->code == sf::Keyboard::Key::Enter) {
                 if (selectedOption == 0) return GameOverResult::RETRY;
                 if (selectedOption == 1) return GameOverResult::QUIT_TO_MENU;
             }
         }
-        //If Enter is pressed, returns whichever option is selected. Otherwise returns NONE meaning nothing happened yet.
+        if (const auto* mb = event.getIf<sf::Event::MouseButtonPressed>()) {
+            if (mb->button == sf::Mouse::Button::Left)
+                handleClick({ static_cast<float>(mb->position.x),
+                              static_cast<float>(mb->position.y) });
+        }
         return GameOverResult::NONE;
     }
 
-    void draw(sf::RenderWindow& window, const PlayerData& data) 
-    {
-        //Gets the window dimensions so everything can be positioned relative to the screen size rather than hardcoded pixel values.
-        float W = (float)window.getSize().x;
-        float H = (float)window.getSize().y;
+    void draw(sf::RenderWindow& window, const PlayerData& data) {
+        if (!layoutReady) setupLayout(data);
 
-        //Fills the entire screen with the dark red background color.
-        background.setSize({ W, H });
-        background.setFillColor(bgColor);
-        window.draw(background);
-
-        //Centers the panel on screen by subtracting half its size from the center point.
-        const float panelW = 400.f, panelH = 340.f;
-        panel.setSize({ panelW, panelH });
-        panel.setPosition({ W / 2.f - panelW / 2.f, H / 2.f - panelH / 2.f });
-
-        panel.setFillColor(panelColor);
-
-        //Draws a red border around the panel.
-        panel.setOutlineThickness(2.f);
-        panel.setOutlineColor(redTitle);
-
-        window.draw(panel);
-
-        // title
-        T(titleText).setString("GAME OVER");
-        T(titleText).setCharacterSize(42);
-        T(titleText).setFillColor(redTitle);
-        T(titleText).setLetterSpacing(3.f);
-        sf::FloatRect tb = T(titleText).getLocalBounds();
-        T(titleText).setOrigin({ tb.size.x / 2.f, 0.f });
-        T(titleText).setPosition({ W / 2.f, H / 2.f - panelH / 2.f + 20.f });
-        window.draw(T(titleText));
-
-        // Builds the stats string dynamically from the player's actual data
+        // Refresh stats each draw in case data changed
         string stats = "Level: " + to_string(data.getCurrentLevel()) +
             "   Gems: " + to_string(data.getGemCount()) +
             "   Best: " + to_string(data.getHighscore());
-
-        T(statsText).setString(stats);
-        T(statsText).setCharacterSize(16);
-        T(statsText).setFillColor(statsCol);
-        sf::FloatRect sb = T(statsText).getLocalBounds();
-        T(statsText).setOrigin({ sb.size.x / 2.f, 0.f });
-        T(statsText).setPosition({ W / 2.f, H / 2.f - 50.f });
-        window.draw(T(statsText));
-
-        // options
-        string opts[2] = { "Retry", "Quit to Menu" };
-        for (int i = 0; i < 2; i++)
+        TX(statsText).setString(stats);
         {
-            //If this option is currently selected, it adds "> " in front and colors it yellow. Otherwise it's indented with spaces and colored dim. This is how the cursor highlight works.
-            T(optionTexts[i]).setString((selectedOption == i ? "> " : "  ") + opts[i]);
-            T(optionTexts[i]).setCharacterSize(24);
-            T(optionTexts[i]).setFillColor(selectedOption == i ? selectedCol : normalCol);
-
-            sf::FloatRect ob = T(optionTexts[i]).getLocalBounds();
-            T(optionTexts[i]).setOrigin({ ob.size.x / 2.f, 0.f });
-            T(optionTexts[i]).setPosition({ W / 2.f, H / 2.f + 20.f + i * 55.f });
-            window.draw(T(optionTexts[i]));
+            auto lb = TX(statsText).getLocalBounds();
+            TX(statsText).setPosition({ 400.f - lb.size.x * 0.5f, STATS_Y });
         }
 
-        // hint
-        T(hintText).setString("Arrows to navigate  |  Enter to select");
-        T(hintText).setCharacterSize(11);
-        T(hintText).setFillColor(hintCol);
-        sf::FloatRect hb = T(hintText).getLocalBounds();
-        T(hintText).setOrigin({ hb.size.x / 2.f, 0.f });
-        T(hintText).setPosition({ W / 2.f, H / 2.f + panelH / 2.f - 24.f });
-        window.draw(T(hintText));
+        // Background
+        if (bgLoaded)
+            window.draw(*bgSprite);
+        else {
+            sf::RectangleShape fb({ 800.f, 600.f });
+            fb.setFillColor(sf::Color(20, 0, 5, 255));
+            window.draw(fb);
+        }
+
+        // Subtle panel
+        window.draw(panel);
+        window.draw(panelOutline);
+
+        // Title
+        window.draw(TX(titleText));
+
+        // Divider
+        window.draw(divider);
+
+        // Stats
+        window.draw(TX(statsText));
+
+        // Buttons
+        for (int i = 0; i < 2; i++) {
+            window.draw(optBtns[i]);
+            window.draw(TX(optionTexts[i]));
+        }
+
+        // Hint
+        window.draw(TX(hintText));
+    }
+
+private:
+    // ── layout constants ───────────────────────────────────────
+    static constexpr float PANEL_W = 360.f;
+    static constexpr float PANEL_H = 310.f;
+    static constexpr float PANEL_X = (800.f - PANEL_W) / 2.f;   // 220
+    static constexpr float PANEL_Y = (600.f - PANEL_H) / 2.f;   // 145
+    static constexpr float BTN_W = 280.f;
+    static constexpr float BTN_H = 42.f;
+    static constexpr float BTN_GAP = 14.f;
+    static constexpr float BTN_LEFT = PANEL_X + (PANEL_W - BTN_W) / 2.f;
+    static constexpr float BTNS_TOP = PANEL_Y + 168.f;
+    static constexpr float STATS_Y = PANEL_Y + 108.f;
+    const sf::Color PANEL_FILL{ 10,  2,   4, 140 };    // lighter touch, less coverage
+    const sf::Color PANEL_OUTLINE{ 160,  25,  25, 180 };
+
+    const sf::Color DIV_COL{ 200,  50,  30, 120 };
+
+    const sf::Color COL_TITLE{ 255,  80,  50, 255 };
+
+    const sf::Color COL_STATS{ 255, 220, 200, 255 };
+
+    const sf::Color BTN_NORMAL{ 25,   5,   5, 160 };
+    const sf::Color BTN_SEL{ 180,  25,  15, 220 };
+    const sf::Color BTN_OUT_NRM{ 160,  50,  40, 180 };   // visible outline now
+    const sf::Color BTN_OUT_SEL{ 255,  90,  60, 255 };
+
+    const sf::Color COL_OPT_NORM{ 220, 170, 160, 230 };   // much more visible
+    const sf::Color COL_OPT_SEL{ 255, 235, 210, 255 };
+    const sf::Color COL_HINT{ 130,  80,  70, 180 };
+
+    // ── state ──────────────────────────────────────────────────
+    sf::Font  font;
+    bool      layoutReady = false;
+    int       selectedOption;
+
+    sf::Texture          bgTex;
+    bool                 bgLoaded = false;
+    optional<sf::Sprite> bgSprite;
+
+    sf::RectangleShape panel;
+    sf::RectangleShape panelOutline;
+    sf::RectangleShape divider;
+    sf::RectangleShape optBtns[2];
+
+    optional<sf::Text> titleText;
+    optional<sf::Text> statsText;
+    optional<sf::Text> optionTexts[2];
+    optional<sf::Text> hintText;
+
+    sf::Text& TX(optional<sf::Text>& t) { return t.value(); }
+
+    void setupLayout(const PlayerData& data) {
+        // Panel
+        panel.setSize({ PANEL_W, PANEL_H });
+        panel.setPosition({ PANEL_X, PANEL_Y });
+        panel.setFillColor(PANEL_FILL);
+        panel.setOutlineThickness(0.f);
+
+        panelOutline.setSize({ PANEL_W, PANEL_H });
+        panelOutline.setPosition({ PANEL_X, PANEL_Y });
+        panelOutline.setFillColor(sf::Color::Transparent);
+        panelOutline.setOutlineThickness(2.f);
+        panelOutline.setOutlineColor(PANEL_OUTLINE);
+
+        // Title
+        TX(titleText).setFillColor(COL_TITLE);
+        TX(titleText).setStyle(sf::Text::Bold);
+        TX(titleText).setLetterSpacing(4.f);
+        {
+            auto lb = TX(titleText).getLocalBounds();
+            TX(titleText).setPosition({
+                PANEL_X + (PANEL_W - lb.size.x) * 0.5f,
+                PANEL_Y + 20.f
+                });
+        }
+
+        // Divider
+        divider.setSize({ PANEL_W - 30.f, 1.5f });
+        divider.setPosition({ PANEL_X + 15.f, PANEL_Y + 78.f });
+        divider.setFillColor(DIV_COL);
+
+        // Stats
+        TX(statsText).setFillColor(COL_STATS);
+
+        // Buttons
+        const char* labels[2] = { "Retry", "Quit to Menu" };
+        for (int i = 0; i < 2; i++) {
+            float by = BTNS_TOP + i * (BTN_H + BTN_GAP);
+            optBtns[i].setSize({ BTN_W, BTN_H });
+            optBtns[i].setPosition({ BTN_LEFT, by });
+            optBtns[i].setOutlineThickness(1.5f);
+            TX(optionTexts[i]).setString(labels[i]);
+        }
+
+        // Hint
+        TX(hintText).setFillColor(COL_HINT);
+        {
+            auto lb = TX(hintText).getLocalBounds();
+            TX(hintText).setPosition({
+                PANEL_X + (PANEL_W - lb.size.x) * 0.5f,
+                PANEL_Y + PANEL_H - 20.f
+                });
+        }
+
+        refreshOptions();
+        layoutReady = true;
+    }
+
+    void refreshOptions() {
+        const char* labels[2] = { "Retry", "Quit to Menu" };
+        for (int i = 0; i < 2; i++) {
+            bool sel = (i == selectedOption);
+            float by = BTNS_TOP + i * (BTN_H + BTN_GAP);
+
+            optBtns[i].setFillColor(sel ? BTN_SEL : BTN_NORMAL);
+            optBtns[i].setOutlineColor(sel ? BTN_OUT_SEL : BTN_OUT_NRM);
+
+            TX(optionTexts[i]).setString(labels[i]);
+            TX(optionTexts[i]).setFillColor(sel ? COL_OPT_SEL : COL_OPT_NORM);
+            TX(optionTexts[i]).setStyle(sel ? sf::Text::Bold : sf::Text::Regular);
+
+            auto lb = TX(optionTexts[i]).getLocalBounds();
+            TX(optionTexts[i]).setPosition({
+                BTN_LEFT + (BTN_W - lb.size.x) * 0.5f,
+                by + (BTN_H - lb.size.y) * 0.5f - 2.f
+                });
+        }
+    }
+
+    void handleClick(sf::Vector2f mp) {
+        if (!layoutReady) return;
+        for (int i = 0; i < 2; i++) {
+            if (optBtns[i].getGlobalBounds().contains(mp)) {
+                selectedOption = i;
+                refreshOptions();
+            }
+        }
     }
 };

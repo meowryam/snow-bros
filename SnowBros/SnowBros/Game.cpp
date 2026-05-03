@@ -358,7 +358,6 @@ void Game::handleGameOverEvents(sf::Event& event) {
 }
 
 void Game::processInput()
-//Only checks input during gameplay. If the pause key is held, switches to the paused state and pauses the music.
 {
     if (currentState == GameState::PLAYING) {
         if (inputManager.isKeyHeld(keyBindings.pause)) {
@@ -367,8 +366,13 @@ void Game::processInput()
             soundManager.pauseMusic();
         }
     }
+    // TEMP: press G to force game over screen for testing
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G)) {
+        gameOverScreen.reset();
+        currentState = GameState::GAME_OVER;
+        soundManager.stopMusic();
+    }
 }
-
 void Game::update(float deltaTime)
 //Immediately exits if the game isn't in the PLAYING state — nothing should update while paused or on a menu.
 {
