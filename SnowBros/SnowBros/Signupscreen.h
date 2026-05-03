@@ -33,17 +33,24 @@ private:
     bool success = false;
 
     // colours matching your LoginScreen palette
-    sf::Color bgColor = sf::Color(26, 10, 46, 255);
-    sf::Color gold = sf::Color(255, 229, 102, 255);
-    sf::Color lightText = sf::Color(232, 224, 255, 255);
-    sf::Color mutedColor = sf::Color(153, 132, 200, 255);
-    sf::Color greenOk = sf::Color(76, 175, 125, 255);
-    sf::Color redErr = sf::Color(226, 75, 74, 255);
+    sf::Color bgFallback = sf::Color(5, 12, 35, 255);
+    sf::Color titleCol = sf::Color(200, 240, 255, 255);   // ice white-blue
+    sf::Color subCol = sf::Color(160, 215, 255, 230);   // softer ice blue
+    sf::Color iceWhite = sf::Color(220, 245, 255, 255);   // typed text
+    sf::Color iceMid = sf::Color(210, 235, 255, 255);   // labels
+    sf::Color iceDim = sf::Color(100, 160, 220, 180);   // hint
+    sf::Color greenOk = sf::Color(180, 255, 230, 255);   // success / subtitle
+    sf::Color redErr = sf::Color(220, 80, 80, 255);
+    sf::Color inputFill = sf::Color(8, 22, 55, 200);
+    sf::Color inputOutAct = sf::Color(160, 230, 255, 255);  // focused border
+    sf::Color inputOutNrm = sf::Color(60, 120, 200, 140);   // unfocused border
 
     sf::RectangleShape background;
     sf::RectangleShape passwordBox;
     sf::RectangleShape confirmBox;
-
+    sf::Texture bgTex;
+    bool        bgLoaded = false;
+    optional<sf::Sprite> bgSprite;
     optional<sf::Text> titleText;
     optional<sf::Text> subtitleText;
     optional<sf::Text> pwLabel;
@@ -69,6 +76,12 @@ public:
 
     bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
+        bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
+        if (bgLoaded) {
+            bgSprite.emplace(bgTex);
+            sf::Vector2u ts = bgTex.getSize();
+            bgSprite->setScale({ 800.f / static_cast<float>(ts.x), 600.f / static_cast<float>(ts.y) });
+        }
         fontLoaded = true;
         titleText.emplace(font);
         subtitleText.emplace(font);
@@ -154,14 +167,19 @@ public:
         float H = (float)window.getSize().y;
 
         // Background
-        background.setSize({ W, H });
-        background.setFillColor(bgColor);
-        window.draw(background);
+        if (bgLoaded) window.draw(*bgSprite);
+        else {
+            sf::RectangleShape fb({ 800.f, 600.f }); fb.setFillColor(bgFallback); window.draw(fb);
+        }
+        sf::RectangleShape vignette({ 800.f, 600.f });
+        vignette.setFillColor(sf::Color(0, 5, 20, 70));
+        window.draw(vignette);
 
         // Title
         T(titleText).setString("SNOW BROS");
-        T(titleText).setCharacterSize(48);
-        T(titleText).setFillColor(gold);
+        T(titleText).setCharacterSize(30u);
+        T(titleText).setFillColor(titleCol);
+        T(titleText).setStyle(sf::Text::Bold);
         T(titleText).setLetterSpacing(3.f);
         sf::FloatRect tb = T(titleText).getLocalBounds();
         T(titleText).setOrigin({ tb.size.x / 2.f, 0.f });
@@ -171,7 +189,7 @@ public:
         // Subtitle
         T(subtitleText).setString("Create Password for: " + username);
         T(subtitleText).setCharacterSize(16);
-        T(subtitleText).setFillColor(greenOk);
+        T(subtitleText).setFillColor(subCol);
         sf::FloatRect sb = T(subtitleText).getLocalBounds();
         T(subtitleText).setOrigin({ sb.size.x / 2.f, 0.f });
         T(subtitleText).setPosition({ W / 2.f, 155.f });
@@ -180,44 +198,45 @@ public:
         // ---- Password field ----
         T(pwLabel).setString("Password:");
         T(pwLabel).setCharacterSize(14);
-        T(pwLabel).setFillColor(focusedField == 0 ? gold : mutedColor);
+        T(pwLabel).setFillColor(iceMid);
         T(pwLabel).setPosition({ W / 2.f - 160.f, 210.f });
         window.draw(T(pwLabel));
 
         passwordBox.setSize({ 320.f, 44.f });
         passwordBox.setPosition({ W / 2.f - 160.f, 232.f });
-        passwordBox.setFillColor(sf::Color(255, 255, 255, 15));
-        passwordBox.setOutlineThickness(focusedField == 0 ? 2.f : 1.f);
-        passwordBox.setOutlineColor(focusedField == 0 ? gold : sf::Color(80, 60, 120));
+        // For passwordBox:
+        passwordBox.setFillColor(inputFill);
+        passwordBox.setOutlineThickness(1.8f);
+        passwordBox.setOutlineColor(focusedField == 0 ? inputOutAct : inputOutNrm);
         window.draw(passwordBox);
 
         string pwMasked(passwordInput.size(), '*');
         if (focusedField == 0) pwMasked += "|";
         T(pwText).setString(pwMasked);
         T(pwText).setCharacterSize(20);
-        T(pwText).setFillColor(lightText);
+        T(pwText).setFillColor(iceWhite);
         T(pwText).setPosition({ W / 2.f - 148.f, 242.f });
         window.draw(T(pwText));
 
         // ---- Confirm field ----
         T(cfLabel).setString("Confirm Password:");
         T(cfLabel).setCharacterSize(14);
-        T(cfLabel).setFillColor(focusedField == 1 ? gold : mutedColor);
+        T(cfLabel).setFillColor(iceMid);
         T(cfLabel).setPosition({ W / 2.f - 160.f, 295.f });
         window.draw(T(cfLabel));
 
         confirmBox.setSize({ 320.f, 44.f });
         confirmBox.setPosition({ W / 2.f - 160.f, 317.f });
-        confirmBox.setFillColor(sf::Color(255, 255, 255, 15));
-        confirmBox.setOutlineThickness(focusedField == 1 ? 2.f : 1.f);
-        confirmBox.setOutlineColor(focusedField == 1 ? gold : sf::Color(80, 60, 120));
+        confirmBox.setFillColor(inputFill);
+        confirmBox.setOutlineThickness(1.8f);
+        confirmBox.setOutlineColor(focusedField == 1 ? inputOutAct : inputOutNrm);
         window.draw(confirmBox);
 
         string cfMasked(confirmInput.size(), '*');
         if (focusedField == 1) cfMasked += "|";
         T(cfText).setString(cfMasked);
         T(cfText).setCharacterSize(20);
-        T(cfText).setFillColor(lightText);
+        T(cfText).setFillColor(iceWhite);
         T(cfText).setPosition({ W / 2.f - 148.f, 327.f });
         window.draw(T(cfText));
 
@@ -235,7 +254,7 @@ public:
         // ---- Bottom hint ----
         T(hintText).setString("Tab to switch field   |   Enter to confirm   |   ESC to go back");
         T(hintText).setCharacterSize(11);
-        T(hintText).setFillColor(mutedColor);
+        T(hintText).setFillColor(iceDim);
         sf::FloatRect hb = T(hintText).getLocalBounds();
         T(hintText).setOrigin({ hb.size.x / 2.f, 0.f });
         T(hintText).setPosition({ W / 2.f, H - 40.f });

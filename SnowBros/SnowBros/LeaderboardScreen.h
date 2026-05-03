@@ -15,17 +15,20 @@ private:
     sf::RectangleShape background;
     sf::RectangleShape panel;
     sf::RectangleShape rowHighlight;
-
+    sf::Texture bgTex;
+    bool        bgLoaded = false;
+    optional<sf::Sprite> bgSprite;
     Leaderboard& leaderboard;
 
-    sf::Color bgColor = sf::Color(10, 20, 60, 255);
-    sf::Color panelColor = sf::Color(15, 30, 80, 230);
-    sf::Color titleColor = sf::Color(80, 220, 255, 255);
-    sf::Color goldColor = sf::Color(255, 215, 0, 255);
+    sf::Color titleCol = sf::Color(200, 240, 255, 255);   // ice white-blue
+    sf::Color goldColor = sf::Color(255, 215, 0, 255);   // kept gold for rank 1
     sf::Color silver = sf::Color(192, 192, 192, 255);
     sf::Color bronze = sf::Color(205, 127, 50, 255);
-    sf::Color normalCol = sf::Color(180, 200, 255, 255);
-    sf::Color hintCol = sf::Color(100, 120, 180, 255);
+    sf::Color normalCol = sf::Color(210, 235, 255, 255);   // bright ice white (was too dim)
+    sf::Color hintCol = sf::Color(100, 160, 220, 180);
+    sf::Color panelFill = sf::Color(0, 10, 30, 175);    // same as PauseScreen panel
+    sf::Color panelBord = sf::Color(90, 170, 220, 180);    // ice blue border
+    sf::Color headerCol = sf::Color(160, 210, 255, 200);
 
     sf::Text& T(optional<sf::Text>& t) { return t.value(); }
 
@@ -36,6 +39,12 @@ public:
 
     bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
+        bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
+        if (bgLoaded) {
+            bgSprite.emplace(bgTex);
+            sf::Vector2u ts = bgTex.getSize();
+            bgSprite->setScale({ 800.f / static_cast<float>(ts.x), 600.f / static_cast<float>(ts.y) });
+        }
         titleText.emplace(font);
         headerText.emplace(font);
         hintText.emplace(font);
@@ -56,22 +65,31 @@ public:
         float W = (float)window.getSize().x;
         float H = (float)window.getSize().y;
 
-        background.setSize({ W, H });
-        background.setFillColor(bgColor);
-        window.draw(background);
+        // Background
+        if (bgLoaded) window.draw(*bgSprite);
+        else {
+            sf::RectangleShape fb({ 800.f, 600.f });
+            fb.setFillColor(sf::Color(5, 12, 35, 255));
+            window.draw(fb);
+        }
+        // Subtle overlay
+        sf::RectangleShape vignette({ 800.f, 600.f });
+        vignette.setFillColor(sf::Color(0, 5, 20, 70));
+        window.draw(vignette);
 
+        // Panel
         const float panelW = 620.f, panelH = 480.f;
         panel.setSize({ panelW, panelH });
         panel.setPosition({ W / 2.f - panelW / 2.f, H / 2.f - panelH / 2.f });
-        panel.setFillColor(panelColor);
+        panel.setFillColor(panelFill);
         panel.setOutlineThickness(2.f);
-        panel.setOutlineColor(titleColor);
+        panel.setOutlineColor(panelBord);
         window.draw(panel);
 
         // title
         T(titleText).setString("LEADERBOARD");
         T(titleText).setCharacterSize(32);
-        T(titleText).setFillColor(titleColor);
+        T(titleText).setFillColor(titleCol);
         T(titleText).setLetterSpacing(4.f);
         sf::FloatRect tb = T(titleText).getLocalBounds();
         T(titleText).setOrigin({ tb.size.x / 2.f, 0.f });
@@ -81,7 +99,7 @@ public:
         // header row
         T(headerText).setString("#    NAME                SCORE      LEVEL    DATE");
         T(headerText).setCharacterSize(13);
-        T(headerText).setFillColor(sf::Color(150, 180, 255, 180));
+        T(headerText).setFillColor(headerCol);
         T(headerText).setPosition({ W / 2.f - panelW / 2.f + 24.f, H / 2.f - panelH / 2.f + 72.f });
         window.draw(T(headerText));
 

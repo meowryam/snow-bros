@@ -342,15 +342,22 @@ private:
 
     sf::RectangleShape background;
     sf::RectangleShape highlight;
-
+    sf::Texture bgTex;
+    bool        bgLoaded = false;
+    optional<sf::Sprite> bgSprite;
     int selectedRow;
     bool waitingForKey;
     
+    sf::Color titleCol = sf::Color(200, 240, 255, 255);  // ice white-blue
+    sf::Color iceWhite = sf::Color(220, 245, 255, 255);  // action name text
+    sf::Color iceMid = sf::Color(160, 210, 255, 220);  // key value normal
+    sf::Color iceDim = sf::Color(100, 160, 220, 180);  // hint
+    sf::Color keySelCol = sf::Color(150, 225, 255, 255);  // key value when selected
 
-    sf::Color bgColor = sf::Color(26, 10, 46, 255);
-    sf::Color gold = sf::Color(255, 229, 102, 255);
-    sf::Color lightText = sf::Color(232, 224, 255, 255);
-    sf::Color mutedColor = sf::Color(153, 132, 200, 255);
+    // Row highlight / button colours
+    sf::Color rowSelFill = sf::Color(30, 100, 220, 160);
+    sf::Color rowSelOut = sf::Color(140, 220, 255, 255);
+    sf::Color rowNrmOut = sf::Color(60, 140, 220, 80);
 
     sf::Text& T(optional<sf::Text>& t) { return t.value(); }
 
@@ -391,6 +398,12 @@ public:
 
     bool loadFont(const string& path) {
         if (!font.openFromFile(path)) return false;
+        bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
+        if (bgLoaded) {
+            bgSprite.emplace(bgTex);
+            sf::Vector2u ts = bgTex.getSize();
+            bgSprite->setScale({ 800.f / static_cast<float>(ts.x), 600.f / static_cast<float>(ts.y) });
+        }
         titleText.emplace(font);
         hintText.emplace(font);
         for (int i = 0; i < 5; i++) {
@@ -421,19 +434,15 @@ public:
     void draw(sf::RenderWindow& window) {
         float W = (float)window.getSize().x;
         float H = (float)window.getSize().y;
-
-        background.setSize({ W, H });
-        background.setFillColor(bgColor);
-        window.draw(background);
-
-        T(titleText).setString("KEY BINDINGS");
-        T(titleText).setCharacterSize(32);
-        T(titleText).setFillColor(gold);
-        T(titleText).setLetterSpacing(3.f);
-        sf::FloatRect tb = T(titleText).getLocalBounds();
-        T(titleText).setOrigin({ tb.size.x / 2.f, 0.f });
-        T(titleText).setPosition({ W / 2.f, 60.f });
-        window.draw(T(titleText));
+        if (bgLoaded) window.draw(*bgSprite);
+        else {
+            sf::RectangleShape fb({ 800.f, 600.f });
+            fb.setFillColor(sf::Color(5, 12, 35, 255));
+            window.draw(fb);
+        }
+        sf::RectangleShape vignette({ 800.f, 600.f });
+        vignette.setFillColor(sf::Color(0, 5, 20, 70));
+        window.draw(vignette);
 
         string actionNames[5] = { "Move Left","Move Right","Jump","Throw Snowball","Pause" };
         sf::Keyboard::Key* keyPtrs[5] = {
@@ -444,22 +453,22 @@ public:
         for (int i = 0; i < 5; i++) {
             float rowY = 160.f + i * 60.f;
             bool sel = (selectedRow == i);
-            if (sel) {
-                highlight.setSize({ 500.f, 44.f });
-                highlight.setPosition({ W / 2.f - 250.f, rowY - 6.f });
-                highlight.setFillColor(sf::Color(255, 229, 102, 25));
-                window.draw(highlight);
-            }
+            highlight.setSize({ 500.f, 44.f });
+            highlight.setPosition({ W / 2.f - 250.f, rowY - 6.f });
+            highlight.setFillColor(sel ? rowSelFill : sf::Color(10, 30, 80, 80));
+            highlight.setOutlineThickness(1.2f);
+            highlight.setOutlineColor(sel ? rowSelOut : rowNrmOut);
+            window.draw(highlight);
             T(actionTexts[i]).setString(actionNames[i]);
             T(actionTexts[i]).setCharacterSize(20);
-            T(actionTexts[i]).setFillColor(sel ? gold : lightText);
+            T(actionTexts[i]).setFillColor(sel ? sf::Color(255, 255, 255, 255) : iceWhite);
             T(actionTexts[i]).setPosition({ W / 2.f - 220.f, rowY });
             window.draw(T(actionTexts[i]));
 
             string keyStr = (waitingForKey && sel) ? "[ Press any key... ]" : keyName(*keyPtrs[i]);
             T(keyTexts[i]).setString(keyStr);
             T(keyTexts[i]).setCharacterSize(20);
-            T(keyTexts[i]).setFillColor(sel ? sf::Color(91, 191, 255, 255) : mutedColor);
+            T(keyTexts[i]).setFillColor(sel ? keySelCol : iceMid);
             T(keyTexts[i]).setPosition({ W / 2.f + 60.f, rowY });
             window.draw(T(keyTexts[i]));
         }
@@ -468,7 +477,7 @@ public:
             "Up/Down to select   |   Enter to rebind   |   Esc to save & exit";
         T(hintText).setString(hint);
         T(hintText).setCharacterSize(12);
-        T(hintText).setFillColor(mutedColor);
+        T(hintText).setFillColor(iceDim);
         sf::FloatRect hb = T(hintText).getLocalBounds();
         T(hintText).setOrigin({ hb.size.x / 2.f, 0.f });
         T(hintText).setPosition({ W / 2.f, H - 40.f });
