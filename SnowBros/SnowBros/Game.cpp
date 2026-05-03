@@ -2009,8 +2009,12 @@ Game::Game()
     twoPlayerMode(false)
     , levelSelectScreen(playerData)
 {
-    // Initialize player 2 data with same lives
-    player2Data = PlayerData();
+    
+        srand(static_cast<unsigned int>(time(nullptr)));
+        // Initialize player 2 data with same lives
+        player2Data = PlayerData();
+        // Initialize player 2 data with same lives
+   
     player2Data.setUsername("Player2");
     player2Data.setLives(2);
     player2Data.setGemCount(0);
