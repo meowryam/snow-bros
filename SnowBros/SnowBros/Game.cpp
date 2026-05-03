@@ -91,8 +91,8 @@ void Game::loadAllFonts() {
     loginScreen.loadFont(fontPath);
     mainMenu.loadFont(fontPath);
     hud.loadFont(fontPath);
-    pauseScreen.loadFont(fontPath);
-    gameOverScreen.loadFont(fontPath);
+    //pauseScreen.loadFont(fontPath);
+    //gameOverScreen.loadFont(fontPath);
     leaderboardScreen.loadFont(fontPath);
     keyRemapScreen.loadFont(fontPath);
     shopScreen.loadFont(fontPath);
@@ -146,10 +146,10 @@ void Game::run() //The main game loop setup
                 handleLoginEvents(*event); break;
             case GameState::MENU:
                 handleMainMenuEvents(*event); break;
-            case GameState::PAUSED:
+         /*   case GameState::PAUSED:
                 handlePauseEvents(*event); break;
             case GameState::GAME_OVER:
-                handleGameOverEvents(*event); break;
+                handleGameOverEvents(*event); break; */
             case GameState::LEVEL_SELECT:
                 levelSelectScreen.handleEvent(*event);
                 if (levelSelectScreen.done) {
@@ -310,9 +310,9 @@ void Game::handleMainMenuEvents(sf::Event& event)
         window.close();
     }
 }
-
+/*
 void Game::handlePauseEvents(sf::Event& event)
-{
+{/*
     PauseResult result = pauseScreen.handleEvent(event);
     if (result == PauseResult::RESUME) {
         currentState = GameState::PLAYING;
@@ -355,10 +355,11 @@ void Game::handleGameOverEvents(sf::Event& event) {
         currentState = GameState::MENU;
         soundManager.stopMusic();
     }
-}
 
+
+} */
 void Game::processInput()
-{
+{/*
     if (currentState == GameState::PLAYING) {
         if (inputManager.isKeyHeld(keyBindings.pause)) {
             currentState = GameState::PAUSED;
@@ -371,7 +372,7 @@ void Game::processInput()
         gameOverScreen.reset();
         currentState = GameState::GAME_OVER;
         soundManager.stopMusic();
-    }
+    } */
 }
 void Game::update(float deltaTime)
 //Immediately exits if the game isn't in the PLAYING state — nothing should update while paused or on a menu.
@@ -382,7 +383,7 @@ void Game::update(float deltaTime)
 
     if (playerData.getLives() <= 0) {
         saveAndSubmitScore();
-        gameOverScreen.reset();
+        /*gameOverScreen.reset();
         currentState = GameState::GAME_OVER; //If the player has run out of lives, saves the score and transitions to the game over screen.
         soundManager.stopMusic();
         return;
@@ -394,7 +395,8 @@ void Game::update(float deltaTime)
         currentState = GameState::GAME_OVER;
         soundManager.stopMusic();
     }
-
+    */
+    }
     if (currentState == GameState::PLAYING) 
     {
         //Updates the current level. Passes player2 only if two-player mode is on, otherwise passes nullptr.
@@ -435,12 +437,12 @@ void Game::draw() {
         hud.draw(window, playerData, twoPlayerMode ? &player2Data : nullptr);
         //hud.draw(window, playerData); // this was when we had single player only
         break;
-    case GameState::PAUSED:
+    /*case GameState::PAUSED:
         pauseScreen.draw(window);
         break;
     case GameState::GAME_OVER:
-        gameOverScreen.draw(window, playerData);
-        break;
+        gameOverScreen.draw(window, playerData); 
+        break; */
     case GameState::KEY_REMAP:
         keyRemapScreen.draw(window);
         break;

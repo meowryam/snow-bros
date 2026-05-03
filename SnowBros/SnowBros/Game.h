@@ -59,8 +59,8 @@ private:
     LoginScreen        loginScreen;
     MainMenu           mainMenu;
     HUD                hud;
-    PauseScreen        pauseScreen;
-    GameOverScreen     gameOverScreen;
+    //PauseScreen        pauseScreen;
+    //GameOverScreen     gameOverScreen;
     LeaderboardScreen  leaderboardScreen;
     KeyRemapScreen     keyRemapScreen;
     ShopScreen         shopScreen;
@@ -84,8 +84,8 @@ private:
     // state handlers
     void handleLoginEvents(sf::Event& event);
     void handleMainMenuEvents(sf::Event& event);
-    void handlePauseEvents(sf::Event& event);
-    void handleGameOverEvents(sf::Event& event);
+   // void handlePauseEvents(sf::Event& event);
+    //void handleGameOverEvents(sf::Event& event);
 
     void saveAndSubmitScore();
 
