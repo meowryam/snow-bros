@@ -1,0 +1,5 @@
+username=ULLO
+current_level=6
+lives=2
+gem_count=416
+high_score=20599

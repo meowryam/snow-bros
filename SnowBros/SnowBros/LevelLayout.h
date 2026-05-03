@@ -83,24 +83,24 @@ public:
         }
 
         // Bring rows DOWN ? was too high
-        float p1y = H - 160.f;  // row 1 near bottom
-        float p2y = H - 280.f;  // row 2 mid
-        float p3y = H - 400.f;  // row 3 upper
+        float p1y = H - 160.f;
+        float p2y = H - 290.f;
+        float p3y = H - 420.f;
 
-        // Row 1
-        platforms[count++] = Platform(50, p1y, 220, ph, sf::Color(60, 100, 160));
-        platforms[count++] = Platform(320, p1y, 160, ph, sf::Color(60, 100, 160));
-        platforms[count++] = Platform(530, p1y, 220, ph, sf::Color(60, 100, 160));
+        // Row 1 — wider gaps (~80px between pieces)
+        platforms[count++] = Platform(20, p1y, 200, ph, sf::Color(60, 100, 160));
+        platforms[count++] = Platform(300, p1y, 160, ph, sf::Color(60, 100, 160));
+        platforms[count++] = Platform(540, p1y, 220, ph, sf::Color(60, 100, 160));
 
-        // Row 2
-        platforms[count++] = Platform(0, p2y, 180, ph, sf::Color(60, 100, 160));
-        platforms[count++] = Platform(230, p2y, 340, ph, sf::Color(60, 100, 160));
+        // Row 2 — wider gaps (~80px between pieces)
+        platforms[count++] = Platform(0, p2y, 160, ph, sf::Color(60, 100, 160));
+        platforms[count++] = Platform(240, p2y, 300, ph, sf::Color(60, 100, 160));
         platforms[count++] = Platform(620, p2y, 180, ph, sf::Color(60, 100, 160));
 
-        // Row 3
-        platforms[count++] = Platform(80, p3y, 200, ph, sf::Color(60, 100, 160));
-        platforms[count++] = Platform(340, p3y, 120, ph, sf::Color(60, 100, 160));
-        platforms[count++] = Platform(520, p3y, 200, ph, sf::Color(60, 100, 160));
+        // Row 3 — wider gaps (~80px between pieces)
+        platforms[count++] = Platform(60, p3y, 180, ph, sf::Color(60, 100, 160));
+        platforms[count++] = Platform(320, p3y, 140, ph, sf::Color(60, 100, 160));
+        platforms[count++] = Platform(540, p3y, 200, ph, sf::Color(60, 100, 160));
 
         return count;
     }
