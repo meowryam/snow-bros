@@ -2,7 +2,7 @@
 #include "Enemy.h"
 #include "Platform.h"
 #include <optional>       
-#include <string> 
+#include <string>
 using namespace sf;
 class Botom : public Enemy {
 
@@ -32,7 +32,7 @@ protected:
     double rollSpeed;
    
     Texture snowTexture;
-    optional<Sprite> snowSprite;
+    std::optional<Sprite> snowSprite;
     bool snowTextureLoaded = false;
     float escapeTimer = 0.f;
     static constexpr float ESCAPE_DURATION = 5.f;
@@ -55,7 +55,7 @@ protected:
     IntRect snow_r4_s3{ { 671, 4178}, {284, 309} };
     IntRect snow_r4_s4{ { 971, 4184}, {308, 298} };
     Texture texture;
-    optional<Sprite> sprite;
+    std::optional<Sprite> sprite;
     bool textureLoaded = false;
     IntRect unused_frame1{ {  8,  22}, { 93,  94} };
     IntRect unused_frame2{ { 99,  22}, { 93,  94} };

@@ -4,8 +4,7 @@
 #include "sfmlcolours.h"
 using namespace sfmlcolours;
 
-FlyingFoogaFoog::FlyingFoogaFoog(double startX, double startY, float scrW, float scrH)
-    : Botom(startX, startY, scrW, scrH)
+FlyingFoogaFoog::FlyingFoogaFoog(double startX, double startY, float scrW, float scrH) : Botom(startX, startY, scrW, scrH)
 {
     inFlight = false;
     groundTimer = GROUND_DURATION;
@@ -27,8 +26,7 @@ void FlyingFoogaFoog::pickRandomFlightDirection() {
     case 6:  dx = 1.f; dy = 1.f; break;  // down-right
     case 7:  dx = -1.f; dy = 1.f; break;  // down-left
     }
-
-    // Normalise so diagonals aren't faster than cardinals
+// Normalise so diagonals aren't faster than cardinals
     float len = sqrtf(dx * dx + dy * dy);
     if (len > 0.f) { dx /= len; dy /= len; }
 
@@ -39,17 +37,13 @@ void FlyingFoogaFoog::pickRandomFlightDirection() {
 void FlyingFoogaFoog::update(double deltaTime) {
     if (!alive) return;
 
-    // ── Once snow-encasing starts, hand everything to Botom ──────────
-    // This covers: partial hits (snowballHits > 0), fully trapped, rolling,
-    // escape timer, gravity drop to ground — all identical to Botom.
     if (trap || snowballHits > 0) {
-        // Make sure we're no longer in flight mode so Botom's gravity runs
         inFlight = false;
         Botom::update(deltaTime);
         return;
     }
 
-    // ── Flight mode ───────────────────────────────────────────────────
+    
     if (inFlight) {
         flightTimer -= static_cast<float>(deltaTime);
         flightDirTimer -= static_cast<float>(deltaTime);
@@ -62,11 +56,11 @@ void FlyingFoogaFoog::update(double deltaTime) {
         x += xspeed * deltaTime;
         y += yspeed * deltaTime;
 
-        // Screen wrap (horizontal)
+       
         if (x + hitboxbotom_width < 0.f)  x = screenWidth;
         else if (x > screenWidth)         x = -hitboxbotom_width;
 
-        // Vertical clamp — bounce off top/bottom
+        
         float topLimit = 0.f;
         float bottomLimit = screenHeight - 24.f - hitboxbotom_height;
         if (y < topLimit) { y = topLimit;      yspeed = -yspeed; }
@@ -75,14 +69,14 @@ void FlyingFoogaFoog::update(double deltaTime) {
         if (hitFlashTimer > 0.f)
             hitFlashTimer -= static_cast<float>(deltaTime);
 
-        // Animation tick (Botom's animTimer/animFrame)
+        
         animTimer += static_cast<float>(deltaTime);
         if (animTimer >= FRAME_DURATION) {
             animTimer = 0.f;
             animFrame++;
         }
 
-        // Flight mode ends → drop to ground
+       
         if (flightTimer <= 0.f) {
             inFlight = false;
             groundTimer = GROUND_DURATION;
@@ -92,7 +86,6 @@ void FlyingFoogaFoog::update(double deltaTime) {
         return;
     }
 
-    // ── Ground mode — delegate to Botom for walk/jump/direction ──────
     Botom::update(deltaTime);
 
     if (isOnGround) {
@@ -108,18 +101,11 @@ void FlyingFoogaFoog::update(double deltaTime) {
 void FlyingFoogaFoog::draw(sf::RenderWindow& window) {
     if (!alive) return;
 
-    // ── Snow state: let Botom::draw() handle everything ──────────────
-    // Botom::draw() already correctly renders:
-    //   - partial snow overlay (snowballHits > 0)
-    //   - fully encased static snowball (trap && !rolling)
-    //   - rolling snowball
-    //   - fallback rectangle if textures not loaded
     if (trap || snowballHits > 0) {
         Botom::draw(window);
         return;
     }
 
-    // ── Normal Foog drawing ───────────────────────────────────────────
     if (textureLoaded && sprite) {
         sf::IntRect cur;
 
@@ -150,7 +136,7 @@ void FlyingFoogaFoog::draw(sf::RenderWindow& window) {
         window.draw(*sprite);
     }
     else {
-        // Fallback rectangle
+
         sf::RectangleShape rect(sf::Vector2f(hitboxbotom_width, hitboxbotom_height));
         rect.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
         if (hitFlashTimer > 0.f) rect.setFillColor(sf::Color(173, 216, 230));
@@ -169,8 +155,7 @@ void FlyingFoogaFoog::draw(sf::RenderWindow& window) {
     }
 }
 
-// Override receiveSnowballHit so it uses FlyingFoogaFoog::HITS_TO_ENCASE (6)
-// rather than Botom's (4). Logic is otherwise identical.
+
 bool FlyingFoogaFoog::receiveSnowballHit() {
     if (trap || !alive) return false;
 
@@ -181,13 +166,11 @@ bool FlyingFoogaFoog::receiveSnowballHit() {
         xspeed *= 0.5;
     }
 
-    if (snowballHits >= HITS_TO_ENCASE) {   // 6 — our shadowed constant
+    if (snowballHits >= HITS_TO_ENCASE) {   // 6 
         trap = true;
         rolling = false;
         xspeed = 0.0;
         yspeed = 0.0;
-        // inFlight is cleared in update() automatically,
-        // but set it here too so gravity starts on same frame
         inFlight = false;
         escapeTimer = ESCAPE_DURATION;
         return true;
@@ -200,7 +183,6 @@ void FlyingFoogaFoog::loadTexture(const std::string& path) {
     if (textureLoaded) {
         sprite.emplace(texture);
         sprite->setTextureRect(fly_frame1);
-
         float scaleX = hitboxbotom_width / static_cast<float>(fly_frame1.size.x);
         float scaleY = hitboxbotom_height / static_cast<float>(fly_frame1.size.y);
         sprite->setScale({ scaleX, scaleY });

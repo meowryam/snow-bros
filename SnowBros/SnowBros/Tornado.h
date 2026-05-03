@@ -88,7 +88,7 @@ private:
     IntRect t_ring1{ {619, 873}, {117, 120} };
     IntRect t_ring2{ {751, 873}, {121, 121} };
     Texture tornadoTexture;
-    optional<Sprite> tornadoSprite;
+    std::optional<sf::Sprite> tornadoSprite;
     bool tornadoTextureLoaded = false;
 
 public:

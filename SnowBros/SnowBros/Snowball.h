@@ -7,7 +7,7 @@ class Snowball : public Entity {
 private:
     
     Texture texture;
-    optional<Sprite> sprite;
+    std::optional<sf::Sprite> sprite;
     bool textureLoaded = false;
     float animTimer = 0.f;
     int animFrame = 0;
