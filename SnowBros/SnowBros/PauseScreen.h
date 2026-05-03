@@ -39,16 +39,10 @@ public:
         return true;
     }
 
-<<<<<<< HEAD
-
-
-    void reset() { selectedOption = 0; }
-=======
     void reset() {
         selectedOption = 0;
         layoutReady = false;
     }
->>>>>>> 231bcfc459e04bb93bfbf41fd7b95ab91270357f
 
     PauseResult handleEvent(const sf::Event& event) {
         if (const auto* kp = event.getIf<sf::Event::KeyPressed>()) {
