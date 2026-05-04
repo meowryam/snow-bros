@@ -1,0 +1,5 @@
+username=library
+current_level=3
+lives=0
+gem_count=16
+high_score=2711

@@ -1,0 +1,5 @@
+username=ahmad
+current_level=2
+lives=0
+gem_count=103
+high_score=188

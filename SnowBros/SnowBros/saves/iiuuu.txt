@@ -1,0 +1,5 @@
+username=iiuuu
+current_level=1
+lives=0
+gem_count=100
+high_score=0
