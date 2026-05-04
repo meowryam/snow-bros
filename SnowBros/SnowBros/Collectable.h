@@ -23,13 +23,12 @@ protected:
     sf::Sprite         sprite;
     bool               hasSprite = false;
 
-    // Fallback rectangle (used if texture not loaded)
     sf::RectangleShape shape;
 
 public:
     Collectable(double spawnX, double spawnY, float life = DEFAULT_LIFETIME)
         : x(spawnX), y(spawnY), alive(true), lifetime(life),
-        sprite(getDummyTexture())   // SFML 3: Sprite requires a texture at construction
+        sprite(getDummyTexture())   
     {
     }
 
@@ -71,17 +70,16 @@ public:
     double getX()    const { return x; }
     double getY()    const { return y; }
 
-    // Type query — no dynamic_cast needed in GameLevel
     virtual CollectableType getType()       const = 0;
 
-    // Point value for food items; 0 for non-food
-    virtual int             getPointValue() const { return 0; }
+ 
+    virtual int getPointValue() const { return 0; }
 
 protected:
     virtual sf::Vector2f getSize()          const = 0;
     virtual void         onCollect(Player&) = 0;
 
-    // Sets sprite from a texture + rect, scales it to targetSize
+   
     void initSprite(sf::Texture& tex, sf::IntRect rect, sf::Vector2f targetSize) {
         sprite.setTexture(tex);
         sprite.setTextureRect(rect);
@@ -91,9 +89,8 @@ protected:
     }
 
 private:
-    // SFML 3 requires a texture in the Sprite constructor.
-    // Returns a reference to a persistent 1x1 dummy so the
-    // base constructor compiles cleanly before subclasses set the real texture.
+  
+
     static sf::Texture& getDummyTexture() {
         static sf::Texture dummy;
         static bool made = false;
@@ -107,10 +104,8 @@ private:
 };
 
 
-// ============================================================
-//  GemCollectable
-//  Sprite: face_pink_border  { {309, 639}, {179, 185} }
-// ============================================================
+
+
 class GemCollectable : public Collectable {
 private:
     static sf::Texture sharedTex;
@@ -146,17 +141,8 @@ inline sf::Texture GemCollectable::sharedTex;
 inline bool        GemCollectable::texLoaded = false;
 
 
-// ============================================================
-//  ── FOOD COLLECTABLES ────────────────────────────────────
-//
-//  All food items use the same shared texture (Items.png).
-//  onCollect is intentionally empty — GameLevel awards score
-//  via getType() == FOOD and getPointValue().
-// ============================================================
 
-// ============================================================
-//  FoodTexture  -  one shared texture load for all 6 food classes
-// ============================================================
+//food
 struct FoodTexture {
     static sf::Texture tex;
     static bool        loaded;
@@ -170,10 +156,8 @@ inline sf::Texture FoodTexture::tex;
 inline bool        FoodTexture::loaded = false;
 
 
-// ============================================================
-//  FoodSushiGold  -  sushi_gold_bowl  { {14, 41}, {147, 153} }
-//  300 points
-// ============================================================
+
+
 class FoodSushiGold : public Collectable {
 public:
     static bool loadSharedTexture(const std::string& path) { return FoodTexture::load(path); }
@@ -201,10 +185,8 @@ protected:
 };
 
 
-// ============================================================
-//  FoodSushiRedStrips  -  sushi_red_strips  { {166, 49}, {160, 145} }
-//  200 points
-// ============================================================
+
+
 class FoodSushiRedStrips : public Collectable {
 public:
     static bool loadSharedTexture(const std::string& path) { return FoodTexture::load(path); }
@@ -232,10 +214,7 @@ protected:
 };
 
 
-// ============================================================
-//  FoodSushiDarkBowl  -  sushi_dark_bowl  { {17, 203}, {136, 137} }
-//  250 points
-// ============================================================
+
 class FoodSushiDarkBowl : public Collectable {
 public:
     static bool loadSharedTexture(const std::string& path) { return FoodTexture::load(path); }
@@ -263,10 +242,6 @@ protected:
 };
 
 
-// ============================================================
-//  FoodSushiRedFish  -  sushi_red_fish  { {142, 211}, {207, 142} }
-//  350 points
-// ============================================================
 class FoodSushiRedFish : public Collectable {
 public:
     static bool loadSharedTexture(const std::string& path) { return FoodTexture::load(path); }
@@ -294,10 +269,6 @@ protected:
 };
 
 
-// ============================================================
-//  FoodSushiRedArc  -  sushi_red_arc  { {19, 368}, {140, 131} }
-//  200 points
-// ============================================================
 class FoodSushiRedArc : public Collectable {
 public:
     static bool loadSharedTexture(const std::string& path) { return FoodTexture::load(path); }
@@ -325,10 +296,6 @@ protected:
 };
 
 
-// ============================================================
-//  FoodSushiWhitePair  -  sushi_white_pair  { {166, 389}, {155, 126} }
-//  400 points
-// ============================================================
 class FoodSushiWhitePair : public Collectable {
 public:
     static bool loadSharedTexture(const std::string& path) { return FoodTexture::load(path); }
@@ -356,10 +323,6 @@ protected:
 };
 
 
-// ============================================================
-//  SpeedBoostPickup  -  spec 8.2: +50% speed for 15 seconds
-//  Sprite: potion_red_full  { {325, 17}, {140, 161} }
-// ============================================================
 class SpeedBoostPickup : public Collectable {
 private:
     static sf::Texture sharedTex;
@@ -395,10 +358,6 @@ inline sf::Texture SpeedBoostPickup::sharedTex;
 inline bool        SpeedBoostPickup::texLoaded = false;
 
 
-// ============================================================
-//  SnowballPowerPickup  -  spec 8.2: 1-hit encase, until level end
-//  Sprite: potion_blue_full  { {325, 166}, {137, 166} }
-// ============================================================
 class SnowballPowerPickup : public Collectable {
 private:
     static sf::Texture sharedTex;
@@ -434,10 +393,6 @@ inline sf::Texture SnowballPowerPickup::sharedTex;
 inline bool        SnowballPowerPickup::texLoaded = false;
 
 
-// ============================================================
-//  DistanceIncreasePickup  -  spec 8.2: full-width throw, until level end
-//  Sprite: potion_yellow_full  { {333, 326}, {126, 163} }
-// ============================================================
 class DistanceIncreasePickup : public Collectable {
 private:
     static sf::Texture sharedTex;
@@ -473,10 +428,7 @@ inline sf::Texture DistanceIncreasePickup::sharedTex;
 inline bool        DistanceIncreasePickup::texLoaded = false;
 
 
-// ============================================================
-//  BalloonModePickup  -  spec 8.2: float upward for 10 seconds
-//  Sprite: potion_green_full  { {349, 485}, {118, 163} }
-// ============================================================
+
 class BalloonModePickup : public Collectable {
 private:
     static sf::Texture sharedTex;
@@ -512,10 +464,6 @@ inline sf::Texture BalloonModePickup::sharedTex;
 inline bool        BalloonModePickup::texLoaded = false;
 
 
-// ============================================================
-//  ExtraLifePickup  -  spec 8.2 / 7.3: +1 life
-//  Sprite: potion_red_select  { {309, 1262}, {177, 171} }
-// ============================================================
 class ExtraLifePickup : public Collectable {
 private:
     static sf::Texture sharedTex;
@@ -551,14 +499,8 @@ inline sf::Texture ExtraLifePickup::sharedTex;
 inline bool        ExtraLifePickup::texLoaded = false;
 
 
-// ============================================================
-//  BonusCashBundle  -  spec 9.2 / 9.3: falls from top of screen
-//  Used for both bonus-level rain AND boss-kill rain.
-//  Sprite: scroll_book  { {17, 974}, {256, 345} }
-//
-//  Score + gems awarded in GameLevel via getType() == CASH_BUNDLE
-//  so that scoreSystem.onBonusBundleCollected() is called there.
-// ============================================================
+
+
 class BonusCashBundle : public Collectable {
 private:
     static sf::Texture sharedTex;
