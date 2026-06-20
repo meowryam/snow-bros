@@ -18,6 +18,69 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Botom.h" />
+    <ClInclude Include="include\Collectable.h" />
+    <ClInclude Include="include\Enemy.h" />
+    <ClInclude Include="include\EnemyFactory.h" />
+    <ClInclude Include="include\Entity.h" />
+    <ClInclude Include="include\EventBus.h" />
+    <ClInclude Include="include\FileManager.h" />
+    <ClInclude Include="include\FlyingFoogaFoog.h" />
+    <ClInclude Include="include\Gamakichi.h" />
+    <ClInclude Include="include\Game.h" />
+    <ClInclude Include="include\GameLevel.h" />
+    <ClInclude Include="include\GameOverScreen.h" />
+    <ClInclude Include="include\GameState.h" />
+    <ClInclude Include="include\GameStateManager.h" />
+    <ClInclude Include="include\GemSystem.h" />
+    <ClInclude Include="include\HUD.h" />
+    <ClInclude Include="include\InputManager.h" />
+    <ClInclude Include="include\KeyBindings.h" />
+    <ClInclude Include="include\KeyRemapScreen.h" />
+    <ClInclude Include="include\Leaderboard.h" />
+    <ClInclude Include="include\LeaderboardScreen.h" />
+    <ClInclude Include="include\Levelblueprint.h" />
+    <ClInclude Include="include\LevelLayout.h" />
+    <ClInclude Include="include\LevelSelection.h" />
+    <ClInclude Include="include\LevelsManager.h" />
+    <ClInclude Include="include\LoginScreen.h" />
+    <ClInclude Include="include\MainMenu.h" />
+    <ClInclude Include="include\Mogera.h" />
+    <ClInclude Include="include\PasswordHasher.h" />
+    <ClInclude Include="include\PauseScreen.h" />
+    <ClInclude Include="include\Platform.h" />
+    <ClInclude Include="include\Player.h" />
+    <ClInclude Include="include\PlayerData.h" />
+    <ClInclude Include="include\PoweUp.h" />
+    <ClInclude Include="include\Projectile.h" />
+    <ClInclude Include="include\ScoreSystem.h" />
+    <ClInclude Include="include\sfmlcolours.h" />
+    <ClInclude Include="include\ShopSystem.h" />
+    <ClInclude Include="include\Signupscreen.h" />
+    <ClInclude Include="include\Snowball.h" />
+    <ClInclude Include="include\SoundManager.h" />
+    <ClInclude Include="include\SplashScreen.h" />
+    <ClInclude Include="include\StarLevel.h" />
+    <ClInclude Include="include\StarLevelScreen.h" />
+    <ClInclude Include="include\Tornado.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="src\Botom.cpp" />
+    <ClCompile Include="src\EnemyFactory.cpp" />
+    <ClCompile Include="src\FileManager.cpp" />
+    <ClCompile Include="src\FlyingFoogaFoog.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\Levelblueprint.cpp" />
+    <ClCompile Include="src\LevelsManager.cpp" />
+    <ClCompile Include="src\Loginscreen.cpp" />
+    <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\sfmlcolours.cpp" />
+    <ClCompile Include="src\SnowBall.cpp" />
+    <ClCompile Include="src\StarLevel.cpp" />
+    <ClCompile Include="src\Tornado.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -105,7 +168,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\Fast\SFML-3.0.0\include;D:\SFML-3.0.0-windows-vc17-64-bit\SFML-3.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Fast\SFML-3.0.0\include;D:\SFML-3.0.0-windows-vc17-64-bit\SFML-3.0.0\include;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,7 +186,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\Fast\SFML-3.0.0\include;D:\SFML-3.0.0-windows-vc17-64-bit\SFML-3.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Fast\SFML-3.0.0\include;D:\SFML-3.0.0-windows-vc17-64-bit\SFML-3.0.0\include;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,69 +195,6 @@
       <AdditionalDependencies>sfml-window.lib;sfml-system.lib;sfml-audio.lib;sfml-graphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Botom.cpp" />
-    <ClCompile Include="EnemyFactory.cpp" />
-    <ClCompile Include="FlyingFoogaFoog.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="FileManager.cpp" />
-    <ClCompile Include="Levelblueprint.cpp" />
-    <ClCompile Include="LevelsManager.cpp" />
-    <ClCompile Include="Loginscreen.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="sfmlcolours.cpp" />
-    <ClCompile Include="SnowBall.cpp" />
-    <ClCompile Include="Source.cpp" />
-    <ClCompile Include="StarLevel.cpp" />
-    <ClCompile Include="Tornado.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Botom.h" />
-    <ClInclude Include="Collectable.h" />
-    <ClInclude Include="Enemy.h" />
-    <ClInclude Include="EnemyFactory.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="EventBus.h" />
-    <ClInclude Include="FileManager.h" />
-    <ClInclude Include="FlyingFoogaFoog.h" />
-    <ClInclude Include="Gamakichi.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameLevel.h" />
-    <ClInclude Include="GameOverScreen.h" />
-    <ClInclude Include="GameState.h" />
-    <ClInclude Include="GameStateManager.h" />
-    <ClInclude Include="GemSystem.h" />
-    <ClInclude Include="HUD.h" />
-    <ClInclude Include="InputManager.h" />
-    <ClInclude Include="KeyBindings.h" />
-    <ClInclude Include="KeyRemapScreen.h" />
-    <ClInclude Include="Leaderboard.h" />
-    <ClInclude Include="LeaderboardScreen.h" />
-    <ClInclude Include="Levelblueprint.h" />
-    <ClInclude Include="LevelLayout.h" />
-    <ClInclude Include="LevelSelection.h" />
-    <ClInclude Include="LevelsManager.h" />
-    <ClInclude Include="LoginScreen.h" />
-    <ClInclude Include="MainMenu.h" />
-    <ClInclude Include="Mogera.h" />
-    <ClInclude Include="PasswordHasher.h" />
-    <ClInclude Include="PauseScreen.h" />
-    <ClInclude Include="Platform.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="PlayerData.h" />
-    <ClInclude Include="PoweUp.h" />
-    <ClInclude Include="Projectile.h" />
-    <ClInclude Include="ScoreSystem.h" />
-    <ClInclude Include="sfmlcolours.h" />
-    <ClInclude Include="ShopSystem.h" />
-    <ClInclude Include="Signupscreen.h" />
-    <ClInclude Include="Snowball.h" />
-    <ClInclude Include="SoundManager.h" />
-    <ClInclude Include="SplashScreen.h" />
-    <ClInclude Include="StarLevel.h" />
-    <ClInclude Include="StarLevelScreen.h" />
-    <ClInclude Include="Tornado.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

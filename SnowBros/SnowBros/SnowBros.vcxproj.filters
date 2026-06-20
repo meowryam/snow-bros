@@ -1,23 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="FileManager.cpp" />
-    <ClCompile Include="Levelblueprint.cpp" />
-    <ClCompile Include="LevelsManager.cpp" />
-    <ClCompile Include="StarLevel.cpp" />
-    <ClCompile Include="Source.cpp" />
-    <ClCompile Include="EnemyFactory.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Botom.cpp" />
-    <ClCompile Include="FlyingFoogaFoog.cpp" />
-    <ClCompile Include="Tornado.cpp" />
-    <ClCompile Include="Gamakichi.cpp" />
-    <ClCompile Include="SnowBall.cpp" />
-    <ClCompile Include="sfmlcolours.cpp" />
-    <ClCompile Include="Loginscreen.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,53 +19,190 @@
     <ClCompile Include="LevelsManager.cpp">
       <Filter>data</Filter>
     </ClCompile>
+    <ClCompile Include="src\Botom.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EnemyFactory.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FileManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FlyingFoogaFoog.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Levelblueprint.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LevelsManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Loginscreen.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Player.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sfmlcolours.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SnowBall.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StarLevel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Tornado.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Botom.h" />
-    <ClInclude Include="Enemy.h" />
-    <ClInclude Include="EnemyFactory.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="EventBus.h" />
-    <ClInclude Include="FileManager.h" />
-    <ClInclude Include="FlyingFoogaFoog.h" />
-    <ClInclude Include="Gamakichi.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameOverScreen.h" />
-    <ClInclude Include="GameState.h" />
-    <ClInclude Include="GameStateManager.h" />
-    <ClInclude Include="GemSystem.h" />
-    <ClInclude Include="HUD.h" />
-    <ClInclude Include="InputManager.h" />
-    <ClInclude Include="KeyBindings.h" />
-    <ClInclude Include="KeyRemapScreen.h" />
-    <ClInclude Include="Leaderboard.h" />
-    <ClInclude Include="LeaderboardScreen.h" />
-    <ClInclude Include="Levelblueprint.h" />
-    <ClInclude Include="LevelsManager.h" />
-    <ClInclude Include="LoginScreen.h" />
-    <ClInclude Include="MainMenu.h" />
-    <ClInclude Include="Mogera.h" />
-    <ClInclude Include="PauseScreen.h" />
-    <ClInclude Include="PlayerData.h" />
-    <ClInclude Include="PoweUp.h" />
-    <ClInclude Include="Projectile.h" />
-    <ClInclude Include="ScoreSystem.h" />
-    <ClInclude Include="ShopSystem.h" />
-    <ClInclude Include="Snowball.h" />
-    <ClInclude Include="SoundManager.h" />
-    <ClInclude Include="StarLevel.h" />
-    <ClInclude Include="Tornado.h" />
-    <ClInclude Include="Platform.h" />
-    <ClInclude Include="LevelLayout.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="GameLevel.h" />
-    <ClInclude Include="sfmlcolours.h" />
-    <ClInclude Include="foogavariant.h" />
-    <ClInclude Include="Collectable.h" />
-    <ClInclude Include="LevelSelection.h" />
-    <ClInclude Include="StarLevelScreen.h" />
-    <ClInclude Include="PasswordHasher.h" />
-    <ClInclude Include="Signupscreen.h" />
-    <ClInclude Include="SplashScreen.h" />
+    <Filter Include="src">
+      <UniqueIdentifier>{276ee559-4812-44a4-a8fe-ddbd592c3df6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{c22991e9-1015-4654-a1b1-7d4f8146038b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Botom.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Collectable.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Enemy.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EnemyFactory.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entity.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EventBus.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FileManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FlyingFoogaFoog.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Gamakichi.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Game.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameLevel.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameOverScreen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameState.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameStateManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GemSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HUD.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\InputManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\KeyBindings.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\KeyRemapScreen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Leaderboard.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LeaderboardScreen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Levelblueprint.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LevelLayout.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LevelSelection.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LevelsManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LoginScreen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MainMenu.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Mogera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PasswordHasher.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PauseScreen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Platform.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Player.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PlayerData.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PoweUp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Projectile.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ScoreSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sfmlcolours.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ShopSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Signupscreen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Snowball.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SoundManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SplashScreen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\StarLevel.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\StarLevelScreen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Tornado.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

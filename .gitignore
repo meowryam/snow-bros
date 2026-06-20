@@ -1,5 +1,13 @@
-.vs/ 
-SnowBros/.vs/ 
-x64/ 
-*.user 
+.vs/
+SnowBros/.vs/
+x64/
+*.user
 *.suo
+Debug/
+Release/
+*.obj
+*.pdb
+*.ilk
+*.exe
+saves/
+users.dat
