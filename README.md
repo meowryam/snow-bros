@@ -25,17 +25,17 @@ A Frozen-inspired remake of the classic 1990 arcade game, built with C++ and SFM
 git clone https://github.com/meowryam/SnowBros.git
 ```
 
-2. Open `SnowBros.sln` in Visual Studio.
+2. Open SnowBros.sln in Visual Studio.
 
 3. Make sure SFML 3.0.0 is installed and configured correctly.
 
 4. Build and run the project.
 
-> Keep the `assets` folder in its original location for textures, fonts, and audio to load properly.
+ Keep the assets folder in its original location for textures, fonts, and audio to load properly.
 
 ## Credits 
 
-Co-developed with d collaborator [@wareesha](https://github.com/25i3109).
+Co-developed with d collaborator [@wareesha](https://github.com/i253009).
 
 Thank you for all the late-night debugging sessions, chaotic commits, and countless "it worked five minutes ago" moments. Couldn't have done it without you 🫶
 
