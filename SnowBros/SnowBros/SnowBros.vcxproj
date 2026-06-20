@@ -66,7 +66,6 @@
     <ClInclude Include="include\Tornado.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp" />
     <ClCompile Include="src\Botom.cpp" />
     <ClCompile Include="src\EnemyFactory.cpp" />
     <ClCompile Include="src\FileManager.cpp" />
@@ -78,6 +77,7 @@
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\sfmlcolours.cpp" />
     <ClCompile Include="src\SnowBall.cpp" />
+    <ClCompile Include="src\Source.cpp" />
     <ClCompile Include="src\StarLevel.cpp" />
     <ClCompile Include="src\Tornado.cpp" />
   </ItemGroup>
