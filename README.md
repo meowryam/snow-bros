@@ -2,7 +2,7 @@
 
 A Frozen-inspired remake of the classic 1990 arcade game, built with C++ and SFML 3.0.0 for our Object-Oriented Programming course. Trap enemies in snowballs, battle bosses, collect gems, and team up with a friend in local co-op.
 
-## Features ✨
+## Features 
 
 -  Single-player and local 2-player gameplay
 -  Multiple enemy types and boss battles
@@ -17,7 +17,7 @@ A Frozen-inspired remake of the classic 1990 arcade game, built with C++ and SFM
 - SFML 3.0.0
 - Visual Studio
 
-## How to Run 🚀
+## How to Run 
 
 1. Clone the repository:
 
@@ -35,7 +35,7 @@ git clone https://github.com/meowryam/SnowBros.git
 
 ## Credits 
 
-Co-developed with d collaborator **[Wareesha]**.
+Co-developed with d collaborator [@wareesha](https://github.com/25i3109).
 
 Thank you for all the late-night debugging sessions, chaotic commits, and countless "it worked five minutes ago" moments. Couldn't have done it without you 🫶
 
