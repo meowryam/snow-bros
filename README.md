@@ -35,7 +35,7 @@ git clone https://github.com/meowryam/SnowBros.git
 
 ## Credits 
 
-Co-developed with d collaborator [@wareesha](https://github.com/i253009).
+Co-developed with my collaborator [@wareesha](https://github.com/i253009).
 
 Thank you for all the late-night debugging sessions, chaotic commits, and countless "it worked five minutes ago" moments. Couldn't have done it without you 🫶
 
