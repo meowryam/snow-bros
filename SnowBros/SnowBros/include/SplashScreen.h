@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <algorithm>
 using namespace std;
 
@@ -23,7 +24,7 @@ private:
     float elapsed = 0.f;
     bool  done = false;
 
-    
+
     struct Snowflake { float x, y, speed, radius, alpha; };
     static const int SNOW_COUNT = 70;
     Snowflake snowflakes[SNOW_COUNT];
@@ -45,7 +46,9 @@ public:
     bool load(const string& titleFontPath, const string& subFontPath, const string& logoPath) {
         if (!font.openFromFile(titleFontPath)) return false;
         extraFontsLoaded = fontTitle.openFromFile(titleFontPath);
-        fontSub.openFromFile(subFontPath);
+        if (!extraFontsLoaded) cout << "fontTitle not loaded" << endl;
+        bool fontSubLoaded = fontSub.openFromFile(subFontPath);
+        if (!fontSubLoaded) cout << "fontSub not loaded" << endl;
         logoLoaded = logoTex.loadFromFile(logoPath);
         if (logoLoaded)
             logoSprite.emplace(logoTex);
@@ -97,7 +100,7 @@ public:
         bg.setFillColor(sf::Color(5, 12, 50, 255));
         window.draw(bg);
 
-  
+
 
         // DELETE topBar and bottomBar draw calls entirely
 // REPLACE WITH:
@@ -106,7 +109,7 @@ public:
         uint8_t auroraA = (uint8_t)(6.f + std::abs(std::sin(auroraPulse * 0.4f)) * 10.f);
         aurora.setFillColor(sf::Color(60, 160, 255, auroraA));
         window.draw(aurora);
-     
+
         // DELETE: uint8_t alpha = (uint8_t)std::min(255.f, elapsed * 255.f);
         // REPLACE WITH:
         uint8_t alpha = (uint8_t)std::min(255.f, std::max(0.f, (elapsed - 0.f) * 255.f));
@@ -121,7 +124,7 @@ public:
         moon.setFillColor(sf::Color(120, 170, 255, 18));
         window.draw(moon);
 
-       
+
         // logo
         if (logoLoaded) {
             sf::Vector2u ts = logoTex.getSize();
@@ -159,13 +162,13 @@ public:
 
         // subtitle
         T(subText).setString("Nick & Tom's Frozen Adventure");
-   
+
 
         T(subText).setCharacterSize(22);
         T(subText).setFillColor(sf::Color(190, 230, 255, subAlpha));
         T(subText).setPosition({ W / 2.f, H / 2.f + 110.f });
 
-     
+
         sf::FloatRect sb = T(subText).getLocalBounds();
         T(subText).setOrigin({ sb.size.x / 2.f, 0.f });
 
@@ -178,12 +181,12 @@ public:
             uint8_t promptAlpha = (uint8_t)(180.f + std::sin(elapsed * 3.f) * 75.f);
             T(promptText).setString("* Press any key to start *");
             T(promptText).setPosition({ W / 2.f, H / 2.f + 147.f });
-      
+
             T(promptText).setCharacterSize(20);
             T(promptText).setFillColor(sf::Color(240, 250, 255, promptAlpha));
             sf::FloatRect pb = T(promptText).getLocalBounds();
             T(promptText).setOrigin({ pb.size.x / 2.f, 0.f });
-    
+
             window.draw(T(promptText));
         }
 

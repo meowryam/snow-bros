@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include "SoundManager.h"  
 using namespace std;
 
@@ -35,27 +36,27 @@ private:
     int    selectedOption = 0;
     string username;
     SoundManager& soundManager;   // ADD
-    
+
     sf::Color titleCol = sf::Color(200, 240, 255, 255);   // bright ice white-blue
     sf::Color subCol = sf::Color(160, 215, 255, 230);   // softer ice blue
     sf::Color hintCol = sf::Color(100, 160, 220, 170);   // dim ice hint
 
-    
+
     sf::Color btnNormal = sf::Color(10, 30, 80, 120);
     sf::Color btnSel = sf::Color(40, 120, 220, 160);
     sf::Color btnOutNrm = sf::Color(60, 140, 220, 80);
     sf::Color btnOutSel = sf::Color(140, 220, 255, 255);
 
-    
+
     sf::Color txtNormal = sf::Color(160, 210, 255, 220);
     sf::Color txtSel = sf::Color(255, 255, 255, 255);
 
-    
+
     sf::Texture bgTex;
     bool        bgLoaded = false;
     optional<sf::Sprite> bgSprite;
 
-   
+
     static constexpr float CX = 400.f;
     static constexpr float BTN_W = 280.f;
     static constexpr float BTN_H = 38.f;
@@ -77,9 +78,12 @@ public:
         const string& bodyPath, const string& btnPath) {
         if (!font.openFromFile(path)) return false;
         extraFontsLoaded = fontTitle.openFromFile(titlePath);
-        fontBody.openFromFile(bodyPath);
-        fontButtons.openFromFile(btnPath);
-        
+        if (!extraFontsLoaded) cout << "fontTitle not loaded" << endl;
+        bool fontBodyLoaded = fontBody.openFromFile(bodyPath);
+        if (!fontBodyLoaded) cout << "fontBody not loaded" << endl;
+        bool fontButtonsLoaded = fontButtons.openFromFile(btnPath);
+        if (!fontButtonsLoaded) cout << "fontButtons not loaded" << endl;
+
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
         if (bgLoaded) {
             bgSprite.emplace(bgTex);
@@ -127,7 +131,7 @@ public:
 
     void draw(sf::RenderWindow& window) {
 
-        
+
         if (bgLoaded) window.draw(*bgSprite);
         else {
             sf::RectangleShape fb({ 800.f, 600.f });
@@ -135,12 +139,12 @@ public:
             window.draw(fb);
         }
 
-       
+
         sf::RectangleShape vignette({ 800.f, 600.f });
         vignette.setFillColor(sf::Color(0, 5, 20, 70));
         window.draw(vignette);
 
-       
+
         TX(txtTitle).setString("SNOW  BROS");
         TX(txtTitle).setCharacterSize(34u);
         TX(txtTitle).setStyle(sf::Text::Bold);

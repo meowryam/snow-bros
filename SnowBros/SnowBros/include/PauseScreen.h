@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 using namespace std;
 using namespace sf;
 enum class PauseResult {
@@ -20,11 +21,13 @@ public:
     PauseScreen(const PauseScreen&) = delete;
     PauseScreen& operator=(const PauseScreen&) = delete;
 
-    bool loadFont(const string& path, const string& titlePath, const string& btnPath){
+    bool loadFont(const string& path, const string& titlePath, const string& btnPath) {
 
         if (!font.openFromFile(path)) return false;
         extraFontsLoaded = fontTitle.openFromFile(titlePath);
-        fontButtons.openFromFile(btnPath);
+        if (!extraFontsLoaded) cout << "fontTitle not loaded" << endl;
+        bool fontButtonsLoaded = fontButtons.openFromFile(btnPath);
+        if (!fontButtonsLoaded) cout << "fontButtons not loaded" << endl;
 
         bgLoaded = bgTex.loadFromFile("assets\\images\\Pause_bg.png");
         if (bgLoaded) {
@@ -33,7 +36,7 @@ public:
             bgSprite->setScale({ 800.f / static_cast<float>(ts.x), 600.f / static_cast<float>(ts.y) });
         }
 
-  
+
         txtTitle.emplace(extraFontsLoaded ? fontTitle : font, "PAUSED", 32u);
         txtHint.emplace(font, "arrows to navigate  |  Enter to select  |  Esc to resume", 10u);
         txtMessage.emplace(font, "", 10u);
@@ -78,7 +81,7 @@ public:
     void draw(RenderWindow& window) {
         if (!layoutReady) setupLayout();
 
-     
+
         if (bgLoaded) window.draw(*bgSprite);
         else {
             RectangleShape fb({ 800.f, 600.f });
@@ -91,7 +94,7 @@ public:
         window.draw(TX(txtTitle));
         window.draw(divider);
 
-     
+
         for (int i = 0; i < OPT_COUNT; i++) {
             window.draw(optBtns[i]);
             window.draw(TX(txtOptions[i]));
@@ -113,14 +116,14 @@ private:
     static constexpr float BTNS_TOP = PANEL_Y + 100.f;
     const Color PANEL_FILL{ 5,  15,  40,  165 };    // CHANGED — was fully transparent
     const Color PANEL_OUTLINE{ 140, 215, 255, 200 };  // CHANGED — was fully transparent
-    const Color BTN_NORMAL{ 10,  30,  80, 150 };   
-    const Color BTN_SEL{ 40, 120, 220, 160 };   
-    const Color BTN_OUT_NRM{ 60, 140, 220,  80 };   
-    const Color BTN_OUT_SEL{ 140, 220, 255, 255 };   
-    const Color COL_TITLE{ 200, 240, 255, 255 };   
-    const Color COL_OPT_NORM{ 160, 210, 255, 220 };  
-    const Color COL_OPT_SEL{ 255, 255, 255, 255 };  
-    const Color COL_HINT{ 100, 160, 220, 160 };  
+    const Color BTN_NORMAL{ 10,  30,  80, 150 };
+    const Color BTN_SEL{ 40, 120, 220, 160 };
+    const Color BTN_OUT_NRM{ 60, 140, 220,  80 };
+    const Color BTN_OUT_SEL{ 140, 220, 255, 255 };
+    const Color COL_TITLE{ 200, 240, 255, 255 };
+    const Color COL_OPT_NORM{ 160, 210, 255, 220 };
+    const Color COL_OPT_SEL{ 255, 255, 255, 255 };
+    const Color COL_HINT{ 100, 160, 220, 160 };
 
     sf::Font  font;
     bool      layoutReady = false;
@@ -131,7 +134,7 @@ private:
     optional<Sprite> bgSprite;
 
     RectangleShape panel;
-    RectangleShape panelOutline; 
+    RectangleShape panelOutline;
     RectangleShape divider;
     RectangleShape optBtns[OPT_COUNT];
 
@@ -140,14 +143,14 @@ private:
     optional<Text> txtHint;
     optional<Text> txtMessage;
 
-    
+
     Text& TX(optional<Text>& t) { return t.value(); }
 
     void setupLayout() {
         panel.setSize({ PANEL_W, PANEL_H });
         panel.setPosition({ PANEL_X, PANEL_Y });
         panel.setFillColor(PANEL_FILL);
-        panel.setOutlineThickness(0.f); 
+        panel.setOutlineThickness(0.f);
         panelOutline.setSize({ PANEL_W, PANEL_H });
         panelOutline.setPosition({ PANEL_X, PANEL_Y });
         panelOutline.setFillColor(sf::Color::Transparent);
@@ -162,7 +165,7 @@ private:
             TX(txtTitle).setPosition({ PANEL_X + (PANEL_W - lb.size.x) * 0.5f, PANEL_Y + 22.f });
         }
 
-       
+
         divider.setSize({ PANEL_W - 40.f, 1.5f });
         divider.setPosition({ PANEL_X + 20.f, PANEL_Y + 72.f });
         divider.setFillColor(Color(140, 215, 255, 130));   // CHANGED — was 60, now visible
@@ -181,7 +184,7 @@ private:
         TX(txtHint).setFillColor(COL_HINT);
         {
             auto lb = TX(txtHint).getLocalBounds();
-            TX(txtHint).setPosition({PANEL_X + (PANEL_W - lb.size.x) * 0.5f,PANEL_Y + PANEL_H - 22.f });
+            TX(txtHint).setPosition({ PANEL_X + (PANEL_W - lb.size.x) * 0.5f,PANEL_Y + PANEL_H - 22.f });
         }
 
         refreshOptions();
@@ -200,7 +203,7 @@ private:
             TX(txtOptions[i]).setFillColor(sel ? COL_OPT_SEL : COL_OPT_NORM);
             TX(txtOptions[i]).setStyle(sel ? Text::Bold : Text::Regular);
             auto lb = TX(txtOptions[i]).getLocalBounds();
-            TX(txtOptions[i]).setPosition({BTN_LEFT + (BTN_W - lb.size.x) * 0.5f,by + (BTN_H - lb.size.y) * 0.5f - 2.f});
+            TX(txtOptions[i]).setPosition({ BTN_LEFT + (BTN_W - lb.size.x) * 0.5f,by + (BTN_H - lb.size.y) * 0.5f - 2.f });
         }
     }
 

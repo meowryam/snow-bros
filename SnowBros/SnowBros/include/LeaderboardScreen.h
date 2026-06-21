@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include "Leaderboard.h"
 using namespace std;
 
@@ -45,8 +46,11 @@ public:
     {
         if (!font.openFromFile(path)) return false;
         extraFontsLoaded = fontTitle.openFromFile(titlePath);
-        fontBody.openFromFile(bodyPath);
-        fontButtons.openFromFile(btnPath);
+        if (!extraFontsLoaded) cout << "fontTitle not loaded" << endl;
+        bool fontBodyLoaded = fontBody.openFromFile(bodyPath);
+        if (!fontBodyLoaded) cout << "fontBody not loaded" << endl;
+        bool fontButtonsLoaded = fontButtons.openFromFile(btnPath);
+        if (!fontButtonsLoaded) cout << "fontButtons not loaded" << endl;
 
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
         if (bgLoaded)
@@ -79,7 +83,7 @@ public:
 
         // Background
         if (bgLoaded) window.draw(*bgSprite);
-        else 
+        else
         {
             sf::RectangleShape fb({ 800.f, 600.f });
             fb.setFillColor(sf::Color(5, 12, 35, 255));
@@ -125,7 +129,7 @@ public:
 
         if (leaderboard.getCount() == 0)
         {
-            T(emptyText).setString("No scores yet — be the first!");
+            T(emptyText).setString("No scores yet ï¿½ be the first!");
             T(emptyText).setCharacterSize(18);
             T(emptyText).setFillColor(normalCol);
             sf::FloatRect eb = T(emptyText).getLocalBounds();
@@ -133,7 +137,7 @@ public:
             T(emptyText).setPosition({ W / 2.f, H / 2.f });
             window.draw(T(emptyText));
         }
-        else 
+        else
         {
             for (int i = 0; i < leaderboard.getCount(); i++) {
                 const LeaderboardEntry& e = leaderboard.getEntry(i);
@@ -158,16 +162,16 @@ public:
                 string level = to_string(e.levelReached);
 
                 // spaces for alignment
-                while (rank.size() < 5) 
+                while (rank.size() < 5)
                     rank += " ";
 
-                while (name.size() < 20) 
+                while (name.size() < 20)
                     name += " ";
 
-                while (score.size() < 10) 
+                while (score.size() < 10)
                     score += " ";
 
-                while (level.size() < 8) 
+                while (level.size() < 8)
                     level += " ";
 
                 T(rowTexts[i]).setString(rank + name + score + level + e.date);

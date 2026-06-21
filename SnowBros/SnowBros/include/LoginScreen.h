@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <string>
 #include <fstream>
 #include "FileManager.h"
@@ -25,7 +26,7 @@ private:
     bool extraFontsLoaded = false;
     string usernameInput;
     string passwordInput;
-  
+
     bool waitingForInput;
     bool waitingForPassword;
     SoundManager& soundManager;   // ADD
@@ -90,7 +91,7 @@ private:
         }
         return "";
     }
-    bool hasPassword(const string& username) const 
+    bool hasPassword(const string& username) const
     {
         return !loadHashForUser(username).empty();
     }
@@ -111,9 +112,11 @@ public:
     {
         if (!font.openFromFile(path)) return false;
         extraFontsLoaded = fontTitle.openFromFile(titlePath);
-        fontBody.openFromFile(bodyPath);
+        if (!extraFontsLoaded) cout << "fontTitle not loaded" << endl;
+        bool fontBodyLoaded = fontBody.openFromFile(bodyPath);
+        if (!fontBodyLoaded) cout << "fontBody not loaded" << endl;
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
-        if (bgLoaded) 
+        if (bgLoaded)
         {
             bgSprite.emplace(bgTex);
             sf::Vector2u ts = bgTex.getSize();
@@ -131,9 +134,9 @@ public:
         txtHint.emplace(font, "", 9u);
         for (int i = 0; i < 3; i++) txtOptions[i].emplace(fontBody, "", 14u);
 
-     //   txtTitle.emplace(extraFontsLoaded ? fontTitle : font, "SNOW  BROS", 32u);
-      //  txtInputField.emplace(fontBody, "", 15u);
-      //  txtPwdField.emplace(fontBody, "", 15u);
+        //   txtTitle.emplace(extraFontsLoaded ? fontTitle : font, "SNOW  BROS", 32u);
+         //  txtInputField.emplace(fontBody, "", 15u);
+         //  txtPwdField.emplace(fontBody, "", 15u);
         for (int i = 0; i < 3; i++) txtOptions[i].emplace(fontBody, "", 14u);
 
         return true;
@@ -270,12 +273,12 @@ public:
         }
         return LoginResult::NONE;
     }
-    string getUsername() const 
+    string getUsername() const
     {
         return usernameInput;
     }
 
-    void draw(sf::RenderWindow& win) 
+    void draw(sf::RenderWindow& win)
     {
         if (bgLoaded) win.draw(*bgSprite);
         else
@@ -336,7 +339,7 @@ public:
             centreText(TX(txtPrompt), 185.f);
             win.draw(TX(txtPrompt));
 
-          
+
 
             inputBox.setSize({ BW, BH });
             inputBox.setPosition({ BX, 210.f });
@@ -351,7 +354,7 @@ public:
             TX(txtInputField).setPosition({ BX + 12.f, 218.f });
             win.draw(TX(txtInputField));
 
-            if (!errorMsg.empty()) 
+            if (!errorMsg.empty())
             {
                 TX(txtError).setString(errorMsg);
                 TX(txtError).setCharacterSize(10u);
@@ -368,7 +371,7 @@ public:
         }
 
         // ── Phase 2 : password ────────────────────────────────────────
-        else if (waitingForPassword) 
+        else if (waitingForPassword)
         {
             TX(txtSub).setString("Welcome back,  " + usernameInput + "!");
             TX(txtSub).setCharacterSize(16u);
@@ -385,7 +388,7 @@ public:
 
             passwordBox.setSize({ BW, BH });
             passwordBox.setPosition({ BX, 245.f });
-       
+
 
             passwordBox.setFillColor(sf::Color(20, 40, 90, 140));
             passwordBox.setOutlineThickness(2.f);
@@ -434,7 +437,7 @@ public:
             float btnStartY = 212.f;
             float btnStep = BTN_H + 14.f;
 
-            for (int i = 0; i < optCount; i++) 
+            for (int i = 0; i < optCount; i++)
             {
                 bool sel = (i == selectedOption);
                 float by = btnStartY + i * btnStep;

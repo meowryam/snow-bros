@@ -1,4 +1,3 @@
-
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Player.h"
@@ -59,7 +58,7 @@ private:
 
     // debug
     bool showHitboxes;
-  
+
     float levelCompleteTimer = -1.f;
     static constexpr float LEVEL_COMPLETE_DELAY = 4.f;
     // refs
@@ -138,7 +137,7 @@ private:
         for (int i = 0; i < count; i++) {
             if (collectableCount >= MAX_COLLECTABLES) break;
             double spawnX = 20.0 + (rand() % 760);
-            collectables[collectableCount++] = new BonusCashBundle(spawnX);
+            collectables[collectableCount++] = new BonusCashBundle(static_cast<float>(spawnX));
         }
     }
     void checkCollisions(Player& player1, Player* player2) {
@@ -293,7 +292,7 @@ private:
             }
 
             };
-       
+
 
 
 
@@ -523,7 +522,7 @@ private:
                     }
                 }
                 // foam damage
-               
+
             }
             };
         checkDamage(player1);
@@ -555,7 +554,7 @@ public:
         hasMogera(false), hasGamakichi(false),
         snowballCount(0), bgLoaded(false), collectableCount(0),
         showHitboxes(false), platformCount(0),
-        levelComplete(false), 
+        levelComplete(false),
         mogera(nullptr), gamakichi(nullptr)
     {
         for (int i = 0; i < MAX_ENEMIES; i++) { botoms[i] = nullptr; foogas[i] = nullptr; tornados[i] = nullptr; }

@@ -1,15 +1,15 @@
 #pragma once
-#pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <string>
 #include <fstream>
 #include "PasswordHasher.h"
 using namespace std;
 
 enum class SignupResult {
-    NONE,       
-    DONE,       
-    BACK        
+    NONE,
+    DONE,
+    BACK
 };
 
 class SignupScreen {
@@ -19,11 +19,11 @@ private:
     sf::Font fontTitle;
     sf::Font fontBody;
     bool extraFontsLoaded = false;
-    string username;            
+    string username;
     string passwordInput;
     string confirmInput;
 
-    int  focusedField = 0;      
+    int  focusedField = 0;
     string errorMsg;
     bool success = false;
 
@@ -72,7 +72,9 @@ public:
     {
         if (!font.openFromFile(path)) return false;
         extraFontsLoaded = fontTitle.openFromFile(titlePath);
-        fontBody.openFromFile(bodyPath);
+        if (!extraFontsLoaded) cout << "fontTitle not loaded" << endl;
+        bool fontBodyLoaded = fontBody.openFromFile(bodyPath);
+        if (!fontBodyLoaded) cout << "fontBody not loaded" << endl;
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
         if (bgLoaded) {
             bgSprite.emplace(bgTex);
@@ -116,7 +118,7 @@ public:
                 kp->code == sf::Keyboard::Key::Up) {
                 focusedField = (focusedField + 1) % 2;
             }
-            else if (kp->code == sf::Keyboard::Key::Backspace) 
+            else if (kp->code == sf::Keyboard::Key::Backspace)
             {
                 string& field = (focusedField == 0) ? passwordInput : confirmInput;
                 if (!field.empty()) field.pop_back();
@@ -125,7 +127,7 @@ public:
             {
                 return SignupResult::BACK;
             }
-            else if (kp->code == sf::Keyboard::Key::Enter) 
+            else if (kp->code == sf::Keyboard::Key::Enter)
             {
                 // Validate
                 if (passwordInput.empty() || confirmInput.empty())
@@ -138,7 +140,7 @@ public:
                     errorMsg = "Password must be at least 4 characters.";
                     return SignupResult::NONE;
                 }
-                if (passwordInput != confirmInput) 
+                if (passwordInput != confirmInput)
                 {
                     errorMsg = "Passwords do not match!";
                     confirmInput.clear();
@@ -156,7 +158,7 @@ public:
             }
         }
 
-        if (auto* te = event.getIf<sf::Event::TextEntered>()) 
+        if (auto* te = event.getIf<sf::Event::TextEntered>())
         {
             uint32_t c = te->unicode;
             if (c >= 32 && c < 127) {

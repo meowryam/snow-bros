@@ -1,4 +1,3 @@
-
 #include "Game.h"
 #include <ctime>
 
@@ -9,7 +8,7 @@ Game::Game()
     player1(playerData, 1, 800.f, 600.f),
     player2(player2Data, 2, 800.f, 600.f),
 
-  
+
     scoreSystem(playerData),
     gemSystem(playerData),
     shopSystem(playerData),
@@ -24,18 +23,18 @@ Game::Game()
     , mainMenu(soundManager)
     //, signupScreen(soundManager)
 {
-    
-        srand(static_cast<unsigned int>(time(nullptr)));
-        player2Data = PlayerData();
-   
+
+    srand(static_cast<unsigned int>(time(nullptr)));
+    player2Data = PlayerData();
+
     player2Data.setUsername("Player2");
     player2Data.setLives(2);
     player2Data.setGemCount(0);
 
 
-    window.setFramerateLimit(30); 
-    leaderboard.load(); 
-    loadAllFonts(); 
+    window.setFramerateLimit(30);
+    leaderboard.load();
+    loadAllFonts();
     splashScreen.load(
         "assets\\fonts\\Cinzel-Bold.ttf",
         "assets\\fonts\\CormorantGaramond-Regular.ttf",
@@ -79,24 +78,24 @@ void Game::loadAllFonts() {
 
 
 
-  
-    void Game::loadAllSounds() {
-        soundManager.loadLoginMusic("assets\\sounds\\snowbros_theme.ogg");
-        soundManager.loadSplashMusic("assets\\sounds\\snowman.ogg");   // ADD
-        soundManager.loadSound("gamestart", "assets\\sounds\\gamestart.wav");  // #2 game start jingle
-        soundManager.loadSound("levelstart", "assets\\sounds\\levelstart.wav"); // #4 next level fanfare
 
-        // UI sounds for login/signup screens
-        soundManager.loadSound("ui_confirm", "assets\\sounds\\Menu Confirm.ogg");
-        soundManager.loadSound("ui_error", "assets\\sounds\\Menu Error.ogg");
-        soundManager.loadSound("ui_navigate", "assets\\sounds\\Menu Move.ogg");
+void Game::loadAllSounds() {
+    soundManager.loadLoginMusic("assets\\sounds\\snowbros_theme.ogg");
+    soundManager.loadSplashMusic("assets\\sounds\\snowman.ogg");   // ADD
+    soundManager.loadSound("gamestart", "assets\\sounds\\gamestart.wav");  // #2 game start jingle
+    soundManager.loadSound("levelstart", "assets\\sounds\\levelstart.wav"); // #4 next level fanfare
 
-        soundManager.loadMenuMusic("assets\\sounds\\menu_bgm.wav");      // #
-        // soundManager.loadMenuMusic("assets\\sounds\\snowman.mp3");      // #
+    // UI sounds for login/signup screens
+    soundManager.loadSound("ui_confirm", "assets\\sounds\\Menu Confirm.ogg");
+    soundManager.loadSound("ui_error", "assets\\sounds\\Menu Error.ogg");
+    soundManager.loadSound("ui_navigate", "assets\\sounds\\Menu Move.ogg");
 
-        soundManager.loadGameMusic("assets\\sounds\\game_bgm.wav");      // #3
-        soundManager.loadGameOverMusic("assets\\sounds\\gameover_bgm.wav"); // #5
-    }
+    soundManager.loadMenuMusic("assets\\sounds\\menu_bgm.wav");      // #
+    // soundManager.loadMenuMusic("assets\\sounds\\snowman.mp3");      // #
+
+    soundManager.loadGameMusic("assets\\sounds\\game_bgm.wav");      // #3
+    soundManager.loadGameOverMusic("assets\\sounds\\gameover_bgm.wav"); // #5
+}
 
 
 
@@ -105,13 +104,13 @@ void Game::loadAllFonts() {
 
 void Game::run()
 {
-    sf::Clock clock; 
+    sf::Clock clock;
     float timeSinceLastUpdate = 0.f;
 
     while (window.isOpen())
     {
-        float deltaTime = clock.restart().asSeconds(); 
-        timeSinceLastUpdate += deltaTime; 
+        float deltaTime = clock.restart().asSeconds();
+        timeSinceLastUpdate += deltaTime;
 
 
         while (auto event = window.pollEvent())
@@ -131,7 +130,7 @@ void Game::run()
                 handleLoginEvents(*event);
                 break;
             case GameState::SIGNUP:
-                handleSignupEvents(*event); 
+                handleSignupEvents(*event);
                 break;   // NEW
             case GameState::MENU:
                 handleMainMenuEvents(*event);
@@ -143,10 +142,10 @@ void Game::run()
                     currentState = GameState::MENU;
                 }
                 break;
-                  case GameState::PAUSED:
-                       handlePauseEvents(*event); break;
-                  case GameState::GAME_OVER:
-                       handleGameOverEvents(*event); break; 
+            case GameState::PAUSED:
+                handlePauseEvents(*event); break;
+            case GameState::GAME_OVER:
+                handleGameOverEvents(*event); break;
             case GameState::LEVEL_SELECT:
                 levelSelectScreen.handleEvent(*event);
                 if (levelSelectScreen.done) {
@@ -194,7 +193,7 @@ void Game::run()
                         if (player1.isDistanceIncreaseActive())
                             player2.activateDistanceIncrease();
                     }
-                    currentState = prevState;  
+                    currentState = prevState;
                 }
                 break;
             case GameState::STAR_LEVEL:
@@ -205,7 +204,7 @@ void Game::run()
         }
 
         while (timeSinceLastUpdate >= TIME_PER_FRAME)
-            
+
         {
             processInput();
             update(TIME_PER_FRAME);
@@ -223,8 +222,8 @@ void Game::handleLoginEvents(sf::Event& event)
     LoginResult result = loginScreen.handleEvent(event);
     if (result == LoginResult::NEW_GAME) {
         saveAndSubmitScore();
-        signupScreen.setUsername(loginScreen.getUsername());   
-        currentState = GameState::SIGNUP;                     
+        signupScreen.setUsername(loginScreen.getUsername());
+        currentState = GameState::SIGNUP;
     }
     else if (result == LoginResult::CONTINUE) {
         saveAndSubmitScore();
@@ -233,7 +232,7 @@ void Game::handleLoginEvents(sf::Event& event)
         mainMenu.setUsername(playerData.getUsername());
         mainMenu.reset();
         currentState = GameState::MENU;
-        soundManager.playMenuMusic(); 
+        soundManager.playMenuMusic();
     }
     else if (result == LoginResult::QUIT) {
         window.close();
@@ -250,7 +249,7 @@ void Game::handleSignupEvents(sf::Event& event)
         mainMenu.setUsername(playerData.getUsername());
         mainMenu.reset();
         currentState = GameState::MENU;
-        soundManager.playMenuMusic(); 
+        soundManager.playMenuMusic();
     }
     else if (result == SignupResult::BACK) {
         currentState = GameState::LOGIN;
@@ -271,22 +270,22 @@ void Game::handleMainMenuEvents(sf::Event& event)
             Keyboard::Key::Space
         );
         player1.loadTexture("assets\\images\\Nick.png");
-        levelSelectScreen.reset();               
-        currentState = GameState::LEVEL_SELECT; 
+        levelSelectScreen.reset();
+        currentState = GameState::LEVEL_SELECT;
         levelsManager.SpecificLevel(playerData.getCurrentLevel());
         // levelsManager.SpecificLevel(5);
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
 
-        soundManager.playSound("gamestart");  
-        soundManager.playGameMusic();         
+        soundManager.playSound("gamestart");
+        soundManager.playGameMusic();
     }
 
 
     else if (result == MainMenuResult::START_2PLAYER)
     {
         twoPlayerMode = true;
-        player2Data.setLives(2);     
-        player2Data.setGemCount(0);  
+        player2Data.setLives(2);
+        player2Data.setGemCount(0);
         player1.loadTexture("assets\\images\\Nick.png");
         player2.loadTexture("assets\\images\\Nick.png"); // or a different texture
 
@@ -341,7 +340,7 @@ void Game::handleMainMenuEvents(sf::Event& event)
         saveAndSubmitScore();
         FileManager::savePlayerData(playerData);
         currentState = GameState::LOGIN;
-        soundManager.stopAll();   // ADD — silence everything on logout
+        soundManager.stopAll();   // ADD ? silence everything on logout
     }
     else if (result == MainMenuResult::QUIT) {
         saveAndSubmitScore();
@@ -381,13 +380,13 @@ void Game::handleGameOverEvents(sf::Event& event) {
         gameLevel.loadLevel(levelsManager.getCurrentLevel());
         gameOverScreen.reset();
         currentState = GameState::PLAYING;
-       // soundManager.playMusic();
+        // soundManager.playMusic();
     }
     else if (result == GameOverResult::QUIT_TO_MENU) {
         saveAndSubmitScore();
         mainMenu.reset();
         currentState = GameState::MENU;
-      //  soundManager.stopMusic();
+        //  soundManager.stopMusic();
     }
 }
 void Game::handleStarLevelEvents(sf::Event& event)
@@ -425,20 +424,20 @@ void Game::processInput()
             soundManager.playLoginMusic();
         }
     }
-    
+
     // TEMP: press G to force game over screen for testing
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G)) {
         gameOverScreen.reset();
         currentState = GameState::GAME_OVER;
         soundManager.playGameOverMusic();
-    } 
+    }
 }
 
 void Game::update(float deltaTime)
 {
     if (currentState == GameState::SPLASH) {
         splashScreen.update(deltaTime);
-        
+
         if (splashScreen.isDone()) {
             soundManager.stopAll();
             currentState = GameState::LOGIN;
@@ -497,8 +496,8 @@ void Game::update(float deltaTime)
                     currentState = GameState::STAR_LEVEL;
                 }
                 gameLevel.loadLevel(levelsManager.getCurrentLevel());
-                soundManager.playSound("levelstart");  // ADD — fanfare
-                soundManager.playGameMusic();          // ADD — BGM restarts
+                soundManager.playSound("levelstart");  // ADD ? fanfare
+                soundManager.playGameMusic();          // ADD ? BGM restarts
             }
         }
     }
@@ -531,12 +530,12 @@ void Game::draw() {
         hud.draw(window, playerData, twoPlayerMode ? &player2Data : nullptr);
         //hud.draw(window, playerData); // this was when we had single player only
         break;
-        case GameState::PAUSED:
-            pauseScreen.draw(window);
-            break;
-       case GameState::GAME_OVER:
-            gameOverScreen.draw(window, playerData);
-            break; 
+    case GameState::PAUSED:
+        pauseScreen.draw(window);
+        break;
+    case GameState::GAME_OVER:
+        gameOverScreen.draw(window, playerData);
+        break;
     case GameState::KEY_REMAP:
         keyRemapScreen.draw(window);
         break;
