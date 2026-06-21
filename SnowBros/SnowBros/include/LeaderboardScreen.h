@@ -11,7 +11,10 @@ private:
     optional<sf::Text> headerText;
     optional<sf::Text> hintText;
     optional<sf::Text> emptyText;
-
+    sf::Font fontTitle;
+    sf::Font fontBody;
+    sf::Font fontButtons;
+    bool extraFontsLoaded = false;
     sf::RectangleShape background;
     sf::RectangleShape panel;
     sf::RectangleShape rowHighlight;
@@ -37,10 +40,13 @@ public:
 
     LeaderboardScreen(Leaderboard& lb) : leaderboard(lb), done(false) {}
 
-    bool loadFont(const string& path)
+    bool loadFont(const string& path, const string& titlePath,
+        const string& bodyPath, const string& btnPath)
     {
-        if (!font.openFromFile(path)) 
-            return false;
+        if (!font.openFromFile(path)) return false;
+        extraFontsLoaded = fontTitle.openFromFile(titlePath);
+        fontBody.openFromFile(bodyPath);
+        fontButtons.openFromFile(btnPath);
 
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
         if (bgLoaded)
@@ -49,12 +55,12 @@ public:
             sf::Vector2u ts = bgTex.getSize();
             bgSprite->setScale({ 800.f / static_cast<float>(ts.x), 600.f / static_cast<float>(ts.y) });
         }
-        titleText.emplace(font);
-        headerText.emplace(font);
-        hintText.emplace(font);
-        emptyText.emplace(font);
+        titleText.emplace(extraFontsLoaded ? fontTitle : font);
+        headerText.emplace(fontButtons);
+        hintText.emplace(fontBody);
+        emptyText.emplace(fontBody);
         for (int i = 0; i < 10; i++)
-            rowTexts[i].emplace(font);
+            rowTexts[i].emplace(fontBody);
         return true;
     }
 
@@ -95,17 +101,24 @@ public:
 
         // title
         T(titleText).setString("LEADERBOARD");
-        T(titleText).setCharacterSize(32);
-        T(titleText).setFillColor(titleCol);
+        T(titleText).setCharacterSize(34);
         T(titleText).setLetterSpacing(4.f);
+        T(titleText).setOutlineThickness(2.f);
+        T(titleText).setOutlineColor(sf::Color(50, 130, 200, 200));
         sf::FloatRect tb = T(titleText).getLocalBounds();
         T(titleText).setOrigin({ tb.size.x / 2.f, 0.f });
+        // shadow
+        T(titleText).setFillColor(sf::Color(0, 0, 0, 100));
+        T(titleText).setPosition({ W / 2.f + 2.f, H / 2.f - panelH / 2.f + 20.f });
+        window.draw(T(titleText));
+        // main
+        T(titleText).setFillColor(titleCol);
         T(titleText).setPosition({ W / 2.f, H / 2.f - panelH / 2.f + 18.f });
         window.draw(T(titleText));
 
         // header row
         T(headerText).setString("#    NAME                SCORE      LEVEL    DATE");
-        T(headerText).setCharacterSize(13);
+        T(headerText).setCharacterSize(12);
         T(headerText).setFillColor(headerCol);
         T(headerText).setPosition({ W / 2.f - panelW / 2.f + 24.f, H / 2.f - panelH / 2.f + 72.f });
         window.draw(T(headerText));
@@ -158,7 +171,7 @@ public:
                     level += " ";
 
                 T(rowTexts[i]).setString(rank + name + score + level + e.date);
-                T(rowTexts[i]).setCharacterSize(15);
+                T(rowTexts[i]).setCharacterSize(13);
                 T(rowTexts[i]).setFillColor(col);
                 T(rowTexts[i]).setPosition({ W / 2.f - panelW / 2.f + 24.f, rowY });
                 window.draw(T(rowTexts[i]));
@@ -167,7 +180,7 @@ public:
 
         // hint
         T(hintText).setString("Enter or Esc to go back");
-        T(hintText).setCharacterSize(12);
+        T(hintText).setCharacterSize(13);
         T(hintText).setFillColor(hintCol);
         sf::FloatRect hb = T(hintText).getLocalBounds();
         T(hintText).setOrigin({ hb.size.x / 2.f, 0.f });

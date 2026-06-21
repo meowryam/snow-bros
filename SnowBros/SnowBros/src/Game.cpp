@@ -20,6 +20,9 @@ Game::Game()
         "assets\\"),
     twoPlayerMode(false)
     , levelSelectScreen(playerData)
+    , loginScreen(soundManager)      // ADD
+    , mainMenu(soundManager)
+    //, signupScreen(soundManager)
 {
     
         srand(static_cast<unsigned int>(time(nullptr)));
@@ -34,10 +37,13 @@ Game::Game()
     leaderboard.load(); 
     loadAllFonts(); 
     splashScreen.load(
-        "assets\\fonts\\Orbitron Light.ttf",
-        "assets\\images\\splash_logo.png"   
+        "assets\\fonts\\Cinzel-Bold.ttf",
+        "assets\\fonts\\CormorantGaramond-Regular.ttf",
+        "assets\\images\\splash_logo.png"
     );
     loadAllSounds();
+
+    soundManager.playSplashMusic();    // ADD
 }
 
 
@@ -48,19 +54,23 @@ Game::Game()
 
 void Game::loadAllFonts() {
     //  string fontPath = "assets\\fonts\\PressStart2P-Regular.ttf";
-    string fontPath = "assets\\fonts\\Orbitron Light.ttf";
+    string fontTitle = "assets\\fonts\\Cinzel-Bold.ttf";
+    string fontBody = "assets\\fonts\\Montserrat-Medium.ttf";
+    string fontButtons = "assets\\fonts\\Montserrat-SemiBoldItalic.ttf";
+    string fontSubtitle = "assets\\fonts\\CormorantGaramond-Regular.ttf";
+    string fontOrbitron = "assets\\fonts\\Orbitron Light.ttf";
 
-    loginScreen.loadFont(fontPath);
-    signupScreen.loadFont(fontPath);  
-    mainMenu.loadFont(fontPath);
-    hud.loadFont(fontPath);
-    pauseScreen.loadFont(fontPath);
-    gameOverScreen.loadFont(fontPath);
-    leaderboardScreen.loadFont(fontPath);
-    keyRemapScreen.loadFont(fontPath);
-    shopScreen.loadFont(fontPath);
-    levelSelectScreen.loadAssets(fontPath, "assets\\images\\LevelSelect_bg.png");
-    starLevelScreen.loadAssets(fontPath, "assets\\images\\StarLevel_bg.png");
+    loginScreen.loadFont(fontOrbitron, fontTitle, fontBody);
+    signupScreen.loadFont(fontOrbitron, fontTitle, fontBody);
+    mainMenu.loadFont(fontOrbitron, fontTitle, fontBody, fontButtons);
+    hud.loadFont(fontOrbitron);
+    pauseScreen.loadFont(fontOrbitron, fontTitle, fontButtons);
+    gameOverScreen.loadFont(fontOrbitron);
+    leaderboardScreen.loadFont(fontOrbitron, fontTitle, fontBody, fontButtons);
+    keyRemapScreen.loadFont(fontOrbitron);
+    shopScreen.loadFont(fontOrbitron);
+    levelSelectScreen.loadAssets(fontOrbitron, "assets\\images\\LevelSelect_bg.png");
+    starLevelScreen.loadAssets(fontOrbitron, "assets\\images\\StarLevel_bg.png");
 }
 
 
@@ -68,15 +78,26 @@ void Game::loadAllFonts() {
 
 
 
-void Game::loadAllSounds() {
 
-    soundManager.loadSound("gamestart", "assets\\sounds\\gamestart.wav");  // #2 game start jingle
-    soundManager.loadSound("levelstart", "assets\\sounds\\levelstart.wav"); // #4 next level fanfare
+  
+    void Game::loadAllSounds() {
+        soundManager.loadLoginMusic("assets\\sounds\\snowbros_theme.ogg");
+        soundManager.loadSplashMusic("assets\\sounds\\snowman.ogg");   // ADD
+        soundManager.loadSound("gamestart", "assets\\sounds\\gamestart.wav");  // #2 game start jingle
+        soundManager.loadSound("levelstart", "assets\\sounds\\levelstart.wav"); // #4 next level fanfare
 
-    soundManager.loadMenuMusic("assets\\sounds\\menu_bgm.wav");      // #1
-    soundManager.loadGameMusic("assets\\sounds\\game_bgm.wav");      // #3
-    soundManager.loadGameOverMusic("assets\\sounds\\gameover_bgm.wav"); // #5
-}
+        // UI sounds for login/signup screens
+        soundManager.loadSound("ui_confirm", "assets\\sounds\\Menu Confirm.ogg");
+        soundManager.loadSound("ui_error", "assets\\sounds\\Menu Error.ogg");
+        soundManager.loadSound("ui_navigate", "assets\\sounds\\Menu Move.ogg");
+
+        soundManager.loadMenuMusic("assets\\sounds\\menu_bgm.wav");      // #
+        // soundManager.loadMenuMusic("assets\\sounds\\snowman.mp3");      // #
+
+        soundManager.loadGameMusic("assets\\sounds\\game_bgm.wav");      // #3
+        soundManager.loadGameOverMusic("assets\\sounds\\gameover_bgm.wav"); // #5
+    }
+
 
 
 
@@ -332,7 +353,7 @@ void Game::handlePauseEvents(sf::Event& event) {
     PauseResult result = pauseScreen.handleEvent(event);
     if (result == PauseResult::RESUME) {
         currentState = GameState::PLAYING;
-        soundManager.resumeGameMusic();
+        soundManager.playGameMusic();
     }
     else if (result == PauseResult::OPEN_SHOP) {
         prevState = currentState;
@@ -401,7 +422,7 @@ void Game::processInput()
         if (inputManager.isKeyHeld(keyBindings.pause)) {
             currentState = GameState::PAUSED;
             pauseScreen.reset();
-            soundManager.pauseGameMusic();
+            soundManager.playLoginMusic();
         }
     }
     
@@ -417,8 +438,14 @@ void Game::update(float deltaTime)
 {
     if (currentState == GameState::SPLASH) {
         splashScreen.update(deltaTime);
-        if (splashScreen.isDone())
+        
+        if (splashScreen.isDone()) {
+            soundManager.stopAll();
             currentState = GameState::LOGIN;
+            soundManager.playLoginMusic();   // ADD
+        }
+
+
         return;
     }
     if (currentState != GameState::PLAYING) return;

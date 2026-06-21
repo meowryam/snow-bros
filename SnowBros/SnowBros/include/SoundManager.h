@@ -14,11 +14,14 @@ private:
     optional<sf::Sound> sounds[MAX_SOUNDS];
     string          soundNames[MAX_SOUNDS];
     int             soundCount;
-
+    sf::Music splashMusic;
+    bool splashMusicLoaded = false;
     sf::Music menuMusic;      
     sf::Music gameMusic;    
     sf::Music gameOverMusic;  
+    sf::Music loginMusic;
 
+    bool loginMusicLoaded = false;
     bool menuMusicLoaded = false;
     bool gameMusicLoaded = false;
     bool gameOverMusicLoaded = false;
@@ -35,7 +38,32 @@ private:
 
 public:
     SoundManager() : soundCount(0) {}
-
+    bool loadSplashMusic(const string& path)
+    {
+        if (!splashMusic.openFromFile(path)) return false;
+        splashMusic.setLooping(true);          // loops forever
+        splashMusic.setVolume(musicVolume);
+        splashMusicLoaded = true;
+        return true;
+    }
+    bool loadLoginMusic(const string& path)
+    {
+        if (!loginMusic.openFromFile(path))
+            return false;
+        loginMusic.setLooping(true);
+        loginMusic.setVolume(musicVolume);
+        loginMusicLoaded = true;
+        return true;
+    }
+    void playLoginMusic()
+    {
+        stopAll();
+        if (loginMusicLoaded) loginMusic.play();
+    }
+    void playSplashMusic()
+    {
+        if (splashMusicLoaded) splashMusic.play();
+    }
     bool loadSound(const string& name, const string& path)
     {
         if (soundCount >= MAX_SOUNDS)
@@ -48,7 +76,11 @@ public:
         soundCount++;
         return true;
     }
-
+    void setSoundLooping(const string& name, bool loop)
+    {
+        int i = findSound(name);
+        if (i != -1) sounds[i]->setLooping(loop);
+    }
     void playSound(const string& name)
     {
         int i = findSound(name);
@@ -112,16 +144,23 @@ public:
             gameOverMusic.play();
     }
 
-    void stopAll() 
+    void stopAll()
     {
-        if (menuMusicLoaded)   
-            menuMusic.stop();
-        if (gameMusicLoaded)  
-            gameMusic.stop();
-        if (gameOverMusicLoaded)
-            gameOverMusic.stop();
+        if (splashMusicLoaded)   splashMusic.stop();
+        if (menuMusicLoaded)     menuMusic.stop();
+        if (gameMusicLoaded)     gameMusic.stop();
+        if (gameOverMusicLoaded) gameOverMusic.stop();
+        if (loginMusicLoaded)    loginMusic.stop();   // ADD
     }
 
+    void setMusicVolume(float v)
+    {
+        musicVolume = v;
+        menuMusic.setVolume(v);
+        gameMusic.setVolume(v);
+        gameOverMusic.setVolume(v);
+        loginMusic.setVolume(v);   // ADD
+    }
     void pauseGameMusic()
     {
         if (gameMusicLoaded)
@@ -133,14 +172,7 @@ public:
         gameMusic.play();
     }
 
-    void setMusicVolume(float v)
-    {
-        musicVolume = v;
-        menuMusic.setVolume(v);
-        gameMusic.setVolume(v);
-        gameOverMusic.setVolume(v);
-    }
-
+    
     void setSfxVolume(float v) 
     { 
         sfxVolume = v;

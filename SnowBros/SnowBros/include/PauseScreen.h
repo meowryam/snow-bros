@@ -11,14 +11,20 @@ enum class PauseResult {
 };
 
 class PauseScreen {
+    sf::Font fontTitle;
+    sf::Font fontButtons;
+    bool extraFontsLoaded = false;
 public:
     PauseScreen() : selectedOption(0) {}
 
     PauseScreen(const PauseScreen&) = delete;
     PauseScreen& operator=(const PauseScreen&) = delete;
 
-    bool loadFont(const string& path) {
+    bool loadFont(const string& path, const string& titlePath, const string& btnPath){
+
         if (!font.openFromFile(path)) return false;
+        extraFontsLoaded = fontTitle.openFromFile(titlePath);
+        fontButtons.openFromFile(btnPath);
 
         bgLoaded = bgTex.loadFromFile("assets\\images\\Pause_bg.png");
         if (bgLoaded) {
@@ -27,11 +33,12 @@ public:
             bgSprite->setScale({ 800.f / static_cast<float>(ts.x), 600.f / static_cast<float>(ts.y) });
         }
 
-        txtTitle.emplace(font, "PAUSED", 28u);
-        txtHint.emplace(font, "arrows to navigate  |  Enter to select  |  Esc to resume", 9u);
-        txtMessage.emplace(font, "", 9u);
+  
+        txtTitle.emplace(extraFontsLoaded ? fontTitle : font, "PAUSED", 32u);
+        txtHint.emplace(font, "arrows to navigate  |  Enter to select  |  Esc to resume", 10u);
+        txtMessage.emplace(font, "", 10u);
         for (int i = 0; i < OPT_COUNT; i++)
-            txtOptions[i].emplace(font, "", 14u);
+            txtOptions[i].emplace(fontButtons, "", 14u);
         layoutReady = false;
         return true;
     }
@@ -104,9 +111,9 @@ private:
     static constexpr float BTN_GAP = 10.f;
     static constexpr float BTN_LEFT = PANEL_X + (PANEL_W - BTN_W) / 2.f;
     static constexpr float BTNS_TOP = PANEL_Y + 100.f;
-    const Color PANEL_FILL{ 0,  10,  30,   0 };  
-    const Color PANEL_OUTLINE{ 0,   0,   0,   0 };  
-    const Color BTN_NORMAL{ 10,  30,  80, 120 };   
+    const Color PANEL_FILL{ 5,  15,  40,  165 };    // CHANGED — was fully transparent
+    const Color PANEL_OUTLINE{ 140, 215, 255, 200 };  // CHANGED — was fully transparent
+    const Color BTN_NORMAL{ 10,  30,  80, 150 };   
     const Color BTN_SEL{ 40, 120, 220, 160 };   
     const Color BTN_OUT_NRM{ 60, 140, 220,  80 };   
     const Color BTN_OUT_SEL{ 140, 220, 255, 255 };   
@@ -158,7 +165,7 @@ private:
        
         divider.setSize({ PANEL_W - 40.f, 1.5f });
         divider.setPosition({ PANEL_X + 20.f, PANEL_Y + 72.f });
-        divider.setFillColor(Color(100, 180, 255, 60));   // nearly invisible
+        divider.setFillColor(Color(140, 215, 255, 130));   // CHANGED — was 60, now visible
 
         const char* labels[OPT_COUNT] = { "Resume", "Shop", "Key Bindings", "Quit to Menu" };
         for (int i = 0; i < OPT_COUNT; i++) {

@@ -16,7 +16,9 @@ class SignupScreen {
 private:
     sf::Font font;
     bool fontLoaded = false;
-
+    sf::Font fontTitle;
+    sf::Font fontBody;
+    bool extraFontsLoaded = false;
     string username;            
     string passwordInput;
     string confirmInput;
@@ -66,9 +68,11 @@ private:
 public:
     SignupScreen() {}
 
-    bool loadFont(const string& path)
+    bool loadFont(const string& path, const string& titlePath, const string& bodyPath)
     {
         if (!font.openFromFile(path)) return false;
+        extraFontsLoaded = fontTitle.openFromFile(titlePath);
+        fontBody.openFromFile(bodyPath);
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
         if (bgLoaded) {
             bgSprite.emplace(bgTex);
@@ -76,14 +80,14 @@ public:
             bgSprite->setScale({ 800.f / static_cast<float>(ts.x), 600.f / static_cast<float>(ts.y) });
         }
         fontLoaded = true;
-        titleText.emplace(font);
-        subtitleText.emplace(font);
-        pwLabel.emplace(font);
-        pwText.emplace(font);
-        cfLabel.emplace(font);
-        cfText.emplace(font);
-        errorText.emplace(font);
-        hintText.emplace(font);
+        titleText.emplace(extraFontsLoaded ? fontTitle : font);
+        subtitleText.emplace(fontBody);
+        pwLabel.emplace(fontBody);
+        pwText.emplace(fontBody);
+        cfLabel.emplace(fontBody);
+        cfText.emplace(fontBody);
+        errorText.emplace(fontBody);
+        hintText.emplace(fontBody);
         return true;
     }
 
@@ -174,38 +178,61 @@ public:
             sf::RectangleShape fb({ 800.f, 600.f }); fb.setFillColor(bgFallback); window.draw(fb);
         }
         sf::RectangleShape vignette({ 800.f, 600.f });
-        vignette.setFillColor(sf::Color(0, 5, 20, 70));
+        vignette.setFillColor(sf::Color(0, 5, 20, 110));
         window.draw(vignette);
 
+        // glow behind card
+        sf::CircleShape cardGlow(250.f);
+        cardGlow.setOrigin({ 250.f, 250.f });
+        cardGlow.setPosition({ W / 2.f, 310.f });
+        cardGlow.setFillColor(sf::Color(150, 220, 255, 18));
+        window.draw(cardGlow);
+
+        // glass card
+        sf::RectangleShape card({ 380.f, 340.f });
+        card.setPosition({ W / 2.f - 190.f, 140.f });
+        card.setFillColor(sf::Color(10, 25, 70, 80));
+        card.setOutlineThickness(1.5f);
+        card.setOutlineColor(sf::Color(180, 230, 255, 140));
+        window.draw(card);
+
+
         T(titleText).setString("SNOW BROS");
-        T(titleText).setCharacterSize(30u);
-        T(titleText).setFillColor(titleCol);
+        T(titleText).setCharacterSize(36u);
         T(titleText).setStyle(sf::Text::Bold);
-        T(titleText).setLetterSpacing(3.f);
+        T(titleText).setLetterSpacing(5.f);
+        T(titleText).setOutlineThickness(2.f);
+        T(titleText).setOutlineColor(sf::Color(50, 130, 200, 200));
         sf::FloatRect tb = T(titleText).getLocalBounds();
         T(titleText).setOrigin({ tb.size.x / 2.f, 0.f });
+        // shadow
+        T(titleText).setFillColor(sf::Color(0, 0, 0, 100));
+        T(titleText).setPosition({ W / 2.f + 2.f, 62.f });
+        window.draw(T(titleText));
+        // main
+        T(titleText).setFillColor(titleCol);
         T(titleText).setPosition({ W / 2.f, 60.f });
         window.draw(T(titleText));
 
         T(subtitleText).setString("Create Password for: " + username);
-        T(subtitleText).setCharacterSize(16);
-        T(subtitleText).setFillColor(subCol);
+        T(subtitleText).setCharacterSize(18);
+        T(subtitleText).setFillColor(sf::Color(190, 230, 255, 255));
         sf::FloatRect sb = T(subtitleText).getLocalBounds();
         T(subtitleText).setOrigin({ sb.size.x / 2.f, 0.f });
         T(subtitleText).setPosition({ W / 2.f, 155.f });
         window.draw(T(subtitleText));
 
         T(pwLabel).setString("Password:");
-        T(pwLabel).setCharacterSize(14);
+        T(pwLabel).setCharacterSize(16);
         T(pwLabel).setFillColor(iceMid);
         T(pwLabel).setPosition({ W / 2.f - 160.f, 210.f });
         window.draw(T(pwLabel));
 
         passwordBox.setSize({ 320.f, 44.f });
         passwordBox.setPosition({ W / 2.f - 160.f, 232.f });
-        passwordBox.setFillColor(inputFill);
-        passwordBox.setOutlineThickness(1.8f);
-        passwordBox.setOutlineColor(focusedField == 0 ? inputOutAct : inputOutNrm);
+        passwordBox.setFillColor(sf::Color(20, 40, 90, 140));
+        passwordBox.setOutlineThickness(2.f);
+        passwordBox.setOutlineColor(focusedField == 0 ? sf::Color(180, 230, 255, 220) : sf::Color(80, 140, 220, 140));
         window.draw(passwordBox);
 
         string pwMasked(passwordInput.size(), '*');
@@ -217,16 +244,16 @@ public:
         window.draw(T(pwText));
 
         T(cfLabel).setString("Confirm Password:");
-        T(cfLabel).setCharacterSize(14);
+        T(cfLabel).setCharacterSize(16);
         T(cfLabel).setFillColor(iceMid);
         T(cfLabel).setPosition({ W / 2.f - 160.f, 295.f });
         window.draw(T(cfLabel));
 
         confirmBox.setSize({ 320.f, 44.f });
         confirmBox.setPosition({ W / 2.f - 160.f, 317.f });
-        confirmBox.setFillColor(inputFill);
-        confirmBox.setOutlineThickness(1.8f);
-        confirmBox.setOutlineColor(focusedField == 1 ? inputOutAct : inputOutNrm);
+        confirmBox.setFillColor(sf::Color(20, 40, 90, 140));
+        confirmBox.setOutlineThickness(2.f);
+        confirmBox.setOutlineColor(focusedField == 1 ? sf::Color(180, 230, 255, 220) : sf::Color(80, 140, 220, 140));
         window.draw(confirmBox);
 
         string cfMasked(confirmInput.size(), '*');
@@ -248,8 +275,8 @@ public:
         }
 
         T(hintText).setString("Tab to switch field   |   Enter to confirm   |   ESC to go back");
-        T(hintText).setCharacterSize(11);
-        T(hintText).setFillColor(iceDim);
+        T(hintText).setCharacterSize(13);
+        T(hintText).setFillColor(sf::Color(200, 230, 255, 220));
         sf::FloatRect hb = T(hintText).getLocalBounds();
         T(hintText).setOrigin({ hb.size.x / 2.f, 0.f });
         T(hintText).setPosition({ W / 2.f, H - 40.f });

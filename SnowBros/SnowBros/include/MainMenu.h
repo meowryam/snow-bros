@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "SoundManager.h"  
 using namespace std;
 
 enum class MainMenuResult {
@@ -16,7 +17,10 @@ enum class MainMenuResult {
 class MainMenu {
 private:
     sf::Font font;
-
+    sf::Font fontTitle;    // Cinzel-Bold
+    sf::Font fontBody;     // Montserrat-Medium
+    sf::Font fontButtons;  // Montserrat-SemiBoldItalic
+    bool extraFontsLoaded = false;
     static constexpr int OPT_COUNT = 7;
 
     optional<sf::Text> txtTitle;
@@ -30,7 +34,7 @@ private:
 
     int    selectedOption = 0;
     string username;
-
+    SoundManager& soundManager;   // ADD
     
     sf::Color titleCol = sf::Color(200, 240, 255, 255);   // bright ice white-blue
     sf::Color subCol = sf::Color(160, 215, 255, 230);   // softer ice blue
@@ -67,11 +71,14 @@ private:
     }
 
 public:
-    MainMenu() : selectedOption(0) {}
+    MainMenu(SoundManager& sm) : selectedOption(0), soundManager(sm) {}
 
-    bool loadFont(const string& path) {
+    bool loadFont(const string& path, const string& titlePath,
+        const string& bodyPath, const string& btnPath) {
         if (!font.openFromFile(path)) return false;
-
+        extraFontsLoaded = fontTitle.openFromFile(titlePath);
+        fontBody.openFromFile(bodyPath);
+        fontButtons.openFromFile(btnPath);
         
         bgLoaded = bgTex.loadFromFile("assets\\images\\Login_bg.png");
         if (bgLoaded) {
@@ -82,12 +89,11 @@ public:
                 600.f / static_cast<float>(ts.y)
                 });
         }
-
-        txtTitle.emplace(font, "SNOW  BROS", 30u);
-        txtSub.emplace(font, "", 11u);
-        txtHint.emplace(font, "", 9u);
+        txtTitle.emplace(extraFontsLoaded ? fontTitle : font, "SNOW  BROS", 30u);
+        txtSub.emplace(fontBody, "", 13u);
+        txtHint.emplace(fontBody, "", 10u);
         for (int i = 0; i < OPT_COUNT; i++)
-            txtOptions[i].emplace(font, "", 13u);
+            txtOptions[i].emplace(fontButtons, "", 13u);
 
         return true;
     }
@@ -97,11 +103,16 @@ public:
 
     MainMenuResult handleEvent(sf::Event& event) {
         if (auto* kp = event.getIf<sf::Event::KeyPressed>()) {
-            if (kp->code == sf::Keyboard::Key::Up)
+            if (kp->code == sf::Keyboard::Key::Up) {
                 selectedOption = (selectedOption - 1 + OPT_COUNT) % OPT_COUNT;
-            else if (kp->code == sf::Keyboard::Key::Down)
+                soundManager.playSound("ui_navigate");   // ADD
+            }
+            else if (kp->code == sf::Keyboard::Key::Down) {
                 selectedOption = (selectedOption + 1) % OPT_COUNT;
+                soundManager.playSound("ui_navigate");   // ADD
+            }
             else if (kp->code == sf::Keyboard::Key::Enter) {
+                soundManager.playSound("ui_confirm");   // ADD
                 if (selectedOption == 0) return MainMenuResult::START_GAME;
                 if (selectedOption == 1) return MainMenuResult::START_2PLAYER;
                 if (selectedOption == 2) return MainMenuResult::OPEN_SHOP;
@@ -131,10 +142,18 @@ public:
 
        
         TX(txtTitle).setString("SNOW  BROS");
-        TX(txtTitle).setCharacterSize(30u);
-        TX(txtTitle).setFillColor(titleCol);
+        TX(txtTitle).setCharacterSize(34u);
         TX(txtTitle).setStyle(sf::Text::Bold);
         TX(txtTitle).setLetterSpacing(5.f);
+        TX(txtTitle).setOutlineThickness(2.f);
+        TX(txtTitle).setOutlineColor(sf::Color(50, 130, 200, 200));
+        // shadow
+        TX(txtTitle).setFillColor(sf::Color(0, 0, 0, 100));
+        centreText(TX(txtTitle), 80.f);
+        TX(txtTitle).move({ 2.f, 2.f });
+        window.draw(TX(txtTitle));
+        // main
+        TX(txtTitle).setFillColor(titleCol);
         centreText(TX(txtTitle), 78.f);
         window.draw(TX(txtTitle));
 
@@ -145,7 +164,7 @@ public:
         window.draw(dividerTop);
 
         TX(txtSub).setString("Welcome back,  " + username + "!");
-        TX(txtSub).setCharacterSize(11u);
+        TX(txtSub).setCharacterSize(14u);
         TX(txtSub).setFillColor(subCol);
         TX(txtSub).setStyle(sf::Text::Regular);
         centreText(TX(txtSub), 148.f);
@@ -186,7 +205,7 @@ public:
         window.draw(dividerBot);
 
         TX(txtHint).setString("Arrows to navigate   |   Enter to select");
-        TX(txtHint).setCharacterSize(9u);
+        TX(txtHint).setCharacterSize(11u);
         TX(txtHint).setFillColor(hintCol);
         centreText(TX(txtHint), 570.f);
         window.draw(TX(txtHint));
